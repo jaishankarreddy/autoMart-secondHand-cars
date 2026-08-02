@@ -1,0 +1,48 @@
+:host { display: block; }
+
+.picker-disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.compare-grid {
+  display: grid;
+  grid-template-columns: 180px repeat(var(--count, 3), minmax(220px, 1fr));
+}
+
+.cell {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.15rem;
+}
+
+.label-cell {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.vehicle-cell {
+  min-height: 18rem;
+  justify-content: flex-start;
+}
+
+.best-cell {
+  color: var(--success);
+  font-weight: 700;
+}

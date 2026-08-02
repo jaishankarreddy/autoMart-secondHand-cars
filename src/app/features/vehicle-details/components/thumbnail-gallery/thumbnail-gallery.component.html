@@ -1,0 +1,18 @@
+<div class="no-scrollbar flex gap-3 overflow-x-auto pb-1">
+  @for (image of images(); track $index) {
+    <button
+      type="button"
+      class="thumb relative h-20 w-24 shrink-0 overflow-hidden rounded-xl border-2 transition-all duration-300 sm:h-24 sm:w-28"
+      [class.thumb-active]="activeIndex() === $index"
+      [attr.aria-label]="'View image ' + ($index + 1)"
+      (click)="selectIndex($index)"
+    >
+      <img
+        [src]="image"
+        [alt]="alt() + ' — image ' + ($index + 1)"
+        loading="lazy"
+        class="h-full w-full object-cover transition-transform duration-500 ease-smooth group-hover:scale-110"
+      />
+    </button>
+  }
+</div>

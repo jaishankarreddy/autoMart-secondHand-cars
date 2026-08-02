@@ -1,0 +1,27 @@
+<section class="py-16 sm:py-24" appReveal>
+  <div class="container-am">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <app-section-heading
+        eyebrow="Similar Vehicles"
+        title="You may also like"
+        subtitle="Hand-picked alternatives that match this vehicle's class and budget."
+      />
+      <div class="mb-1 flex items-center gap-2">
+        <button type="button" (click)="scroll(-1)" appRipple aria-label="Scroll left" class="slider-btn">
+          <svg lucideChevronLeft class="h-5 w-5"></svg>
+        </button>
+        <button type="button" (click)="scroll(1)" appRipple aria-label="Scroll right" class="slider-btn">
+          <svg lucideChevronRight class="h-5 w-5"></svg>
+        </button>
+      </div>
+    </div>
+
+    <div #track class="no-scrollbar mt-10 flex snap-x gap-6 overflow-x-auto pb-2">
+      @for (car of vehicles(); track car.id) {
+        <div class="w-[270px] shrink-0 snap-start sm:w-[300px] lg:w-[320px]">
+          <app-car-card [car]="car" />
+        </div>
+      }
+    </div>
+  </div>
+</section>

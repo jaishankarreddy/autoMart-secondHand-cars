@@ -1,0 +1,44 @@
+.price-sticky {
+  position: sticky;
+  top: 6.5rem;
+}
+
+/* ---- Description typography ---- */
+.prose-detail {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.85;
+
+  p + p {
+    margin-top: 1.1rem;
+  }
+
+  p:first-child::first-letter {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 2.6em;
+    line-height: 1;
+    float: left;
+    padding-right: 0.55rem;
+    padding-top: 0.12rem;
+    color: var(--primary);
+  }
+}
+
+/* ---- Loading skeletons ---- */
+.skeleton {
+  background: linear-gradient(
+    100deg,
+    var(--surface-2) 40%,
+    color-mix(in srgb, var(--surface-2) 40%, var(--surface)) 50%,
+    var(--surface-2) 60%
+  );
+  background-size: 200% 100%;
+  animation: am-shimmer 1.6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}

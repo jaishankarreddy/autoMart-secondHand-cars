@@ -1,0 +1,46 @@
+.icon-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 0.75rem;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: border-color 0.25s ease, color 0.25s ease, background-color 0.25s ease, transform 0.2s ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--border) 40%, var(--primary));
+    color: var(--primary);
+    transform: translateY(-1px);
+  }
+}
+
+.icon-action-active {
+  background: #fee2e2;
+  border-color: #fecaca;
+  color: var(--danger);
+
+  &:hover {
+    background: #fee2e2;
+    border-color: #fecaca;
+    color: var(--danger);
+  }
+}
+
+.avail-available {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.avail-reserved {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: color-mix(in srgb, var(--accent) 75%, #000);
+}
+
+.avail-sold {
+  background: color-mix(in srgb, var(--text-muted) 12%, transparent);
+  color: var(--text-muted);
+}

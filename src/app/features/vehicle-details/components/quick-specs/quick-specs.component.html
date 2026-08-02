@@ -1,0 +1,33 @@
+<div class="rounded-2xl border border-border bg-surface p-5 shadow-sm sm:p-6">
+  <div class="flex items-center gap-2.5">
+    <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-soft text-primary">
+      <svg lucideSettings2 class="h-4 w-4"></svg>
+    </span>
+    <h2 class="font-heading text-lg font-bold text-text sm:text-xl">Quick Specifications</h2>
+  </div>
+
+  <dl class="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-3">
+    @for (spec of specs(vehicle()); track spec.label) {
+      <div class="spec-tile group flex items-start gap-3 rounded-xl border border-border bg-surface-2 p-3.5 transition-colors duration-300 hover:border-primary/30 hover:bg-primary-soft/40">
+        <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface text-primary shadow-sm">
+          @switch (spec.icon) {
+            @case ('calendar') { <svg lucideCalendar class="h-[18px] w-[18px]"></svg> }
+            @case ('fuel') { <svg lucideFuel class="h-[18px] w-[18px]"></svg> }
+            @case ('cog') { <svg lucideCog class="h-[18px] w-[18px]"></svg> }
+            @case ('gauge') { <svg lucideGauge class="h-[18px] w-[18px]"></svg> }
+            @case ('users') { <svg lucideUsers class="h-[18px] w-[18px]"></svg> }
+            @case ('settings') { <svg lucideSettings2 class="h-[18px] w-[18px]"></svg> }
+            @case ('zap') { <svg lucideZap class="h-[18px] w-[18px]"></svg> }
+            @case ('palette') { <svg lucidePalette class="h-[18px] w-[18px]"></svg> }
+            @case ('fileBadge') { <svg lucideFileBadge class="h-[18px] w-[18px]"></svg> }
+            @case ('shieldCheck') { <svg lucideShieldCheck class="h-[18px] w-[18px]"></svg> }
+          }
+        </span>
+        <div class="min-w-0">
+          <dt class="text-[11px] font-semibold uppercase tracking-wider text-muted">{{ spec.label }}</dt>
+          <dd class="mt-0.5 text-sm font-semibold text-text">{{ spec.value }}</dd>
+        </div>
+      </div>
+    }
+  </dl>
+</div>

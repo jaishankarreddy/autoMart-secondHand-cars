@@ -1,0 +1,47 @@
+<section class="py-20 sm:py-28" appReveal>
+  <div class="container-am">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <app-section-heading
+        eyebrow="Popular Brands"
+        title="Shop by your favourite brand"
+        subtitle="From everyday hatchbacks to premium cruisers — find trusted vehicles from the brands you love."
+      />
+      <a routerLink="/cars" class="group mb-1 inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition-colors hover:text-primary-hover">
+        View all brands
+        <svg lucideArrowRight class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"></svg>
+      </a>
+    </div>
+
+    <!-- Brand card grid — scrollable on mobile, wraps on desktop -->
+    <div class="no-scrollbar mt-12 flex gap-5 overflow-x-auto pb-3 snap-x snap-mandatory lg:flex-wrap">
+      @for (brand of brands; track brand.name) {
+        <a
+          routerLink="/search"
+          class="group flex w-[150px] shrink-0 snap-start flex-col items-center rounded-2xl border border-border bg-surface px-5 pb-5 pt-6 shadow-sm am-card"
+        >
+          <!-- Logo tile -->
+          <span class="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border border-border bg-surface-2 transition-transform duration-500 ease-smooth group-hover:scale-110">
+            @if (brand.logo && !failedLogos().has(brand.name)) {
+              <img
+                [src]="brand.logo"
+                [alt]="brand.name"
+                loading="lazy"
+                class="h-9 w-9 object-contain"
+                (error)="onLogoError(brand.name)"
+              />
+            } @else {
+              <span class="font-heading text-lg font-extrabold tracking-tight" [style.color]="brand.color">{{ brand.code }}</span>
+            }
+          </span>
+          <!-- Name -->
+          <span class="mt-4 text-center text-sm font-semibold leading-tight text-text">{{ brand.name }}</span>
+          <!-- Hover hint -->
+          <span class="mt-2 flex items-center gap-1 text-xs font-medium text-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+            Explore
+            <svg lucideArrowRight class="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5"></svg>
+          </span>
+        </a>
+      }
+    </div>
+  </div>
+</section>

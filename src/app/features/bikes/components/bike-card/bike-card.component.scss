@@ -1,0 +1,73 @@
+:host { display: block; }
+
+.bike-card {
+  transform-style: preserve-3d;
+  transform: perspective(900px)
+             rotateX(var(--tilt-rx, 0deg))
+             rotateY(var(--tilt-ry, 0deg));
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.bike-card:hover {
+  transform: perspective(900px)
+             translateY(-6px)
+             rotateX(var(--tilt-rx, 0deg))
+             rotateY(var(--tilt-ry, 0deg));
+}
+
+/* List layout: image left, content right */
+.bike-card.list-layout {
+  flex-direction: row;
+  align-items: stretch;
+
+  .bike-image {
+    position: relative;
+    width: 42%;
+    min-width: 240px;
+    aspect-ratio: auto;
+    min-height: 260px;
+
+    img {
+      position: absolute;
+      inset: 0;
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .bike-body {
+    flex: 1;
+  }
+}
+
+@media (max-width: 639px) {
+  .bike-card.list-layout {
+    flex-direction: column;
+
+    .bike-image {
+      width: 100%;
+      min-width: 0;
+      min-height: 0;
+      aspect-ratio: 16/9;
+
+      img { position: static; }
+    }
+  }
+}
+
+.wishlisted {
+  background: #fee2e2;
+  color: var(--danger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bike-card,
+  .bike-card:hover {
+    transform: none;
+    transition: none;
+  }
+}

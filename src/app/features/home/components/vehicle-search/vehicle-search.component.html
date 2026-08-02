@@ -1,0 +1,128 @@
+<section class="relative z-20 -mt-10 px-4 sm:-mt-14 sm:px-0">
+  <div class="container-am mx-auto max-w-7xl">
+    <form
+      class="search-card rounded-[28px] border border-border bg-surface p-5 shadow-lg sm:p-7"
+      (submit)="$event.preventDefault()"
+    >
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <!-- Vehicle Type -->
+        <label class="search-field">
+          <span class="search-label">
+            <svg lucideCar class="h-4 w-4"></svg>
+            Vehicle Type
+          </span>
+          <div class="relative">
+            <select
+              class="search-select"
+              [value]="vehicleType()"
+              (change)="vehicleType.set($any($event.target).value)"
+            >
+              <option value="" disabled>Select type</option>
+              @for (opt of vehicleTypes; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+            <svg lucideChevronDown class="search-chevron"></svg>
+          </div>
+        </label>
+
+        <!-- Brand -->
+        <label class="search-field">
+          <span class="search-label">
+            <svg lucideCar class="h-4 w-4"></svg>
+            Brand
+          </span>
+          <div class="relative">
+            <select class="search-select" [value]="brand()" (change)="brand.set($any($event.target).value)">
+              @for (opt of brands; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+            <svg lucideChevronDown class="search-chevron"></svg>
+          </div>
+        </label>
+
+        <!-- Model -->
+        <label class="search-field">
+          <span class="search-label">
+            <svg lucideBike class="h-4 w-4"></svg>
+            Model
+          </span>
+          <div class="relative">
+            <input
+              class="search-select"
+              type="text"
+              placeholder="e.g. Creta"
+              [value]="model()"
+              (input)="model.set($any($event.target).value)"
+            />
+          </div>
+        </label>
+
+        <!-- Budget -->
+        <label class="search-field">
+          <span class="search-label">
+            <svg lucideIndianRupee class="h-4 w-4"></svg>
+            Budget
+          </span>
+          <div class="relative">
+            <select class="search-select" [value]="budget()" (change)="budget.set($any($event.target).value)">
+              @for (opt of budgets; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+            <svg lucideChevronDown class="search-chevron"></svg>
+          </div>
+        </label>
+
+        <!-- Fuel -->
+        <label class="search-field">
+          <span class="search-label">
+            <svg lucideFuel class="h-4 w-4"></svg>
+            Fuel
+          </span>
+          <div class="relative">
+            <select class="search-select" [value]="fuel()" (change)="fuel.set($any($event.target).value)">
+              @for (opt of fuels; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+            <svg lucideChevronDown class="search-chevron"></svg>
+          </div>
+        </label>
+
+        <!-- Location -->
+        <label class="search-field">
+          <span class="search-label">
+            <svg lucideMapPin class="h-4 w-4"></svg>
+            Location
+          </span>
+          <div class="relative">
+            <select class="search-select" [value]="location()" (change)="location.set($any($event.target).value)">
+              @for (opt of locations; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+            <svg lucideChevronDown class="search-chevron"></svg>
+          </div>
+        </label>
+      </div>
+
+      <!-- Search button row -->
+      <div class="mt-5 flex flex-col items-stretch gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
+        <p class="flex items-center gap-2 text-sm text-muted">
+          <svg lucideSlidersHorizontal class="h-4 w-4 shrink-0 text-primary"></svg>
+          Refine your search across 1,000+ listings
+        </p>
+        <button
+          type="submit"
+          appMagnetic
+          class="btn-shine inline-flex w-full shrink-0 items-center justify-center gap-2 overflow-hidden rounded-full bg-primary px-8 py-3.5 text-sm font-bold text-white shadow-primary transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-lg active:scale-[0.98] sm:w-auto"
+        >
+          <svg lucideSearch class="h-4 w-4"></svg>
+          Search Vehicles
+        </button>
+      </div>
+    </form>
+  </div>
+</section>

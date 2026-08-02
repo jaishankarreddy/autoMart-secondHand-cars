@@ -1,0 +1,61 @@
+<div class="flex flex-col items-center justify-center px-4 py-20 text-center">
+  <!-- Illustration -->
+  <div class="empty-illustration relative">
+    <svg class="h-40 w-40" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- Bike -->
+      <ellipse cx="100" cy="168" rx="62" ry="14" fill="url(#b-shadow)" opacity="0.5"/>
+      <circle cx="58" cy="150" r="21" fill="url(#b-wheel)"/>
+      <circle cx="58" cy="150" r="9" fill="#fff" opacity="0.85"/>
+      <circle cx="142" cy="150" r="21" fill="url(#b-wheel)"/>
+      <circle cx="142" cy="150" r="9" fill="#fff" opacity="0.85"/>
+      <path d="M58 150 L82 96 L130 72" stroke="url(#b-frame)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M82 96 L142 150" stroke="url(#b-frame)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M82 96 L118 90" stroke="url(#b-frame)" stroke-width="7" stroke-linecap="round"/>
+      <path d="M58 150 L58 122 Q66 104 82 96" stroke="url(#b-frame)" stroke-width="5" stroke-linecap="round"/>
+      <path d="M142 150 L142 122 Q128 96 118 90" stroke="url(#b-frame)" stroke-width="5" stroke-linecap="round"/>
+      <path d="M66 112 L108 104 L108 82" stroke="url(#b-handle)" stroke-width="4" stroke-linecap="round"/>
+      <path d="M58 150 L40 162" stroke="url(#b-frame)" stroke-width="5" stroke-linecap="round"/>
+      <path d="M142 150 L160 162" stroke="url(#b-frame)" stroke-width="5" stroke-linecap="round"/>
+      <path d="M58 150 L58 128" stroke="url(#b-fork)" stroke-width="4" stroke-linecap="round"/>
+      <path d="M142 150 L142 132" stroke="url(#b-fork)" stroke-width="4" stroke-linecap="round"/>
+      <defs>
+        <linearGradient id="b-frame" x1="40" y1="70" x2="160" y2="160" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#6366f1"/>
+          <stop offset="1" stop-color="#4f46e5"/>
+        </linearGradient>
+        <linearGradient id="b-handle" x1="66" y1="80" x2="108" y2="112" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#0f172a"/>
+          <stop offset="1" stop-color="#334155"/>
+        </linearGradient>
+        <radialGradient id="b-wheel" cx="0.5" cy="0.5" r="0.5">
+          <stop stop-color="#0f172a"/>
+          <stop offset="1" stop-color="#334155"/>
+        </radialGradient>
+        <radialGradient id="b-shadow" cx="0.5" cy="0.5" r="0.5">
+          <stop stop-color="#0a0f1e"/>
+          <stop offset="1" stop-color="#0a0f1e" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+    </svg>
+
+    <!-- Floating search badge -->
+    <div class="empty-badge absolute -right-2 top-2 flex h-12 w-12 items-center justify-center rounded-full bg-surface text-primary shadow-md">
+      <svg lucideSearchX class="h-5 w-5"></svg>
+    </div>
+  </div>
+
+  <h3 class="mt-6 font-heading text-2xl font-bold text-text">No Bikes Found</h3>
+  <p class="mt-2 max-w-sm text-sm leading-relaxed text-muted">
+    We couldn't find any bikes matching your current filters. Try adjusting or clearing them to see more results.
+  </p>
+
+  <button
+    type="button"
+    (click)="clearAll()"
+    appRipple
+    class="mt-6 inline-flex items-center gap-2 overflow-hidden rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white shadow-primary transition-all duration-300 hover:bg-primary-hover hover:shadow-lg active:scale-[0.98]"
+  >
+    <svg lucideRotateCcw class="h-4 w-4"></svg>
+    Clear All Filters
+  </button>
+</div>

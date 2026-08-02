@@ -1,0 +1,130 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h2 class="font-heading text-2xl font-bold text-text sm:text-3xl">Vehicles</h2>
+      <p class="mt-1 text-sm text-muted">Manage all cars and bikes listed in your marketplace.</p>
+    </div>
+    <button
+      type="button"
+      appRipple
+      class="inline-flex items-center gap-2 overflow-hidden rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-primary transition-all duration-300 hover:bg-primary-hover hover:shadow-lg active:scale-[0.99]"
+    >
+      <svg lucidePlus class="h-4 w-4"></svg>
+      Add Vehicle
+    </button>
+  </div>
+
+  <!-- Summary chips -->
+  <div class="flex flex-wrap items-center gap-3">
+    <span class="rounded-full bg-primary-soft px-3.5 py-1.5 text-xs font-bold text-primary">{{ totalCount() }} total</span>
+    <span class="rounded-full bg-surface-2 px-3.5 py-1.5 text-xs font-bold text-success">{{ availableCount() }} available</span>
+    <span class="rounded-full bg-surface-2 px-3.5 py-1.5 text-xs font-bold text-muted">{{ totalCount() - availableCount() }} sold</span>
+  </div>
+
+  <!-- Filters -->
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div class="inline-flex rounded-xl border border-border bg-surface p-1">
+      @for (opt of typeOptions; track opt.value) {
+        <button
+          type="button"
+          (click)="typeFilter.set(opt.value)"
+          class="rounded-lg px-4 py-2 text-xs font-bold transition-colors duration-200"
+          [class.bg-primary]="typeFilter() === opt.value"
+          [class.text-white]="typeFilter() === opt.value"
+          [class.text-muted]="typeFilter() !== opt.value"
+        >
+          {{ opt.label }}
+        </button>
+      }
+    </div>
+
+    <div class="relative w-full sm:w-72">
+      <svg lucideSearch class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"></svg>
+      <input
+        type="text"
+        placeholder="Search vehicles…"
+        [value]="search()"
+        (input)="search.set($any($event.target).value)"
+        class="w-full rounded-xl border border-border bg-surface py-2.5 pl-10 pr-4 text-sm font-medium text-text outline-none transition-colors duration-300 placeholder:text-muted/70 focus:border-primary"
+      />
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="overflow-x-auto rounded-2xl border border-border bg-surface shadow-sm">
+    <table class="w-full min-w-[820px] text-left text-sm">
+      <thead>
+        <tr class="border-b border-border bg-surface-2/70 text-[11px] uppercase tracking-[0.12em] text-muted">
+          <th class="px-5 py-4 font-bold">Vehicle</th>
+          <th class="px-4 py-4 font-bold">Type</th>
+          <th class="px-4 py-4 font-bold">Price</th>
+          <th class="px-4 py-4 font-bold">Year · Fuel</th>
+          <th class="px-4 py-4 font-bold">Mileage</th>
+          <th class="px-4 py-4 font-bold">Location</th>
+          <th class="px-4 py-4 font-bold">Status</th>
+          <th class="px-4 py-4 text-right font-bold">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-border">
+        @for (vehicle of vehicles(); track vehicle.id) {
+          <tr class="transition-colors hover:bg-surface-2/40">
+            <td class="px-5 py-3.5">
+              <div class="flex items-center gap-3">
+                <img [src]="vehicle.image" [alt]="vehicle.brand + ' ' + vehicle.model" loading="lazy" class="h-12 w-16 shrink-0 rounded-lg object-cover" />
+                <div class="min-w-0">
+                  <p class="truncate font-semibold text-text">{{ vehicle.brand }} {{ vehicle.model }}</p>
+                  <p class="truncate text-xs text-muted">{{ vehicle.variant }} · {{ vehicle.transmission }}</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-3.5">
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-bold capitalize text-muted">
+                @if (vehicle.type === 'car') {
+                  <svg lucideCar class="h-3.5 w-3.5 text-primary"></svg>
+                } @else {
+                  <svg lucideBike class="h-3.5 w-3.5 text-primary"></svg>
+                }
+                {{ vehicle.type }}
+              </span>
+            </td>
+            <td class="px-4 py-3.5 font-semibold text-text">₹{{ vehicle.priceInLakh | number: '1.1-1' }} L</td>
+            <td class="px-4 py-3.5 text-muted">{{ vehicle.year }} · {{ vehicle.fuel }}</td>
+            <td class="px-4 py-3.5 text-muted">{{ vehicle.mileage }}</td>
+            <td class="px-4 py-3.5">
+              <span class="inline-flex items-center gap-1 text-muted">
+                <svg lucideMapPin class="h-3.5 w-3.5 text-primary"></svg>
+                {{ vehicle.district }}
+              </span>
+            </td>
+            <td class="px-4 py-3.5">
+              <span class="status-chip" [class.status-available]="vehicle.status === 'Available'" [class.status-sold]="vehicle.status === 'Sold'">
+                {{ vehicle.status }}
+              </span>
+            </td>
+            <td class="px-4 py-3.5">
+              <div class="flex items-center justify-end gap-1.5">
+                <button type="button" class="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-primary-soft hover:text-primary" aria-label="View">
+                  <svg lucideEye class="h-4 w-4"></svg>
+                </button>
+                <button type="button" class="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-primary-soft hover:text-primary" aria-label="Edit">
+                  <svg lucidePencil class="h-4 w-4"></svg>
+                </button>
+                <button type="button" class="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-danger/10 hover:text-danger" aria-label="Delete">
+                  <svg lucideTrash2 class="h-4 w-4"></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="8" class="px-5 py-16 text-center">
+              <p class="font-heading text-lg font-bold text-text">No vehicles found</p>
+              <p class="mt-1 text-sm text-muted">Try adjusting your search or filters.</p>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

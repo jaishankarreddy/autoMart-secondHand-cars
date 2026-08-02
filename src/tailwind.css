@@ -1,0 +1,65 @@
+/* ============================================================
+   AutoMart — Tailwind CSS v4 Entry Point (plain CSS, not SCSS)
+   Registers semantic design tokens as Tailwind utilities.
+   Actual token values live in src/styles.scss (theming + dark).
+   ============================================================ */
+
+/* 2. Google Fonts (must come before Tailwind so imports stay at the top) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+/* 1. Tailwind CSS v4 core */
+@import "tailwindcss";
+
+/* Explicit content sources: Angular templates, TS files and root HTML.
+   Tailwind v4's automatic scanning does not detect the app templates,
+   so we point it at the source files to generate utility classes. */
+@source "./app";
+@source "./index.html";
+
+/* 3. Class-based dark mode variant (toggled by adding `.dark` to <html>) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* 4. AutoMart semantic tokens -> Tailwind utilities
+   e.g. `bg-surface`, `text-muted`, `border-border`, `bg-primary`, `text-ink` */
+@theme {
+  /* Brand */
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-accent: var(--accent);
+
+  /* Surfaces */
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+
+  /* Text */
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+
+  /* Lines & status */
+  --color-border: var(--border);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+
+  /* Typography */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+
+  /* Custom Breakpoint */
+  --breakpoint-uw: 1920px;
+
+  /* Border Radii */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* Shadows */
+  --shadow-primary: var(--shadow-primary);
+
+  /* Easing */
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+}

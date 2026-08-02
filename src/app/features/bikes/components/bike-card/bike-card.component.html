@@ -1,0 +1,106 @@
+<article
+  appTilt
+  class="bike-card group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-sm am-card"
+  [class.list-layout]="layout() === 'list'"
+>
+  <!-- Image -->
+  <div class="bike-image relative aspect-[4/3] overflow-hidden">
+    <img
+      [src]="bike().image"
+      [alt]="bike().brand + ' ' + bike().model"
+      loading="lazy"
+      class="h-full w-full object-cover transition-transform duration-700 ease-smooth group-hover:scale-105"
+    />
+
+    <!-- Bottom gradient for legibility -->
+    <div class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-ink/80 via-ink/30 to-transparent"></div>
+
+    <!-- Featured badge -->
+    @if (bike().featured) {
+      <span class="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-white shadow-md">
+        <svg lucideShieldCheck class="h-3.5 w-3.5"></svg>
+        Featured
+      </span>
+    }
+
+    <!-- Wishlist -->
+    <button
+      type="button"
+      (click)="toggleWishlist()"
+      [attr.aria-label]="wishlisted() ? 'Remove from wishlist' : 'Add to wishlist'"
+      class="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-ink shadow-sm backdrop-blur transition-transform duration-200 hover:scale-110 active:scale-95"
+      [class.wishlisted]="wishlisted()"
+    >
+      <svg lucideHeart class="h-[18px] w-[18px] transition-colors duration-200" [attr.fill]="wishlisted() ? 'currentColor' : 'none'"></svg>
+    </button>
+
+    <!-- ABS badge -->
+    @if (bike().abs) {
+      <span class="absolute bottom-3.5 left-3 inline-flex items-center gap-1 rounded-full bg-ink/70 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white backdrop-blur">
+        <svg lucideShieldCheck class="h-3 w-3 text-indigo-400"></svg>
+        ABS
+      </span>
+    }
+
+    <!-- Rating -->
+    @if (bike().rating) {
+      <span class="absolute bottom-3.5 right-3.5 inline-flex items-center gap-1 rounded-full bg-ink/70 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur">
+        <svg lucideStar class="h-3 w-3" [color]="'#f59e0b'" [attr.fill]="'#f59e0b'"></svg>
+        {{ bike().rating }}
+      </span>
+    }
+  </div>
+
+  <!-- Body -->
+  <div class="bike-body flex flex-1 flex-col p-5">
+    <div class="flex items-center justify-between gap-2">
+      <span class="truncate text-[11px] font-bold uppercase tracking-[0.18em] text-primary">{{ bike().brand }}</span>
+      <span class="inline-flex shrink-0 items-center gap-1 text-xs text-muted">
+        <svg lucideMapPin class="h-3.5 w-3.5 text-primary"></svg>
+        {{ bike().district }}
+      </span>
+    </div>
+
+    <div class="mt-1.5">
+      <h3 class="font-heading text-lg font-bold leading-snug text-text">{{ bike().model }}</h3>
+      <p class="mt-0.5 text-xs font-medium text-muted">{{ bike().variant }} · {{ bike().bodyType }}</p>
+    </div>
+
+    <div class="mt-3 flex items-baseline gap-2">
+      <span class="font-heading text-[22px] font-bold leading-none text-text">{{ bike().priceInLakh | price }}</span>
+      <span class="text-[11px] font-medium text-muted">Drive-away</span>
+    </div>
+
+    <!-- Quick specs -->
+    <div class="mt-4 grid grid-cols-3 gap-2">
+      <div class="flex flex-col items-center gap-1 rounded-xl border border-border bg-surface-2 px-2 py-2">
+        <svg lucideCog class="h-4 w-4 text-primary"></svg>
+        <span class="text-[10px] font-semibold leading-tight text-text">{{ engineLabel() }}</span>
+      </div>
+      <div class="flex flex-col items-center gap-1 rounded-xl border border-border bg-surface-2 px-2 py-2">
+        <svg lucideFuel class="h-4 w-4 text-primary"></svg>
+        <span class="text-[10px] font-semibold leading-tight text-text">{{ bike().fuel }}</span>
+      </div>
+      <div class="flex flex-col items-center gap-1 rounded-xl border border-border bg-surface-2 px-2 py-2">
+        <svg lucideGauge class="h-4 w-4 text-primary"></svg>
+        <span class="text-[10px] font-semibold leading-tight text-text">{{ bike().kilometers | number }} km</span>
+      </div>
+    </div>
+
+    <div class="my-4 h-px bg-border"></div>
+
+    <!-- Footer row -->
+    <div class="mt-auto flex items-center justify-between gap-2 text-xs text-muted">
+      <span>{{ bike().year }} · {{ bike().owners }} owner{{ bike().owners > 1 ? 's' : '' }} · {{ mileageLabel() }}</span>
+    </div>
+
+    <button
+      type="button"
+      appRipple
+      class="mt-3 inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:bg-primary-hover hover:shadow-primary active:scale-[0.99]"
+    >
+      View Details
+      <svg lucideArrowRight class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"></svg>
+    </button>
+  </div>
+</article>

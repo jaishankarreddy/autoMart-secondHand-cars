@@ -1,0 +1,21 @@
+<section class="py-20 sm:py-28" appReveal>
+  <div class="container-am">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <app-section-heading
+        eyebrow="Featured Bikes"
+        title="Two wheels, endless freedom"
+        subtitle="From classic cruisers to performance sport bikes — certified and ready to ride across Karnataka."
+      />
+      <a routerLink="/bikes" class="group mb-1 inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition-colors hover:text-primary-hover">
+        View all bikes
+        <svg lucideArrowRight class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"></svg>
+      </a>
+    </div>
+
+    <div class="mt-10 grid gap-6 sm:gap-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      @for (bike of bikes; track bike.id) {
+        <app-vehicle-card [vehicle]="bike" />
+      }
+    </div>
+  </div>
+</section>

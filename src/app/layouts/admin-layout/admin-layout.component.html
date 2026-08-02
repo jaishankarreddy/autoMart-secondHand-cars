@@ -1,0 +1,189 @@
+<div class="admin-shell min-h-screen bg-bg" [class.sidebar-collapsed]="collapsed()">
+  <!-- ===== Desktop sidebar ===== -->
+  <aside class="admin-sidebar fixed inset-y-0 left-0 z-40 flex flex-col bg-ink text-white">
+    <div class="flex h-16 shrink-0 items-center justify-between gap-2 border-b border-white/10 px-4">
+      <a routerLink="/admin/dashboard" class="flex min-w-0 items-center gap-3" aria-label="AutoMart admin home">
+        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-primary">
+          <svg lucideCar class="h-5.5 w-5.5"></svg>
+        </span>
+        <span class="brand-text truncate font-heading text-lg font-bold leading-tight">
+          AutoMart <span class="text-primary">Admin</span>
+        </span>
+      </a>
+      <button
+        type="button"
+        (click)="toggleSidebar()"
+        class="hidden h-8 w-8 shrink-0 items-center justify-center rounded-lg text-white/50 transition-colors hover:bg-white/10 hover:text-white lg:flex"
+        aria-label="Toggle sidebar"
+      >
+        @if (collapsed()) {
+          <svg lucideChevronsRight class="h-4.5 w-4.5"></svg>
+        } @else {
+          <svg lucideChevronsLeft class="h-4.5 w-4.5"></svg>
+        }
+      </button>
+    </div>
+
+    <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-5">
+      @for (item of navItems; track item.path) {
+        <a
+          routerLink="{{ item.path }}"
+          routerLinkActive="admin-nav-active"
+          class="admin-nav-link flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-semibold text-white/70 transition-colors duration-200"
+        >
+          <span class="flex h-5 w-5 shrink-0 items-center justify-center">
+            @switch (item.icon) {
+              @case ('dashboard') { <svg lucideLayoutDashboard class="h-5 w-5"></svg> }
+              @case ('warehouse') { <svg lucideWarehouse class="h-5 w-5"></svg> }
+              @case ('car') { <svg lucideCar class="h-5 w-5"></svg> }
+              @case ('bike') { <svg lucideBike class="h-5 w-5"></svg> }
+              @case ('offers') { <svg lucideHandCoins class="h-5 w-5"></svg> }
+              @case ('mail') { <svg lucideMail class="h-5 w-5"></svg> }
+              @case ('settings') { <svg lucideSettings class="h-5 w-5"></svg> }
+            }
+          </span>
+          <span class="nav-label flex-1 truncate">{{ item.label }}</span>
+          @if (item.badge) {
+            <span class="nav-label rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold leading-none text-white">{{ item.badge }}</span>
+          }
+        </a>
+      }
+    </nav>
+
+    <div class="space-y-1 border-t border-white/10 p-3">
+      <a
+        routerLink="/home"
+        class="admin-nav-link flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-semibold text-white/70 transition-colors duration-200"
+      >
+        <svg lucideExternalLink class="h-5 w-5 shrink-0"></svg>
+        <span class="nav-label flex-1 truncate">View website</span>
+      </a>
+      <a
+        routerLink="/admin/login"
+        class="admin-nav-link flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-semibold text-white/70 transition-colors duration-200"
+      >
+        <svg lucideLogOut class="h-5 w-5 shrink-0"></svg>
+        <span class="nav-label flex-1 truncate">Sign out</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ===== Mobile drawer ===== -->
+  <div
+    class="fixed inset-0 z-40 bg-ink/60 backdrop-blur-sm transition-opacity duration-300 lg:hidden"
+    [class.pointer-events-none]="!mobileOpen()"
+    [class.opacity-0]="!mobileOpen()"
+    (click)="mobileOpen.set(false)"
+  ></div>
+  <aside
+    class="fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-ink text-white transition-transform duration-300 ease-smooth lg:hidden"
+    [class.-translate-x-full]="!mobileOpen()"
+  >
+    <div class="flex h-16 shrink-0 items-center justify-between border-b border-white/10 px-4">
+      <a routerLink="/admin/dashboard" class="flex items-center gap-3">
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-primary">
+          <svg lucideCar class="h-5.5 w-5.5"></svg>
+        </span>
+        <span class="font-heading text-lg font-bold">AutoMart <span class="text-primary">Admin</span></span>
+      </a>
+      <button
+        type="button"
+        (click)="mobileOpen.set(false)"
+        class="flex h-9 w-9 items-center justify-center rounded-lg text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+        aria-label="Close menu"
+      >
+        <svg lucideX class="h-5 w-5"></svg>
+      </button>
+    </div>
+
+    <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-5">
+      @for (item of navItems; track item.path) {
+        <a
+          routerLink="{{ item.path }}"
+          routerLinkActive="admin-nav-active"
+          class="admin-nav-link flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-semibold text-white/70 transition-colors duration-200"
+        >
+          <span class="flex h-5 w-5 shrink-0 items-center justify-center">
+            @switch (item.icon) {
+              @case ('dashboard') { <svg lucideLayoutDashboard class="h-5 w-5"></svg> }
+              @case ('warehouse') { <svg lucideWarehouse class="h-5 w-5"></svg> }
+              @case ('car') { <svg lucideCar class="h-5 w-5"></svg> }
+              @case ('bike') { <svg lucideBike class="h-5 w-5"></svg> }
+              @case ('offers') { <svg lucideHandCoins class="h-5 w-5"></svg> }
+              @case ('mail') { <svg lucideMail class="h-5 w-5"></svg> }
+              @case ('settings') { <svg lucideSettings class="h-5 w-5"></svg> }
+            }
+          </span>
+          <span class="flex-1 truncate">{{ item.label }}</span>
+          @if (item.badge) {
+            <span class="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold leading-none text-white">{{ item.badge }}</span>
+          }
+        </a>
+      }
+    </nav>
+  </aside>
+
+  <!-- ===== Main ===== -->
+  <div class="admin-main flex min-h-screen flex-col">
+    <!-- Topbar -->
+    <header class="admin-topbar sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-border bg-surface/90 px-4 backdrop-blur sm:px-6">
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          (click)="toggleMobile()"
+          class="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text transition-colors hover:bg-surface-2 lg:hidden"
+          aria-label="Open menu"
+        >
+          <svg lucideMenu class="h-5 w-5"></svg>
+        </button>
+        <h1 class="font-heading text-lg font-bold text-text sm:text-xl">{{ pageTitle() }}</h1>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <div class="relative hidden md:block">
+          <svg lucideSearch class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"></svg>
+          <input
+            type="text"
+            placeholder="Search…"
+            class="w-56 rounded-xl border border-border bg-surface-2 py-2.5 pl-10 pr-4 text-sm font-medium text-text outline-none transition-colors duration-300 placeholder:text-muted/70 focus:border-primary lg:w-64"
+          />
+        </div>
+
+        <button
+          type="button"
+          (click)="toggleTheme()"
+          aria-label="Toggle dark mode"
+          class="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text transition-colors hover:bg-surface-2"
+        >
+          @if (!dark()) {
+            <svg lucideMoon class="h-4.5 w-4.5"></svg>
+          } @else {
+            <svg lucideSun class="h-4.5 w-4.5"></svg>
+          }
+        </button>
+
+        <button
+          type="button"
+          aria-label="Notifications"
+          class="relative flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text transition-colors hover:bg-surface-2"
+        >
+          <svg lucideBell class="h-4.5 w-4.5"></svg>
+          <span class="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-danger text-[9px] font-bold leading-none text-white">3</span>
+        </button>
+
+        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-xs font-bold text-white shadow-primary sm:h-9 sm:w-9">
+          RK
+        </div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="flex-1 p-4 sm:p-6 lg:p-8">
+      <router-outlet />
+    </main>
+
+    <footer class="border-t border-border px-6 py-4 text-center text-xs text-muted">
+      &copy; {{ currentYear }} AutoMart Admin · Premium Vehicle Marketplace
+    </footer>
+  </div>
+</div>

@@ -1,1 +1,233 @@
-/* You can add global styles to this file, and also import other style files */
+/* ============================================================
+   AutoMart — Global Styles
+   Theming, resets, shared utilities & animation primitives.
+   ============================================================ */
+
+/* ---- Design Tokens (Light) ---- */
+:root {
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-soft: #eef2ff;
+  --accent: #f59e0b;
+
+  --ink: #0a0f1e;
+  --ink-2: #0f172a;
+
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f6f7fb;
+
+  --text: #0b1220;
+  --text-muted: #5b6472;
+
+  --border: #e8ebf1;
+  --success: #16a34a;
+  --danger: #dc2626;
+
+  --shadow-sm: 0 1px 2px rgba(10, 15, 30, 0.06);
+  --shadow-md: 0 6px 24px rgba(10, 15, 30, 0.08);
+  --shadow-lg: 0 24px 60px rgba(10, 15, 30, 0.14);
+  --shadow-primary: 0 12px 34px rgba(79, 70, 229, 0.35);
+}
+
+/* ---- Design Tokens (Dark) ---- */
+.dark {
+  --primary: #6366f1;
+  --primary-hover: #818cf8;
+  --primary-soft: rgba(99, 102, 241, 0.16);
+  --accent: #fbbf24;
+
+  --ink: #06090f;
+  --ink-2: #0b1220;
+
+  --bg: #0a0f1e;
+  --surface: #111827;
+  --surface-2: #141c2f;
+
+  --text: #eef1f7;
+  --text-muted: #94a3b8;
+
+  --border: #1f2937;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.5);
+  --shadow-primary: 0 12px 34px rgba(99, 102, 241, 0.3);
+}
+
+/* ---- Base (wrapped in @layer base so Tailwind utilities like text-white override) ---- */
+@layer base {
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    transition: background-color 0.35s ease, color 0.35s ease;
+  }
+
+  img, video, svg { display: block; max-width: 100%; }
+  button { cursor: pointer; font: inherit; color: inherit; background: none; border: none; }
+  a { text-decoration: none; color: inherit; }
+  h1, h2, h3, h4 { font-family: var(--font-heading); line-height: 1.15; font-weight: 700; }
+  ul { list-style: none; }
+  input, select, textarea { font: inherit; color: inherit; }
+  select { background: transparent; }
+
+  ::selection { background: var(--primary); color: #fff; }
+}
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--text-muted) 40%, transparent); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ---- Shared helpers ---- */
+.container-am {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+@media (min-width: 640px) { .container-am { padding-inline: 1.5rem; } }
+@media (min-width: 1024px) { .container-am { padding-inline: 2rem; } }
+
+.font-heading { font-family: var(--font-heading); }
+
+.gradient-text {
+  background: linear-gradient(100deg, #818cf8 0%, #6366f1 45%, #4f46e5 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Hide scrollbar on horizontal carousels but keep scroll */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ---- Admin status chips (shared across admin pages) ---- */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.status-pending {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
+}
+
+.status-accepted {
+  background: color-mix(in srgb, var(--success) 14%, transparent);
+  color: var(--success);
+}
+
+.status-countered {
+  background: color-mix(in srgb, #3b82f6 14%, transparent);
+  color: #3b82f6;
+}
+
+.status-rejected {
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+  color: var(--danger);
+}
+
+.status-available {
+  background: color-mix(in srgb, var(--success) 14%, transparent);
+  color: var(--success);
+}
+
+.status-sold {
+  background: color-mix(in srgb, var(--text-muted) 16%, transparent);
+  color: var(--text-muted);
+}
+
+.status-new {
+  background: color-mix(in srgb, #3b82f6 14%, transparent);
+  color: #3b82f6;
+}
+
+.status-replied {
+  background: color-mix(in srgb, var(--success) 14%, transparent);
+  color: var(--success);
+}
+
+/* ---- Animation primitives ---- */
+@keyframes am-fade-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes am-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes am-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes am-slow-zoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+@keyframes am-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+/* ---- Button ripple ---- */
+.am-ripple {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.45);
+  transform: scale(0);
+  animation: am-ripple 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes am-ripple {
+  to { transform: scale(1); opacity: 0; }
+}
+
+/* ---- Smooth card hover (plain CSS, browser-safe) ---- */
+.am-card {
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.am-card:hover {
+  border-color: color-mix(in srgb, var(--primary) 30%, var(--border));
+  box-shadow: var(--shadow-sm);
+}
+
+/* Scroll-reveal: element starts hidden; `.is-revealed` animates it in */
+.reveal {
+  opacity: 0;
+  transform: translateY(34px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-revealed { opacity: 1; transform: translateY(0); }
+
+/* Reduced-motion: only disable the scroll-reveal choreography,
+   keep short interactive transitions so hovers still feel smooth. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}

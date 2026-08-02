@@ -1,0 +1,17 @@
+@if (cars().length > 0) {
+  @if (gridView() === 'grid') {
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3 2xl:grid-cols-4">
+      @for (car of cars(); track trackById($index, car)) {
+        <app-car-card [car]="car" layout="grid" />
+      }
+    </div>
+  } @else {
+    <div class="flex flex-col gap-5">
+      @for (car of cars(); track trackById($index, car)) {
+        <app-car-card [car]="car" layout="list" />
+      }
+    </div>
+  }
+} @else {
+  <app-empty-state />
+}

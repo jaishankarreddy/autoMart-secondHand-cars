@@ -1,0 +1,54 @@
+<div class="flex flex-col items-center justify-center px-4 py-20 text-center">
+  <!-- Illustration -->
+  <div class="empty-illustration relative">
+    <svg class="h-40 w-40" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- Car body -->
+      <ellipse cx="100" cy="135" rx="70" ry="22" fill="url(#e-shadow)" opacity="0.5"/>
+      <path d="M38 118 L48 82 Q52 68 68 66 L132 66 Q148 68 152 82 L162 118 L150 118 Q144 118 144 110 L144 106 Q144 100 138 100 L62 100 Q56 100 56 106 L56 110 Q56 118 50 118 Z" fill="url(#e-body)"/>
+      <path d="M70 66 L86 44 Q88 40 93 40 L113 40 Q118 40 120 44 L134 66 Z" fill="url(#e-glass)"/>
+      <circle cx="64" cy="118" r="13" fill="url(#e-wheel)"/>
+      <circle cx="64" cy="118" r="5.5" fill="#fff" opacity="0.9"/>
+      <circle cx="136" cy="118" r="13" fill="url(#e-wheel)"/>
+      <circle cx="136" cy="118" r="5.5" fill="#fff" opacity="0.9"/>
+      <path d="M78 100 L122 100" stroke="#fff" stroke-opacity="0.25" stroke-width="3" stroke-linecap="round"/>
+      <defs>
+        <linearGradient id="e-body" x1="38" y1="60" x2="162" y2="120" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#6366f1"/>
+          <stop offset="1" stop-color="#4f46e5"/>
+        </linearGradient>
+        <linearGradient id="e-glass" x1="70" y1="40" x2="134" y2="66" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#0f172a"/>
+          <stop offset="1" stop-color="#334155"/>
+        </linearGradient>
+        <radialGradient id="e-wheel" cx="0.5" cy="0.5" r="0.5">
+          <stop stop-color="#0f172a"/>
+          <stop offset="1" stop-color="#334155"/>
+        </radialGradient>
+        <radialGradient id="e-shadow" cx="0.5" cy="0.5" r="0.5">
+          <stop stop-color="#0a0f1e"/>
+          <stop offset="1" stop-color="#0a0f1e" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+    </svg>
+
+    <!-- Floating search badge -->
+    <div class="empty-badge absolute -right-2 top-2 flex h-12 w-12 items-center justify-center rounded-full bg-surface text-primary shadow-md">
+      <svg lucideSearchX class="h-5 w-5"></svg>
+    </div>
+  </div>
+
+  <h3 class="mt-6 font-heading text-2xl font-bold text-text">No Cars Found</h3>
+  <p class="mt-2 max-w-sm text-sm leading-relaxed text-muted">
+    We couldn't find any cars matching your current filters. Try adjusting or clearing them to see more results.
+  </p>
+
+  <button
+    type="button"
+    (click)="clearAll()"
+    appRipple
+    class="mt-6 inline-flex items-center gap-2 overflow-hidden rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white shadow-primary transition-all duration-300 hover:bg-primary-hover hover:shadow-lg active:scale-[0.98]"
+  >
+    <svg lucideRotateCcw class="h-4 w-4"></svg>
+    Clear All Filters
+  </button>
+</div>

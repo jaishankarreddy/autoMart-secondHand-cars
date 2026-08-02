@@ -1,0 +1,57 @@
+<!-- Floating filter button (mobile only) -->
+<!-- Floating filter button (mobile only) -->
+<button
+  type="button"
+  (click)="openDrawer()"
+  appRipple
+  aria-label="Open filters"
+  class="mobile-fab lg:hidden"
+>
+  <svg lucideSlidersHorizontal class="h-5 w-5"></svg>
+  <span>Filters</span>
+  @if (activeFilterCount() > 0) {
+    <span class="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[11px] font-bold text-white shadow-sm">
+      {{ activeFilterCount() }}
+    </span>
+  }
+</button>
+
+<div class="mobile-filter-wrap">
+  <!-- Backdrop -->
+  @if (open()) {
+    <div class="mobile-backdrop" (click)="closeDrawer()"></div>
+  }
+
+  <!-- Bottom drawer -->
+  <div class="mobile-drawer" [class.open]="open()" role="dialog" aria-modal="true" aria-label="Filters">
+    <div class="mobile-handle"></div>
+    <div class="flex items-center justify-between px-5 pb-2 pt-2">
+      <div class="flex items-center gap-2">
+        <h3 class="font-heading text-lg font-bold text-text">Filters</h3>
+        @if (activeFilterCount() > 0) {
+          <span class="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-bold text-white">
+            {{ activeFilterCount() }}
+          </span>
+        }
+      </div>
+      <button type="button" (click)="closeDrawer()" aria-label="Close filters" class="flex h-9 w-9 items-center justify-center rounded-full bg-surface-2 text-muted transition-colors hover:bg-primary-soft hover:text-primary">
+        <svg lucideX class="h-5 w-5"></svg>
+      </button>
+    </div>
+
+    <div class="max-h-[60vh] flex-1 overflow-y-auto px-5 pb-6">
+      <app-filter-sidebar [embedded]="true" />
+    </div>
+
+    <div class="border-t border-border p-4">
+      <button
+        type="button"
+        (click)="closeDrawer()"
+        appRipple
+        class="flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-primary px-4 py-3.5 text-sm font-semibold text-white shadow-primary transition-all duration-300 hover:bg-primary-hover hover:shadow-lg active:scale-[0.99]"
+      >
+        Show {{ resultCount() }} car{{ resultCount() === 1 ? '' : 's' }}
+      </button>
+    </div>
+  </div>
+</div>

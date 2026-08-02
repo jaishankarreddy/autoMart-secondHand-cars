@@ -1,0 +1,67 @@
+:host { display: block; }
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.field-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.field-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 0.875rem;
+  border: 1.5px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+
+  &::placeholder { color: var(--text-muted); }
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--border) 40%, var(--primary));
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: var(--surface);
+    box-shadow: 0 0 0 4px var(--primary-soft);
+  }
+}
+
+.toggle-track {
+  position: relative;
+  width: 3rem;
+  height: 1.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-muted) 28%, transparent);
+  transition: background-color 0.3s ease;
+}
+
+.toggle-track.toggle-on {
+  background: var(--primary);
+}
+
+.toggle-knob {
+  position: absolute;
+  top: 0.2rem;
+  left: 0.2rem;
+  height: 1.2rem;
+  width: 1.2rem;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.toggle-on .toggle-knob {
+  transform: translateX(1.4rem);
+}

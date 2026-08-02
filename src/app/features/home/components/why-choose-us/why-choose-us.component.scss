@@ -1,0 +1,19 @@
+:host { display: block; }
+
+.feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 3.25rem;
+  width: 3.25rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, var(--primary-soft), color-mix(in srgb, var(--primary) 18%, var(--primary-soft)));
+  color: var(--primary);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s ease, color 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+  transform: scale(1.06) rotate(-4deg);
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: #fff;
+}

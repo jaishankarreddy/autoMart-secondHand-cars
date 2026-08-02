@@ -1,0 +1,37 @@
+export type BikeFuel = 'Petrol' | 'Electric';
+export type BikeBodyType =
+  | 'Commuter'
+  | 'Scooter'
+  | 'Sport'
+  | 'Street'
+  | 'Cruiser'
+  | 'Adventure'
+  | 'Streetfighter'
+  | 'Tourer'
+  | 'Electric Scooter';
+
+export interface Bike {
+  id: string;
+  brand: string;
+  model: string;
+  variant: string;
+  year: number;
+  /** Price expressed in Lakhs (e.g. 0.62 = ₹0.62 Lakh) */
+  priceInLakh: number;
+  /** Engine displacement in cc. 0 for electric bikes. */
+  engineCC: number;
+  fuel: BikeFuel;
+  abs: boolean;
+  /** km/l for petrol bikes, km per full charge for electric bikes */
+  mileage: number;
+  /** Odometer reading in km */
+  kilometers: number;
+  /** District in Karnataka */
+  district: string;
+  owners: number;
+  bodyType: BikeBodyType;
+  color: string;
+  image: string;
+  featured?: boolean;
+  rating?: number;
+}

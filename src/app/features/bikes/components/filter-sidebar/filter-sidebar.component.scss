@@ -1,0 +1,162 @@
+.filter-section {
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--surface);
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.filter-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.9rem 1rem;
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: left;
+  transition: color 0.2s ease;
+
+  &:hover { color: var(--primary); }
+}
+
+.filter-chevron {
+  color: var(--text-muted);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.filter-section.open .filter-chevron {
+  transform: rotate(180deg);
+  color: var(--primary);
+}
+
+.filter-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+
+  > div {
+    min-height: 0;
+    overflow: hidden;
+    padding: 0 1rem 1rem;
+  }
+}
+
+.filter-section.open .filter-body {
+  grid-template-rows: 1fr;
+}
+
+.filter-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.filter-grid-cols-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.35rem 0.75rem;
+}
+
+.filter-check {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.35rem 0;
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.filter-check-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 0.35rem;
+  border: 1.5px solid var(--border);
+  background: var(--surface-2);
+  color: transparent;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease,
+              transform 0.2s ease;
+
+  svg { opacity: 0; transition: opacity 0.2s ease; }
+}
+
+.filter-check input:checked + .filter-check-box {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+
+  svg { opacity: 1; }
+}
+
+.filter-check:hover .filter-check-box {
+  border-color: var(--primary);
+}
+
+.filter-check-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text);
+  transition: color 0.2s ease;
+}
+
+.filter-check:hover .filter-check-label {
+  color: var(--primary);
+}
+
+.price-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Range inputs */
+.filter-range {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+  outline: none;
+  margin-top: 0.75rem;
+  cursor: pointer;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 9999px;
+    background: #fff;
+    border: 3px solid var(--primary);
+    box-shadow: 0 2px 8px rgba(10, 15, 30, 0.18);
+    transition: transform 0.2s ease;
+  }
+
+  &::-webkit-slider-thumb:hover { transform: scale(1.15); }
+  &::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 9999px;
+    background: #fff;
+    border: 3px solid var(--primary);
+    box-shadow: 0 2px 8px rgba(10, 15, 30, 0.18);
+  }
+}
+
+.filter-range-single {
+  margin-top: 0.25rem;
+}

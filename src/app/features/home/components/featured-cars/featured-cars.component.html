@@ -1,0 +1,21 @@
+<section class="bg-surface-2/60 py-20 sm:py-28" appReveal>
+  <div class="container-am">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <app-section-heading
+        eyebrow="Featured Cars"
+        title="Handpicked cars, ready to drive"
+        subtitle="Inspected, certified and priced transparently — our most-loved pre-owned cars across Karnataka."
+      />
+      <a routerLink="/cars" class="group mb-1 inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition-colors hover:text-primary-hover">
+        View all cars
+        <svg lucideArrowRight class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"></svg>
+      </a>
+    </div>
+
+    <div class="mt-10 grid gap-6 sm:gap-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      @for (car of cars; track car.id) {
+        <app-vehicle-card [vehicle]="car" />
+      }
+    </div>
+  </div>
+</section>

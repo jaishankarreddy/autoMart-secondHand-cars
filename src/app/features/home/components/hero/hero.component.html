@@ -1,0 +1,59 @@
+<section class="relative flex min-h-[100svh] flex-col overflow-hidden">
+  <!-- Background -->
+  <div class="absolute inset-0">
+    <img [src]="image" alt="Luxury car on an open road" class="hero-bg h-full w-full object-cover" />
+    <div class="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/30"></div>
+    <div class="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-ink to-transparent"></div>
+    <!-- Animated aurora / light beams -->
+    <div class="hero-aurora" aria-hidden="true">
+      <span class="beam beam-1"></span>
+      <span class="beam beam-2"></span>
+      <span class="beam beam-3"></span>
+      <span class="glow glow-a"></span>
+      <span class="glow glow-b"></span>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="container-am relative z-10 flex flex-1 flex-col justify-center pt-28 pb-12 sm:pt-32">
+    <div class="max-w-2xl">
+      <span class="hero-fade inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-sm" style="animation-delay: .05s">
+        <svg lucideShieldCheck class="h-4 w-4 text-indigo-400"></svg>
+        Verified vehicles across Karnataka
+      </span>
+
+      <h1 class="hero-fade mt-6 font-heading text-4xl font-bold leading-[1.08] text-white sm:text-5xl lg:text-[4.25rem]" style="animation-delay: .15s">
+        Find Your Perfect
+        <span class="gradient-text">Used Car</span>
+        or Bike
+      </h1>
+      <p class="hero-fade mt-6 max-w-xl text-lg leading-relaxed text-white/75 sm:text-xl" style="animation-delay: .25s">
+        Explore verified second-hand vehicles across Karnataka. Trusted by
+        <span class="font-semibold text-white">500+ buyers</span> with transparent pricing and doorstep delivery.
+      </p>
+
+      <div class="hero-fade mt-9 flex flex-col gap-3.5 sm:flex-row" style="animation-delay: .35s">
+        <a routerLink="/cars" appMagnetic class="group inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-4 text-base font-semibold text-white shadow-primary transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-lg">
+          <svg lucideCar class="h-5 w-5"></svg>
+          Browse Cars
+        </a>
+        <a routerLink="/bikes" appMagnetic class="inline-flex items-center justify-center gap-2 rounded-full border border-white/25 bg-white/10 px-7 py-4 text-base font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/20">
+          <svg lucideBike class="h-5 w-5"></svg>
+          Browse Bikes
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating stats -->
+  <div class="container-am relative z-10 pb-16 sm:pb-20">
+    <div class="hero-fade grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4" style="animation-delay: .5s">
+      @for (stat of stats; track stat.label) {
+        <div class="float-card">
+          <span class="font-heading text-2xl font-bold text-white sm:text-3xl">{{ stat.value }}</span>
+          <span class="text-sm text-white/70">{{ stat.label }}</span>
+        </div>
+      }
+    </div>
+  </div>
+</section>

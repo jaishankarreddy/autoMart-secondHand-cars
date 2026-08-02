@@ -1,0 +1,202 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div>
+    <h2 class="font-heading text-2xl font-bold text-text sm:text-3xl">Settings</h2>
+    <p class="mt-1 text-sm text-muted">Manage your profile, notifications and marketplace preferences.</p>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-[240px_1fr]">
+    <!-- Tabs -->
+    <div class="flex gap-2 overflow-x-auto rounded-2xl border border-border bg-surface p-2 shadow-sm lg:flex-col lg:gap-1.5 lg:overflow-visible lg:self-start">
+      @for (item of tabs; track item.value) {
+        <button
+          type="button"
+          (click)="setTab(item.value)"
+          class="flex shrink-0 items-center gap-2.5 rounded-xl px-4 py-3 text-sm font-semibold transition-colors duration-200"
+          [class.bg-primary]="tab() === item.value"
+          [class.text-white]="tab() === item.value"
+          [class.shadow-primary]="tab() === item.value"
+          [class.text-muted]="tab() !== item.value"
+          [class.hover:bg-surface-2]="tab() !== item.value"
+        >
+          <span class="flex h-4.5 w-4.5 items-center justify-center">
+            @switch (item.icon) {
+              @case ('user') { <svg lucideUser class="h-4.5 w-4.5"></svg> }
+              @case ('bell') { <svg lucideBell class="h-4.5 w-4.5"></svg> }
+              @case ('lock') { <svg lucideLock class="h-4.5 w-4.5"></svg> }
+              @case ('store') { <svg lucideStore class="h-4.5 w-4.5"></svg> }
+            }
+          </span>
+          {{ item.label }}
+        </button>
+      }
+    </div>
+
+    <!-- Panel -->
+    <div class="rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-8">
+      @if (saved()) {
+        <div class="mb-6 flex items-center gap-3 rounded-xl border border-success/30 bg-success/5 px-4 py-3 text-sm font-semibold text-success">
+          <svg lucideCheckCircle2 class="h-5 w-5"></svg>
+          Settings saved successfully.
+        </div>
+      }
+
+      @switch (tab()) {
+        @case ('profile') {
+          <div>
+            <h3 class="font-heading text-lg font-bold text-text">Profile</h3>
+            <p class="mt-1 text-sm text-muted">Update your personal information.</p>
+
+            <div class="mt-7 flex items-center gap-5">
+              <span class="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-xl font-bold text-white shadow-primary">AM</span>
+              <button type="button" appRipple class="overflow-hidden rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-text transition-colors duration-300 hover:bg-surface-2">
+                Change avatar
+              </button>
+            </div>
+
+            <form class="mt-7 space-y-5" (submit)="save(); $event.preventDefault()">
+              <div class="field-group">
+                <label for="setting-name" class="field-label">Full Name</label>
+                <input id="setting-name" type="text" class="field-input" [value]="name()" (input)="name.set($any($event.target).value)" />
+              </div>
+              <div class="grid gap-5 sm:grid-cols-2">
+                <div class="field-group">
+                  <label for="setting-email" class="field-label">Email Address</label>
+                  <input id="setting-email" type="email" class="field-input" [value]="email()" (input)="email.set($any($event.target).value)" />
+                </div>
+                <div class="field-group">
+                  <label for="setting-phone" class="field-label">Phone Number</label>
+                  <input id="setting-phone" type="tel" class="field-input" [value]="phone()" (input)="phone.set($any($event.target).value)" />
+                </div>
+              </div>
+
+              <button type="submit" appRipple class="inline-flex items-center gap-2 overflow-hidden rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-primary transition-all duration-300 hover:bg-primary-hover active:scale-[0.99]">
+                <svg lucideSave class="h-4 w-4"></svg>
+                Save Changes
+              </button>
+            </form>
+          </div>
+        }
+
+        @case ('notifications') {
+          <div>
+            <h3 class="font-heading text-lg font-bold text-text">Notifications</h3>
+            <p class="mt-1 text-sm text-muted">Choose what you want to be notified about.</p>
+
+            <div class="mt-7 space-y-4">
+              @for (item of notifyToggles(); track item.key) {
+                <div class="flex items-center justify-between gap-4 rounded-2xl border border-border bg-surface-2/60 p-4 sm:p-5">
+                  <div>
+                    <p class="text-sm font-semibold text-text">{{ item.label }}</p>
+                    <p class="mt-0.5 text-xs text-muted">{{ item.detail }}</p>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    [attr.aria-checked]="item.on"
+                    (click)="toggleNotify(item.key)"
+                    class="toggle-track shrink-0"
+                    [class.toggle-on]="item.on"
+                  >
+                    <span class="toggle-knob"></span>
+                  </button>
+                </div>
+              }
+            </div>
+
+            <button type="button" appRipple (click)="save()" class="mt-6 inline-flex items-center gap-2 overflow-hidden rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-primary transition-all duration-300 hover:bg-primary-hover active:scale-[0.99]">
+              <svg lucideSave class="h-4 w-4"></svg>
+              Save Preferences
+            </button>
+          </div>
+        }
+
+        @case ('security') {
+          <div>
+            <h3 class="font-heading text-lg font-bold text-text">Security</h3>
+            <p class="mt-1 text-sm text-muted">Change your password to keep your account secure.</p>
+
+            <form class="mt-7 space-y-5" (submit)="changePassword($event)">
+              <div class="field-group">
+                <label for="setting-old" class="field-label">Current Password</label>
+                <input id="setting-old" type="password" class="field-input" placeholder="Enter current password" [value]="oldPassword()" (input)="oldPassword.set($any($event.target).value)" />
+              </div>
+              <div class="grid gap-5 sm:grid-cols-2">
+                <div class="field-group">
+                  <label for="setting-new" class="field-label">New Password</label>
+                  <input id="setting-new" type="password" class="field-input" placeholder="Min. 6 characters" [value]="newPassword()" (input)="newPassword.set($any($event.target).value)" />
+                </div>
+                <div class="field-group">
+                  <label for="setting-confirm" class="field-label">Confirm New Password</label>
+                  <input id="setting-confirm" type="password" class="field-input" placeholder="Re-enter new password" [value]="confirmPassword()" (input)="confirmPassword.set($any($event.target).value)" />
+                </div>
+              </div>
+
+              @if (securityError()) {
+                <p class="rounded-xl border border-danger/30 bg-danger/5 px-4 py-3 text-sm font-medium text-danger">{{ securityError() }}</p>
+              }
+
+              <button type="submit" appRipple class="inline-flex items-center gap-2 overflow-hidden rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-primary transition-all duration-300 hover:bg-primary-hover active:scale-[0.99]">
+                <svg lucideLock class="h-4 w-4"></svg>
+                Update Password
+              </button>
+            </form>
+          </div>
+        }
+
+        @case ('marketplace') {
+          <div>
+            <h3 class="font-heading text-lg font-bold text-text">Marketplace</h3>
+            <p class="mt-1 text-sm text-muted">Configure how your marketplace behaves.</p>
+
+            <div class="mt-7 grid gap-5 sm:grid-cols-2">
+              <div class="field-group">
+                <label for="setting-location" class="field-label">
+                  <span class="inline-flex items-center gap-1.5"><svg lucideMapPin class="h-4 w-4 text-primary"></svg>Service Region</span>
+                </label>
+                <select id="setting-location" class="field-input" [value]="location()" (change)="location.set($any($event.target).value)">
+                  <option>Karnataka, India</option>
+                  <option>Maharashtra, India</option>
+                  <option>Tamil Nadu, India</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label for="setting-currency" class="field-label">Display Currency</label>
+                <select id="setting-currency" class="field-input" [value]="currency()" (change)="currency.set($any($event.target).value)">
+                  <option>₹ INR</option>
+                  <option>$ USD</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mt-7 space-y-4">
+              @for (item of marketToggles(); track item.key) {
+                <div class="flex items-center justify-between gap-4 rounded-2xl border border-border bg-surface-2/60 p-4 sm:p-5">
+                  <div>
+                    <p class="text-sm font-semibold text-text">{{ item.label }}</p>
+                    <p class="mt-0.5 text-xs text-muted">{{ item.detail }}</p>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    [attr.aria-checked]="item.on"
+                    (click)="toggleMarket(item.key)"
+                    class="toggle-track shrink-0"
+                    [class.toggle-on]="item.on"
+                  >
+                    <span class="toggle-knob"></span>
+                  </button>
+                </div>
+              }
+            </div>
+
+            <button type="button" appRipple (click)="save()" class="mt-6 inline-flex items-center gap-2 overflow-hidden rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-primary transition-all duration-300 hover:bg-primary-hover active:scale-[0.99]">
+              <svg lucideSave class="h-4 w-4"></svg>
+              Save Preferences
+            </button>
+          </div>
+        }
+      }
+    </div>
+  </div>
+</div>

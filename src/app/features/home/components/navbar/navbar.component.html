@@ -1,0 +1,115 @@
+<header class="fixed inset-x-0 top-0 z-50 transition-transform duration-500 ease-smooth" [class.hidden]="hidden() && !menuOpen()">
+  <div class="container-am pt-3 sm:pt-4">
+    <div
+      class="mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-2xl px-4 transition-all duration-500 ease-smooth sm:px-5"
+      [class.nav-pill]="scrolled()"
+    >
+      <nav class="flex h-14 w-full items-center justify-between gap-4 md:h-16" aria-label="Main navigation">
+    <!-- Brand -->
+    <a routerLink="/home" class="flex shrink-0 items-center gap-3" aria-label="AutoMart home">
+      <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-primary transition-transform duration-300 hover:scale-105">
+        <svg lucideCar class="h-6 w-6"></svg>
+      </span>
+      <span class="font-heading text-xl font-bold tracking-tight">
+        Auto<span class="text-primary">Mart</span>
+      </span>
+    </a>
+
+    <!-- Desktop navigation -->
+    <ul class="hidden items-center gap-1.5 lg:flex">
+      @for (link of links; track link.path) {
+        <li>
+          <a
+            routerLink="{{ link.path }}"
+            routerLinkActive="nav-active"
+            class="rounded-full px-5 py-2.5 text-sm font-medium transition-colors duration-200"
+          >
+            {{ link.label }}
+          </a>
+        </li>
+      }
+    </ul>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-2">
+      <button
+        type="button"
+        (click)="toggleTheme()"
+        aria-label="Toggle dark mode"
+        class="icon-btn"
+      >
+        @if (!dark()) {
+          <svg lucideSun class="h-5 w-5"></svg>
+        } @else {
+          <svg lucideMoon class="h-5 w-5"></svg>
+        }
+      </button>
+
+      <a routerLink="/search" aria-label="Search" class="icon-btn">
+        <svg lucideSearch class="h-5 w-5"></svg>
+      </a>
+
+      <a routerLink="/wishlist" aria-label="Wishlist" class="icon-btn relative">
+        <svg lucideHeart class="h-5 w-5"></svg>
+        @if (wishlistCount() > 0) {
+          <span class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-danger text-[10px] font-bold leading-none text-white">{{ wishlistCount() }}</span>
+        }
+      </a>
+
+      <a
+        routerLink="/auth/login"
+        class="ml-1.5 hidden items-center rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-primary transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-lg sm:inline-flex"
+      >
+        Login
+      </a>
+
+      <button
+        type="button"
+        (click)="menuOpen.set(!menuOpen())"
+        aria-label="Open menu"
+        class="icon-btn lg:hidden"
+      >
+        <svg lucideMenu class="h-6 w-6"></svg>
+      </button>
+    </div>
+  </nav>
+    </div>
+  </div>
+
+  <!-- Mobile drawer -->
+  <div class="mobile-drawer lg:hidden" [class.open]="menuOpen()">
+    <div class="mobile-backdrop" (click)="menuOpen.set(false)"></div>
+    <div class="mobile-panel">
+      <div class="flex items-center justify-between border-b border-border px-6 py-5">
+        <span class="font-heading text-lg font-bold">Menu</span>
+        <button type="button" (click)="menuOpen.set(false)" aria-label="Close menu" class="icon-btn">
+          <svg lucideX class="h-6 w-6"></svg>
+        </button>
+      </div>
+
+      <ul class="flex flex-1 flex-col gap-1 px-4 py-5">
+        @for (link of links; track link.path) {
+          <li>
+            <a
+              routerLink="{{ link.path }}"
+              (click)="menuOpen.set(false)"
+              class="block rounded-xl px-4 py-3 text-base font-medium transition-colors hover:bg-primary-soft"
+            >
+              {{ link.label }}
+            </a>
+          </li>
+        }
+      </ul>
+
+      <div class="border-t border-border p-4">
+        <a
+          routerLink="/auth/login"
+          (click)="menuOpen.set(false)"
+          class="flex w-full items-center justify-center rounded-xl bg-primary px-4 py-3.5 text-base font-semibold text-white shadow-primary transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-lg"
+        >
+          Login
+        </a>
+      </div>
+    </div>
+  </div>
+</header>

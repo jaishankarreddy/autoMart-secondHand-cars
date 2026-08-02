@@ -1,0 +1,70 @@
+<div class="toolbar flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+  <!-- Search + sort -->
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
+    <!-- Keyword search -->
+    <div class="relative w-full sm:w-72">
+      <svg lucideSearch class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"></svg>
+      <input
+        type="text"
+        class="toolbar-input"
+        placeholder="Search by brand, model or keyword…"
+        [value]="query().keyword"
+        (input)="onKeywordInput($any($event.target).value)"
+      />
+      @if (query().keyword) {
+        <button
+          type="button"
+          (click)="clearKeyword()"
+          aria-label="Clear search"
+          class="absolute right-3 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full bg-surface-2 text-muted transition-colors hover:bg-primary-soft hover:text-primary"
+        >
+          <svg lucideX class="h-3.5 w-3.5"></svg>
+        </button>
+      }
+    </div>
+
+    <!-- Sort -->
+    <div class="relative sm:w-64">
+      <svg lucideArrowUpDown class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"></svg>
+      <select
+        class="toolbar-input toolbar-select"
+        [value]="query().sort"
+        (change)="onSortChange($any($event.target).value)"
+        aria-label="Sort cars"
+      >
+        @for (opt of sortOptions; track opt.value) {
+          <option [value]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- Count + view toggle -->
+  <div class="flex items-center justify-between gap-3 lg:justify-end">
+    <span class="text-sm font-medium text-muted">
+      <strong class="font-semibold text-text">{{ totalCount() }}</strong>
+      {{ totalCount() === 1 ? 'car' : 'cars' }} found
+    </span>
+
+    <div class="flex items-center gap-1 rounded-xl border border-border bg-surface p-1">
+      <button
+        type="button"
+        (click)="setView('grid')"
+        class="flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-200"
+        [class.view-active]="gridView() === 'grid'"
+        aria-label="Grid view"
+      >
+        <svg lucideGrid3X3 class="h-4 w-4"></svg>
+      </button>
+      <button
+        type="button"
+        (click)="setView('list')"
+        class="flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-200"
+        [class.view-active]="gridView() === 'list'"
+        aria-label="List view"
+      >
+        <svg lucideList class="h-4 w-4"></svg>
+      </button>
+    </div>
+  </div>
+</div>

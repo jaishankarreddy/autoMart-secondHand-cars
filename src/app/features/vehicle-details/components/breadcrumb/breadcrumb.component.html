@@ -1,0 +1,22 @@
+<nav aria-label="Breadcrumb" class="breadcrumb">
+  <ol class="flex flex-wrap items-center gap-1.5 text-sm">
+    <li>
+      <a routerLink="/home" class="inline-flex items-center gap-1.5 font-medium text-muted transition-colors hover:text-primary">
+        <svg lucideHome class="h-4 w-4"></svg>
+        Home
+      </a>
+    </li>
+    @for (item of items(); track item.label; let last = $last) {
+      <li class="flex items-center gap-1.5">
+        <svg lucideChevronRight class="h-4 w-4 text-border" aria-hidden="true"></svg>
+        @if (item.path && !last) {
+          <a [routerLink]="item.path" class="font-medium text-muted transition-colors hover:text-primary">
+            {{ item.label }}
+          </a>
+        } @else {
+          <span class="truncate font-semibold text-text">{{ item.label }}</span>
+        }
+      </li>
+    }
+  </ol>
+</nav>

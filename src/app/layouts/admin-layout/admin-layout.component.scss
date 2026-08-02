@@ -1,0 +1,64 @@
+:host {
+  display: block;
+}
+
+.admin-sidebar {
+  width: 264px;
+  transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sidebar-collapsed .admin-sidebar {
+  width: 84px;
+}
+
+.sidebar-collapsed .admin-sidebar .brand-text,
+.sidebar-collapsed .admin-sidebar .nav-label {
+  display: none;
+}
+
+.sidebar-collapsed .admin-sidebar .admin-nav-link {
+  justify-content: center;
+  padding-inline: 0.75rem;
+}
+
+.admin-main {
+  margin-left: 264px;
+  transition: margin-left 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sidebar-collapsed .admin-main {
+  margin-left: 84px;
+}
+
+.admin-nav-link {
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+  }
+}
+
+.admin-nav-active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: var(--shadow-primary);
+
+  &:hover {
+    background: var(--primary);
+    color: #fff;
+  }
+}
+
+@media (max-width: 1023px) {
+  .admin-sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar-collapsed .admin-sidebar {
+    width: 264px;
+  }
+
+  .admin-main,
+  .sidebar-collapsed .admin-main {
+    margin-left: 0;
+  }
+}

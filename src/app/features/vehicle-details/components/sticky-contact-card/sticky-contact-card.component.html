@@ -1,0 +1,38 @@
+<div class="sticky-bar lg:hidden" role="region" aria-label="Contact options">
+  <div class="flex items-center gap-2">
+    <div class="min-w-0 pr-1">
+      <p class="truncate font-heading text-base font-bold leading-tight text-text">
+        ₹{{ (priceInLakh() * 100000).toLocaleString('en-IN') }}
+      </p>
+      <p class="text-[11px] font-medium text-muted">Drive-away</p>
+    </div>
+
+    <div class="ml-auto flex items-center gap-2">
+      <a
+        href="https://wa.me/{{ whatsapp() }}?text=Hi%20AutoMart%2C%20I%27m%20interested%20in%20this%20vehicle."
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Contact on WhatsApp"
+        class="flex h-11 w-11 items-center justify-center rounded-xl border border-border text-primary transition-colors duration-200 hover:bg-primary-soft"
+      >
+        <svg lucideMessageCircle class="h-5 w-5"></svg>
+      </a>
+      <a
+        href="tel:{{ phone() }}"
+        aria-label="Call the seller"
+        class="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-white shadow-primary transition-transform duration-200 hover:scale-105 active:scale-95"
+      >
+        <svg lucidePhoneCall class="h-5 w-5"></svg>
+      </a>
+      <a
+        [href]="'mailto:offers@automart.in?subject=Offer on this vehicle'"
+        appRipple
+        aria-label="Make an offer"
+        class="flex h-11 items-center justify-center gap-2 rounded-xl bg-ink px-5 text-sm font-semibold text-white transition-transform duration-200 hover:scale-105 active:scale-95"
+      >
+        <svg lucideBadgeIndianRupee class="h-5 w-5"></svg>
+        Offer
+      </a>
+    </div>
+  </div>
+</div>
