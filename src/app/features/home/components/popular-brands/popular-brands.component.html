@@ -14,7 +14,7 @@
 
     <!-- Brand card grid — scrollable on mobile, wraps on desktop -->
     <div class="no-scrollbar mt-12 flex gap-5 overflow-x-auto pb-3 snap-x snap-mandatory lg:flex-wrap">
-      @for (brand of brands; track brand.name) {
+      @for (brand of brands(); track brand.name) {
         <a
           routerLink="/search"
           class="group flex w-[150px] shrink-0 snap-start flex-col items-center rounded-2xl border border-border bg-surface px-5 pb-5 pt-6 shadow-sm am-card"

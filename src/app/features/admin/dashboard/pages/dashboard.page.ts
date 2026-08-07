@@ -1,4 +1,5 @@
-﻿import { Component, computed, inject } from '@angular/core';
+﻿import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import {
   LucideWarehouse,
@@ -13,7 +14,7 @@ import {
 import { RippleDirective } from '../../../cars/directives/ripple.directive';
 import { CarsFilterService } from '../../../cars/services/cars-filter.service';
 import { BikesFilterService } from '../../../bikes/services/bikes-filter.service';
-import { ADMIN_OFFERS, ADMIN_CONTACTS } from '../../data/admin.data';
+import { AdminOffer, AdminContact } from '../../data/admin.data';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -33,25 +34,40 @@ import { ADMIN_OFFERS, ADMIN_CONTACTS } from '../../data/admin.data';
   templateUrl: './dashboard.page.html',
   styleUrl: './dashboard.page.scss'
 })
-export class AdminDashboardPageComponent {
+export class AdminDashboardPageComponent implements OnInit {
   private readonly carsService = inject(CarsFilterService);
   private readonly bikesService = inject(BikesFilterService);
+  private readonly http = inject(HttpClient);
 
-  readonly totalCars = this.carsService.cars.length;
-  readonly totalBikes = this.bikesService.bikes.length;
-  readonly totalVehicles = this.totalCars + this.totalBikes;
+  readonly totalCars = computed(() => this.carsService.cars().length);
+  readonly totalBikes = computed(() => this.bikesService.bikes().length);
+  readonly totalVehicles = computed(() => this.totalCars() + this.totalBikes());
 
-  readonly pendingOffers = ADMIN_OFFERS.filter((o) => o.status === 'Pending').length;
-  readonly newContacts = ADMIN_CONTACTS.filter((c) => c.status === 'New').length;
-  readonly recentOffers = ADMIN_OFFERS.slice(0, 5);
-  readonly latestContacts = ADMIN_CONTACTS.slice(0, 4);
+  readonly offers = signal<AdminOffer[]>([]);
+  readonly contacts = signal<AdminContact[]>([]);
+
+  readonly pendingOffers = computed(() => this.offers().filter((o) => o.status === 'Pending').length);
+  readonly newContacts = computed(() => this.contacts().filter((c) => c.status === 'New').length);
+  readonly recentOffers = computed(() => this.offers().slice(0, 5));
+  readonly latestContacts = computed(() => this.contacts().slice(0, 4));
+
+  ngOnInit(): void {
+    this.http.get<AdminOffer[]>('/api/admin/offers').subscribe({
+      next: (list) => this.offers.set(list.map((o) => ({ ...o, date: this.formatDate(o.date) }))),
+      error: () => this.offers.set([])
+    });
+    this.http.get<AdminContact[]>('/api/admin/contacts').subscribe({
+      next: (list) => this.contacts.set(list.map((c) => ({ ...c, date: this.formatDate(c.date) }))),
+      error: () => this.contacts.set([])
+    });
+  }
 
   readonly brandStats = computed(() => {
     const map = new Map<string, number>();
-    for (const c of this.carsService.cars) {
+    for (const c of this.carsService.cars()) {
       map.set(c.brand, (map.get(c.brand) ?? 0) + 1);
     }
-    for (const b of this.bikesService.bikes) {
+    for (const b of this.bikesService.bikes()) {
       map.set(b.brand, (map.get(b.brand) ?? 0) + 1);
     }
     return [...map.entries()]
@@ -79,5 +95,17 @@ export class AdminDashboardPageComponent {
 
   formatPrice(value: number): string {
     return `₹${(value / 100000).toFixed(1)} L`;
+  }
+
+  private formatDate(value: unknown): string {
+    if (!value) return '';
+    const d = new Date(value as string);
+    if (Number.isNaN(d.getTime())) return String(value);
+    return d.toLocaleString('en-IN', {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit'
+    });
   }
 }

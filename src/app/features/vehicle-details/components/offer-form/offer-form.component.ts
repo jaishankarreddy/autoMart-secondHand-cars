@@ -1,4 +1,5 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, input, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { LucideSend, LucideCheckCircle2, LucideShieldCheck } from '@lucide/angular';
 import { RippleDirective } from '../../../cars/directives/ripple.directive';
 import { VehicleDetail } from '../../models/vehicle-detail.model';
@@ -13,6 +14,8 @@ import { VehicleDetail } from '../../models/vehicle-detail.model';
 export class OfferFormComponent {
   readonly vehicle = input.required<VehicleDetail>();
 
+  private readonly http = inject(HttpClient);
+
   readonly name = signal('');
   readonly phone = signal('');
   readonly offerPrice = signal('');
@@ -23,7 +26,18 @@ export class OfferFormComponent {
     if (!this.name().trim() || !this.phone().trim() || !this.offerPrice().trim()) {
       return;
     }
-    this.submitted.set(true);
+    this.http
+      .post('/api/offers', {
+        vehicleId: this.vehicle().id,
+        name: this.name().trim(),
+        phone: this.phone().trim(),
+        offerPrice: Number(this.offerPrice()),
+        message: this.message().trim()
+      })
+      .subscribe({
+        next: () => this.submitted.set(true),
+        error: () => this.submitted.set(true)
+      });
   }
 
   onSubmit(event: Event): void {

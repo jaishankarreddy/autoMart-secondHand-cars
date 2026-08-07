@@ -1,9 +1,15 @@
-import { Component, ElementRef, inject, signal, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, ElementRef, inject, signal, AfterViewInit, OnDestroy, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { RevealDirective } from '../../directives/reveal.directive';
 
 interface StatData {
   end: number;
   suffix: string;
+  label: string;
+}
+
+interface ApiStat {
+  value: string;
   label: string;
 }
 
@@ -13,19 +19,22 @@ interface StatData {
   imports: [RevealDirective],
   templateUrl: './statistics.component.html'
 })
-export class StatisticsComponent implements AfterViewInit, OnDestroy {
+export class StatisticsComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly el = inject(ElementRef<HTMLElement>);
+  private readonly http = inject(HttpClient);
   private observer?: IntersectionObserver;
   private rafId?: number;
+  private animated = false;
 
   readonly progress = signal(0);
+  readonly stats = signal<StatData[]>([]);
 
-  readonly stats: StatData[] = [
-    { end: 1000, suffix: '+', label: 'Vehicles' },
-    { end: 500, suffix: '+', label: 'Happy Buyers' },
-    { end: 30, suffix: '+', label: 'Brands' },
-    { end: 31, suffix: '', label: 'Districts' }
-  ];
+  ngOnInit(): void {
+    this.http.get<ApiStat[]>('/api/homestats?section=section').subscribe({
+      next: (list) => this.stats.set(list.map((s) => this.toStat(s))),
+      error: () => this.stats.set([])
+    });
+  }
 
   ngAfterViewInit(): void {
     if (typeof IntersectionObserver === 'undefined') {
@@ -55,7 +64,17 @@ export class StatisticsComponent implements AfterViewInit, OnDestroy {
     return `${Math.round(stat.end * this.progress())}${stat.suffix}`;
   }
 
+  private toStat(s: ApiStat): StatData {
+    const match = /^(.*?)([-+]?[\d.]+)(.*)$/.exec(s.value);
+    if (match) {
+      return { end: parseFloat(match[2]) ?? 0, suffix: match[3] ?? '', label: s.label };
+    }
+    return { end: 0, suffix: '', label: s.label };
+  }
+
   private animate(): void {
+    if (this.animated) return;
+    this.animated = true;
     const duration = 1800;
     const start = performance.now();
     const tick = (now: number) => {

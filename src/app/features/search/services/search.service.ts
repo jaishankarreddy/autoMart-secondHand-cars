@@ -1,8 +1,7 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { Car } from '../../cars/models/car.model';
 import { Bike } from '../../bikes/models/bike.model';
-import { CARS } from '../../cars/data/cars.data';
-import { BIKES } from '../../bikes/data/bikes.data';
+import { CatalogService, CatalogVehicle } from '../../../services/catalog.service';
 
 export type SearchVehicleType = 'all' | 'car' | 'bike';
 
@@ -10,28 +9,32 @@ const BUDGET_MAX = 25;
 
 @Injectable({ providedIn: 'root' })
 export class SearchService {
+  private readonly catalog = inject(CatalogService);
+
+  constructor() {
+    this.catalog.load();
+  }
+
   readonly keyword = signal('');
   readonly type = signal<SearchVehicleType>('all');
   readonly brand = signal('');
   readonly budget = signal('');
   readonly fuel = signal('');
 
-  readonly brands = computed(() => {
-    const set = new Set<string>();
-    for (const c of CARS) set.add(c.brand);
-    for (const b of BIKES) set.add(b.brand);
-    return [...set].sort();
-  });
+  readonly brands = computed(() => this.catalog.brands());
 
   readonly fuels = computed(() => {
     const set = new Set<string>();
-    for (const c of CARS) set.add(c.fuel);
-    for (const b of BIKES) set.add(b.fuel);
+    for (const v of this.catalog.vehicles()) set.add(v.fuel);
     return [...set];
   });
 
-  readonly cars = computed(() => this.applyFilters(CARS) as Car[]);
-  readonly bikes = computed(() => this.applyFilters(BIKES) as Bike[]);
+  readonly cars = computed(() =>
+    this.applyFilters(this.catalog.cars()) as Car[]
+  );
+  readonly bikes = computed(() =>
+    this.applyFilters(this.catalog.bikes()) as Bike[]
+  );
 
   readonly totalCount = computed(() => this.cars().length + this.bikes().length);
 
@@ -53,7 +56,7 @@ export class SearchService {
     this.fuel.set('');
   }
 
-  private applyFilters(list: (Car | Bike)[]): (Car | Bike)[] {
+  private applyFilters(list: CatalogVehicle[]): CatalogVehicle[] {
     const kw = this.keyword().trim().toLowerCase();
     const type = this.type();
     const brand = this.brand();
@@ -61,8 +64,7 @@ export class SearchService {
     const fuel = this.fuel();
 
     return list.filter((v) => {
-      if (type === 'car' && !('transmission' in v)) return false;
-      if (type === 'bike' && 'transmission' in v) return false;
+      if (type !== 'all' && v.vehicleType !== type) return false;
       if (brand && v.brand !== brand) return false;
       if (fuel && v.fuel !== fuel) return false;
       if (budget && !this.matchesBudget(v.priceInLakh, budget)) return false;

@@ -1,48 +1,51 @@
-import { Injectable, computed, signal } from '@angular/core';
-import { VEHICLE_DETAILS } from '../data/vehicle-details.data';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { CatalogService, CatalogVehicle } from '../../../services/catalog.service';
 import { VehicleDetail } from '../models/vehicle-detail.model';
 import { Car } from '../../cars/models/car.model';
-import { CARS } from '../../cars/data/cars.data';
 
-/** Data-access seam for the Vehicle Details page.
- *
- *  Today it resolves the vehicle from static dummy JSON. To consume a real
- *  backend later, replace `resolveDetail` / `resolveSimilar` internals with
- *  HttpClient calls (e.g. `this.http.get<VehicleDetail>('/api/vehicles/' + id)`)
- *  while keeping the same emitted shapes — no component template changes needed.
- */
+/** Data-access seam for the Vehicle Details page backed by the Node API. */
 @Injectable({ providedIn: 'root' })
 export class VehicleDetailsService {
-  private readonly detailSource = signal<VehicleDetail | null>(null);
-  private readonly similarSource = signal<Car[]>([]);
-  private readonly loadingSource = signal(true);
+  private readonly http = inject(HttpClient);
+  private readonly catalog = inject(CatalogService);
 
-  /** Reactive handles that components consume. In a real integration these would
-   *  come from `toSignal(this.http.get<VehicleDetail>('/api/vehicles/:id'))`
-   *  and a similar endpoint. */
+  private readonly detailSource = signal<VehicleDetail | null>(null);
+  private readonly loadingSource = signal(true);
+  private readonly currentId = signal<string | null>(null);
+
   readonly detail = this.detailSource.asReadonly();
-  readonly similar = this.similarSource.asReadonly();
   readonly loading = this.loadingSource.asReadonly();
 
+  /** Similar vehicles (same type) resolved reactively from the live catalogue. */
+  readonly similar = computed<Car[]>(() => {
+    const id = this.currentId();
+    const car = this.catalog.cars().find((c) => c.id === id);
+    const type = car ? 'car' : 'bike';
+    const pool = type === 'car' ? this.catalog.cars() : this.catalog.bikes();
+    return pool
+      .filter((v) => v.id !== id)
+      .slice(0, 6) as unknown as Car[];
+  });
+
   load(id: string): void {
+    this.currentId.set(id);
     this.loadingSource.set(true);
-    // Dummy async resolution; swap the bodies of resolveDetail/resolveSimilar
-    // for HttpClient calls and the component tree keeps working unchanged.
-    queueMicrotask(() => {
-      this.detailSource.set(this.resolveDetail(id));
-      this.similarSource.set(this.resolveSimilar(id));
-      this.loadingSource.set(false);
-    });
-  }
+    this.catalog.load();
 
-  /** Dummy resolver — swap for `this.http.get<VehicleDetail>('/api/vehicles/' + id)`. */
-  private resolveDetail(id: string): VehicleDetail {
-    return VEHICLE_DETAILS.find((v) => v.id === id) ?? VEHICLE_DETAILS[0];
-  }
-
-  /** Dummy resolver — swap for `this.http.get<Car[]>('/api/vehicles/:id/similar')`. */
-  private resolveSimilar(id: string): Car[] {
-    const pool = CARS.filter((c) => c.id !== id);
-    return pool.slice(0, 6);
+    this.http
+      .get<CatalogVehicle>(`/api/vehicles/${id}`)
+      .subscribe({
+        next: (v) => {
+          this.detailSource.set(v as unknown as VehicleDetail);
+          this.loadingSource.set(false);
+        },
+        error: () => {
+          // Fall back to the locally-cached catalogue entry if the API fails.
+          const cached = this.catalog.byId(id);
+          this.detailSource.set(cached ? (cached as unknown as VehicleDetail) : null);
+          this.loadingSource.set(false);
+        }
+      });
   }
 }

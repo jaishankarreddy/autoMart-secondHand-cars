@@ -1,8 +1,7 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { Car } from '../../cars/models/car.model';
 import { Bike } from '../../bikes/models/bike.model';
-import { CARS } from '../../cars/data/cars.data';
-import { BIKES } from '../../bikes/data/bikes.data';
+import { CatalogService, CatalogVehicle } from '../../../services/catalog.service';
 
 export interface ComparableVehicle {
   id: string;
@@ -30,6 +29,12 @@ export interface ComparableVehicle {
 
 @Injectable({ providedIn: 'root' })
 export class CompareService {
+  private readonly catalogService = inject(CatalogService);
+
+  constructor() {
+    this.catalogService.load();
+  }
+
   readonly max = 3;
 
   readonly ids = signal<string[]>([]);
@@ -49,8 +54,8 @@ export class CompareService {
   });
 
   readonly catalog = computed(() => {
-    const cars = CARS.map((c) => this.toComparable(c, 'car'));
-    const bikes = BIKES.map((b) => this.toComparable(b, 'bike'));
+    const cars = this.catalogService.cars().map((c) => this.toComparable(c, 'car'));
+    const bikes = this.catalogService.bikes().map((b) => this.toComparable(b, 'bike'));
     return [...cars, ...bikes];
   });
 
@@ -75,63 +80,60 @@ export class CompareService {
   }
 
   private lookup(id: string): ComparableVehicle | null {
-    const car = CARS.find((c) => c.id === id);
-    if (car) return this.toComparable(car, 'car');
-    const bike = BIKES.find((b) => b.id === id);
-    if (bike) return this.toComparable(bike, 'bike');
-    return null;
+    const v = this.catalogService.byId(id);
+    if (!v) return null;
+    return this.toComparable(v, v.vehicleType);
   }
 
-  private toComparable(v: Car | Bike, type: 'car' | 'bike'): ComparableVehicle {
-    if ('transmission' in v) {
-      const car = v;
+  private toComparable(v: CatalogVehicle, type: 'car' | 'bike'): ComparableVehicle {
+    if (type === 'bike') {
       return {
-        id: car.id,
+        id: v.id,
         type,
-        brand: car.brand,
-        model: car.model,
-        variant: car.variant,
-        year: car.year,
-        priceInLakh: car.priceInLakh,
-        fuel: car.fuel,
-        transmission: car.transmission,
-        engine: '—',
-        mileage: car.mileage,
-        mileageUnit: 'km/l',
-        abs: '—',
-        bodyType: car.bodyType,
-        color: car.color,
-        district: car.district,
-        owners: car.owners,
-        kilometers: car.kilometers,
-        image: car.image,
-        rating: car.rating,
-        featured: car.featured
+        brand: v.brand,
+        model: v.model,
+        variant: v.variant,
+        year: v.year,
+        priceInLakh: v.priceInLakh,
+        fuel: v.fuel,
+        transmission: v.engineCC ? 'Manual' : 'Electric',
+        engine: v.engineCC && v.engineCC > 0 ? `${v.engineCC} cc` : 'Electric',
+        mileage: v.mileage,
+        mileageUnit: v.fuel === 'Electric' ? 'km/charge' : 'km/l',
+        abs: v.abs ? 'Yes' : 'No',
+        bodyType: v.bodyType,
+        color: v.color,
+        district: v.district,
+        owners: v.owners,
+        kilometers: v.kilometers,
+        image: v.image,
+        rating: v.rating,
+        featured: v.featured
       };
     }
-    const bike = v as Bike;
+    const c = v as unknown as Car;
     return {
-      id: bike.id,
+      id: c.id,
       type,
-      brand: bike.brand,
-      model: bike.model,
-      variant: bike.variant,
-      year: bike.year,
-      priceInLakh: bike.priceInLakh,
-      fuel: bike.fuel,
-      transmission: bike.engineCC === 0 ? 'Electric' : 'Manual',
-      engine: bike.engineCC > 0 ? `${bike.engineCC} cc` : 'Electric',
-      mileage: bike.mileage,
-      mileageUnit: bike.fuel === 'Electric' ? 'km/charge' : 'km/l',
-      abs: bike.abs ? 'Yes' : 'No',
-      bodyType: bike.bodyType,
-      color: bike.color,
-      district: bike.district,
-      owners: bike.owners,
-      kilometers: bike.kilometers,
-      image: bike.image,
-      rating: bike.rating,
-      featured: bike.featured
+      brand: c.brand,
+      model: c.model,
+      variant: c.variant,
+      year: c.year,
+      priceInLakh: c.priceInLakh,
+      fuel: c.fuel,
+      transmission: c.transmission,
+      engine: '—',
+      mileage: c.mileage,
+      mileageUnit: 'km/l',
+      abs: '—',
+      bodyType: c.bodyType,
+      color: c.color,
+      district: c.district,
+      owners: c.owners,
+      kilometers: c.kilometers,
+      image: c.image,
+      rating: c.rating,
+      featured: c.featured
     };
   }
 }

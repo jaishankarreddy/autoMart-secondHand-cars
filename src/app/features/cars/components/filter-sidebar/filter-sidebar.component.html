@@ -23,7 +23,7 @@
       </button>
       <div class="filter-body">
         <div class="filter-grid">
-          @for (brand of brands; track brand) {
+          @for (brand of brands(); track brand) {
             <label class="filter-check">
               <input
                 type="checkbox"
@@ -83,7 +83,7 @@
       </button>
       <div class="filter-body">
         <div class="filter-grid filter-grid-cols-2">
-          @for (year of years; track year) {
+          @for (year of years(); track year) {
             <label class="filter-check">
               <input
                 type="checkbox"
@@ -106,7 +106,7 @@
       </button>
       <div class="filter-body">
         <div class="filter-grid">
-          @for (fuel of fuels; track fuel) {
+          @for (fuel of fuels(); track fuel) {
             <label class="filter-check">
               <input
                 type="checkbox"
@@ -129,7 +129,7 @@
       </button>
       <div class="filter-body">
         <div class="filter-grid">
-          @for (t of transmissions; track t) {
+          @for (t of transmissions(); track t) {
             <label class="filter-check">
               <input
                 type="checkbox"
@@ -152,7 +152,7 @@
       </button>
       <div class="filter-body">
         <div class="filter-grid">
-          @for (o of owners; track o) {
+          @for (o of owners(); track o) {
             <label class="filter-check">
               <input
                 type="checkbox"
@@ -175,7 +175,7 @@
       </button>
       <div class="filter-body">
         <div class="filter-grid filter-grid-cols-2">
-          @for (bt of bodyTypes; track bt) {
+          @for (bt of bodyTypes(); track bt) {
             <label class="filter-check">
               <input
                 type="checkbox"
@@ -219,7 +219,7 @@
       </button>
       <div class="filter-body">
         <div class="filter-grid filter-grid-cols-2">
-          @for (d of districts; track d) {
+          @for (d of districts(); track d) {
             <label class="filter-check">
               <input
                 type="checkbox"
@@ -242,7 +242,7 @@
       </button>
       <div class="filter-body">
         <div class="filter-grid">
-          @for (c of colors; track c) {
+          @for (c of colors(); track c) {
             <label class="filter-check">
               <input
                 type="checkbox"

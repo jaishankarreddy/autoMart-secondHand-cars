@@ -1,4 +1,5 @@
-﻿import { Component, computed, signal } from '@angular/core';
+﻿import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import {
   LucideSearch,
   LucideCheck,
@@ -7,7 +8,7 @@ import {
   LucideTrendingUp
 } from '@lucide/angular';
 import { RippleDirective } from '../../../cars/directives/ripple.directive';
-import { ADMIN_OFFERS, AdminOffer, OfferStatus } from '../../data/admin.data';
+import { AdminOffer, OfferStatus } from '../../data/admin.data';
 
 export type OfferFilter = 'all' | OfferStatus;
 
@@ -25,10 +26,19 @@ export type OfferFilter = 'all' | OfferStatus;
   templateUrl: './offers.page.html',
   styleUrl: './offers.page.scss'
 })
-export class AdminOffersPageComponent {
-  readonly offers = signal<AdminOffer[]>(ADMIN_OFFERS);
+export class AdminOffersPageComponent implements OnInit {
+  private readonly http = inject(HttpClient);
+
+  readonly offers = signal<AdminOffer[]>([]);
   readonly search = signal('');
   readonly statusFilter = signal<OfferFilter>('all');
+
+  ngOnInit(): void {
+    this.http.get<AdminOffer[]>('/api/admin/offers').subscribe({
+      next: (list) => this.offers.set(list.map((o) => ({ ...o, date: this.formatDate(o.date) }))),
+      error: () => this.offers.set([])
+    });
+  }
 
   readonly counts = computed(() => {
     const list = this.offers();
@@ -70,6 +80,11 @@ export class AdminOffersPageComponent {
     this.offers.update((list) =>
       list.map((o) => (o.id === id ? { ...o, status } : o))
     );
+    this.http.patch(`/api/admin/offers/${id}`, { status }).subscribe({
+      error: () => {
+        this.load();
+      }
+    });
   }
 
   initials(name: string): string {
@@ -83,5 +98,24 @@ export class AdminOffersPageComponent {
 
   formatPrice(value: number): string {
     return `₹${(value / 100000).toFixed(1)} L`;
+  }
+
+  private load(): void {
+    this.http.get<AdminOffer[]>('/api/admin/offers').subscribe({
+      next: (list) => this.offers.set(list.map((o) => ({ ...o, date: this.formatDate(o.date) }))),
+      error: () => this.offers.set([])
+    });
+  }
+
+  private formatDate(value: unknown): string {
+    if (!value) return '';
+    const d = new Date(value as string);
+    if (Number.isNaN(d.getTime())) return String(value);
+    return d.toLocaleString('en-IN', {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit'
+    });
   }
 }

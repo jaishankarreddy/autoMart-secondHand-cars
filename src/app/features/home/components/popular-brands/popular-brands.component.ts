@@ -1,9 +1,16 @@
-﻿import { Component, signal } from '@angular/core';
+﻿import { Component, OnInit, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { LucideArrowRight } from '@lucide/angular';
-import { POPULAR_BRANDS } from '../../data/brands.data';
 import { SectionHeadingComponent } from '../section-heading/section-heading.component';
 import { RevealDirective } from '../../directives/reveal.directive';
+
+interface ApiBrand {
+  name: string;
+  code: string;
+  color: string;
+  logo?: string;
+}
 
 @Component({
   selector: 'app-popular-brands',
@@ -11,9 +18,18 @@ import { RevealDirective } from '../../directives/reveal.directive';
   imports: [RouterLink, LucideArrowRight, SectionHeadingComponent, RevealDirective],
   templateUrl: './popular-brands.component.html'
 })
-export class PopularBrandsComponent {
-  readonly brands = POPULAR_BRANDS;
+export class PopularBrandsComponent implements OnInit {
+  private readonly http = inject(HttpClient);
+
+  readonly brands = signal<ApiBrand[]>([]);
   readonly failedLogos = signal<Set<string>>(new Set());
+
+  ngOnInit(): void {
+    this.http.get<ApiBrand[]>('/api/brands').subscribe({
+      next: (list) => this.brands.set(list.filter((b) => b.logo || b.code)),
+      error: () => this.brands.set([])
+    });
+  }
 
   onLogoError(name: string): void {
     this.failedLogos.update((failed) => {

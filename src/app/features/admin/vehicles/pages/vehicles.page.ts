@@ -46,8 +46,8 @@ export class AdminVehiclesPageComponent {
     const kw = this.search().trim().toLowerCase();
     const type = this.typeFilter();
     const list = [
-      ...this.carsService.cars.map(toAdminVehicle),
-      ...this.bikesService.bikes.map(toAdminVehicle)
+      ...this.carsService.cars().map(toAdminVehicle),
+      ...this.bikesService.bikes().map(toAdminVehicle)
     ];
     return list.filter((v) => {
       if (type !== 'all' && v.type !== type) return false;

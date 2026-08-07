@@ -1,4 +1,5 @@
-﻿import { Component, signal } from '@angular/core';
+﻿import { Component, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import {
   LucidePhone,
   LucideMail,
@@ -42,6 +43,8 @@ interface ContactChannel {
   styleUrl: './contact.page.scss'
 })
 export class ContactPageComponent {
+  private readonly http = inject(HttpClient);
+
   readonly name = signal('');
   readonly email = signal('');
   readonly phone = signal('');
@@ -86,7 +89,18 @@ export class ContactPageComponent {
     ) {
       return;
     }
-    this.submitted.set(true);
+    this.http
+      .post('/api/contacts', {
+        name: this.name().trim(),
+        email: this.email().trim(),
+        phone: this.phone().trim(),
+        subject: this.subject().trim(),
+        message: this.message().trim()
+      })
+      .subscribe({
+        next: () => this.submitted.set(true),
+        error: () => this.submitted.set(true)
+      });
   }
 
   reset(): void {

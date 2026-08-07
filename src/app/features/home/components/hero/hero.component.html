@@ -48,7 +48,7 @@
   <!-- Floating stats -->
   <div class="container-am relative z-10 pb-16 sm:pb-20">
     <div class="hero-fade grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4" style="animation-delay: .5s">
-      @for (stat of stats; track stat.label) {
+      @for (stat of stats(); track stat.label) {
         <div class="float-card">
           <span class="font-heading text-2xl font-bold text-white sm:text-3xl">{{ stat.value }}</span>
           <span class="text-sm text-white/70">{{ stat.label }}</span>

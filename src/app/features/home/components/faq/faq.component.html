@@ -11,7 +11,7 @@
 
     <!-- Accordion -->
     <div class="space-y-3">
-      @for (faq of faqs; track faq.question; let i = $index) {
+      @for (faq of faqs(); track faq.question; let i = $index) {
         <div class="faq-item overflow-hidden rounded-2xl border border-border bg-surface shadow-sm transition-colors" [class.open]="openIndex() === i">
           <button
             type="button"

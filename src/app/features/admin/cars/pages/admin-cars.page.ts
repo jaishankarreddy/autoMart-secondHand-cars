@@ -39,7 +39,7 @@ export class AdminCarsPageComponent {
 
   readonly cars = computed(() => {
     const kw = this.search().trim().toLowerCase();
-    const list = this.carsService.cars.map(toAdminVehicle);
+    const list = this.carsService.cars().map(toAdminVehicle);
     if (!kw) return list;
     return list.filter((c) =>
       `${c.brand} ${c.model} ${c.variant} ${c.district} ${c.fuel}`

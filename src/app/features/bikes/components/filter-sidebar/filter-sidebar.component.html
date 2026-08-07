@@ -23,7 +23,7 @@
       </button>
       <div class="filter-body">
         <div class="filter-grid filter-grid-cols-2">
-          @for (brand of brands; track brand) {
+          @for (brand of brands(); track brand) {
             <label class="filter-check">
               <input
                 type="checkbox"
@@ -46,7 +46,7 @@
       </button>
       <div class="filter-body">
         <div class="filter-grid filter-grid-cols-2">
-          @for (model of models; track model) {
+          @for (model of models(); track model) {
             <label class="filter-check">
               <input
                 type="checkbox"
@@ -150,7 +150,7 @@
       </button>
       <div class="filter-body">
         <div class="filter-grid">
-          @for (fuel of fuels; track fuel) {
+          @for (fuel of fuels(); track fuel) {
             <label class="filter-check">
               <input
                 type="checkbox"
@@ -173,7 +173,7 @@
       </button>
       <div class="filter-body">
         <div class="filter-grid">
-          @for (o of owners; track o) {
+          @for (o of owners(); track o) {
             <label class="filter-check">
               <input
                 type="checkbox"

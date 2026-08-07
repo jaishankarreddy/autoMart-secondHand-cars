@@ -13,7 +13,7 @@
     </div>
 
     <div class="mt-10 grid gap-6 sm:gap-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      @for (bike of bikes; track bike.id) {
+      @for (bike of bikes(); track bike.id) {
         <app-vehicle-card [vehicle]="bike" />
       }
     </div>

@@ -9,8 +9,6 @@ import { RippleDirective } from '../../cars/directives/ripple.directive';
 import { RevealDirective } from '../../home/directives/reveal.directive';
 import { CarsFilterService } from '../../cars/services/cars-filter.service';
 import { BikesFilterService } from '../../bikes/services/bikes-filter.service';
-import { CARS } from '../../cars/data/cars.data';
-import { BIKES } from '../../bikes/data/bikes.data';
 
 @Component({
   selector: 'app-wishlist-page',
@@ -34,11 +32,11 @@ export class WishlistPageComponent {
   private readonly bikesService = inject(BikesFilterService);
 
   readonly wishlistedCars = computed(() =>
-    CARS.filter((c) => this.carsService.wishlist().has(c.id))
+    this.carsService.cars().filter((c) => this.carsService.wishlist().has(c.id))
   );
 
   readonly wishlistedBikes = computed(() =>
-    BIKES.filter((b) => this.bikesService.wishlist().has(b.id))
+    this.bikesService.bikes().filter((b) => this.bikesService.wishlist().has(b.id))
   );
 
   readonly totalCount = computed(

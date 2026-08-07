@@ -1,18 +1,6 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, Signal, computed, inject, signal } from '@angular/core';
 import { Car } from '../models/car.model';
-import {
-  CARS,
-  CAR_BODY_TYPES,
-  CAR_BRANDS,
-  CAR_COLORS,
-  CAR_DISTRICTS,
-  CAR_FUELS,
-  CAR_OWNERS,
-  CAR_TRANSMISSIONS,
-  CAR_YEARS,
-  PRICE_MAX,
-  PRICE_MIN
-} from '../data/cars.data';
+import { CatalogService } from '../../../services/catalog.service';
 
 export type CarSortKey =
   | 'newest'
@@ -40,6 +28,9 @@ export interface CarQuery {
   sort: CarSortKey;
 }
 
+const PRICE_MIN = 5;
+const PRICE_MAX = 40;
+
 const DEFAULT_FILTERS: CarFilters = {
   brands: [],
   priceMin: PRICE_MIN,
@@ -54,17 +45,44 @@ const DEFAULT_FILTERS: CarFilters = {
   colors: []
 };
 
+/** Distinct values in original order. */
+function distinct<T, K>(list: T[], key: (item: T) => K): K[] {
+  const seen = new Set<string>();
+  const out: K[] = [];
+  for (const item of list) {
+    const k = key(item);
+    const s = String(k);
+    if (!seen.has(s)) {
+      seen.add(s);
+      out.push(k);
+    }
+  }
+  return out;
+}
+
 @Injectable({ providedIn: 'root' })
 export class CarsFilterService {
-  readonly cars = CARS;
-  readonly brands = CAR_BRANDS;
-  readonly years = CAR_YEARS;
-  readonly fuels = CAR_FUELS;
-  readonly transmissions = CAR_TRANSMISSIONS;
-  readonly owners = CAR_OWNERS;
-  readonly bodyTypes = CAR_BODY_TYPES;
-  readonly districts = CAR_DISTRICTS;
-  readonly colors = CAR_COLORS;
+  private readonly catalog = inject(CatalogService);
+
+  constructor() {
+    this.catalog.load();
+  }
+
+  readonly cars: Signal<Car[]> = this.catalog.cars as Signal<Car[]>;
+  readonly brands = computed(() => distinct(this.cars(), (c) => c.brand).sort());
+  readonly years = computed(() =>
+    distinct(this.cars(), (c) => c.year).sort((a, b) => b - a)
+  );
+  readonly fuels = computed(() => distinct(this.cars(), (c) => c.fuel));
+  readonly transmissions = computed(() =>
+    distinct(this.cars(), (c) => c.transmission)
+  );
+  readonly owners = computed(() => distinct(this.cars(), (c) => c.owners).sort());
+  readonly bodyTypes = computed(() => distinct(this.cars(), (c) => c.bodyType));
+  readonly districts = computed(() =>
+    distinct(this.cars(), (c) => c.district).sort()
+  );
+  readonly colors = computed(() => distinct(this.cars(), (c) => c.color));
   readonly priceMinBound = PRICE_MIN;
   readonly priceMaxBound = PRICE_MAX;
 
@@ -96,7 +114,7 @@ export class CarsFilterService {
   readonly filtered = computed(() => {
     const f = this.filters();
     const q = this.query();
-    let list = this.cars;
+    let list = this.cars();
 
     if (q.keyword.trim()) {
       const kw = q.keyword.trim().toLowerCase();

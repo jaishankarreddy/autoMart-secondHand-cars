@@ -1,15 +1,6 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, Signal, computed, inject, signal } from '@angular/core';
 import { Bike } from '../models/bike.model';
-import {
-  BIKES,
-  BIKE_BRANDS,
-  BIKE_FUELS,
-  BIKE_MILEAGE_MAX,
-  BIKE_MODELS,
-  BIKE_OWNERS,
-  ENGINE_CC_MAX,
-  ENGINE_CC_MIN
-} from '../data/bikes.data';
+import { CatalogService } from '../../../services/catalog.service';
 
 export type BikeSortKey =
   | 'newest'
@@ -35,6 +26,10 @@ export interface BikeQuery {
   sort: BikeSortKey;
 }
 
+const ENGINE_CC_MIN = 100;
+const ENGINE_CC_MAX = 650;
+const BIKE_MILEAGE_MAX = 60;
+
 const DEFAULT_FILTERS: BikeFilters = {
   brands: [],
   models: [],
@@ -46,13 +41,34 @@ const DEFAULT_FILTERS: BikeFilters = {
   owners: []
 };
 
+/** Distinct values in original order. */
+function distinct<T, K>(list: T[], key: (item: T) => K): K[] {
+  const seen = new Set<string>();
+  const out: K[] = [];
+  for (const item of list) {
+    const k = key(item);
+    const s = String(k);
+    if (!seen.has(s)) {
+      seen.add(s);
+      out.push(k);
+    }
+  }
+  return out;
+}
+
 @Injectable({ providedIn: 'root' })
 export class BikesFilterService {
-  readonly bikes = BIKES;
-  readonly brands = BIKE_BRANDS;
-  readonly models = BIKE_MODELS;
-  readonly fuels = BIKE_FUELS;
-  readonly owners = BIKE_OWNERS;
+  private readonly catalog = inject(CatalogService);
+
+  constructor() {
+    this.catalog.load();
+  }
+
+  readonly bikes: Signal<Bike[]> = this.catalog.bikes as Signal<Bike[]>;
+  readonly brands = computed(() => distinct(this.bikes(), (b) => b.brand).sort());
+  readonly models = computed(() => distinct(this.bikes(), (b) => b.model).sort());
+  readonly fuels = computed(() => distinct(this.bikes(), (b) => b.fuel));
+  readonly owners = computed(() => distinct(this.bikes(), (b) => b.owners).sort());
   readonly ccMinBound = ENGINE_CC_MIN;
   readonly ccMaxBound = ENGINE_CC_MAX;
   readonly mileageBound = BIKE_MILEAGE_MAX;
@@ -81,7 +97,7 @@ export class BikesFilterService {
   readonly filtered = computed(() => {
     const f = this.filters();
     const q = this.query();
-    let list = this.bikes;
+    let list = this.bikes();
 
     if (q.keyword.trim()) {
       const kw = q.keyword.trim().toLowerCase();
