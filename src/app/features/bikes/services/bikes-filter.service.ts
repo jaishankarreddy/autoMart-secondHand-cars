@@ -1,6 +1,8 @@
-import { Injectable, Signal, computed, inject, signal } from '@angular/core';
+import { Injectable, Signal, computed, effect, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { Bike } from '../models/bike.model';
-import { CatalogService } from '../../../services/catalog.service';
+import { CatalogService, CatalogVehicle } from '../../../services/catalog.service';
 
 export type BikeSortKey =
   | 'newest'
@@ -41,112 +43,59 @@ const DEFAULT_FILTERS: BikeFilters = {
   owners: []
 };
 
-/** Distinct values in original order. */
-function distinct<T, K>(list: T[], key: (item: T) => K): K[] {
-  const seen = new Set<string>();
-  const out: K[] = [];
-  for (const item of list) {
-    const k = key(item);
-    const s = String(k);
-    if (!seen.has(s)) {
-      seen.add(s);
-      out.push(k);
-    }
-  }
-  return out;
+interface BikeFacets {
+  brands: string[];
+  models: string[];
+  fuels: string[];
+  owners: number[];
 }
+
+const EMPTY_FACETS: BikeFacets = { brands: [], models: [], fuels: [], owners: [] };
+
+const SORT_MAP: Record<BikeSortKey, string> = {
+  newest: '',
+  'price-asc': 'price_asc',
+  'price-desc': 'price_desc',
+  mileage: 'mileage_desc',
+  year: 'year_desc'
+};
+
+const API_URL = '/api';
 
 @Injectable({ providedIn: 'root' })
 export class BikesFilterService {
+  private readonly http = inject(HttpClient);
   private readonly catalog = inject(CatalogService);
 
-  constructor() {
-    this.catalog.load();
-  }
+  /** Full bike list (only populated once the catalogue itself is loaded). */
+  readonly bikes: Signal<Bike[]> = this.catalog.bikes as unknown as Signal<Bike[]>;
 
-  readonly bikes: Signal<Bike[]> = this.catalog.bikes as Signal<Bike[]>;
-  readonly brands = computed(() => distinct(this.bikes(), (b) => b.brand).sort());
-  readonly models = computed(() => distinct(this.bikes(), (b) => b.model).sort());
-  readonly fuels = computed(() => distinct(this.bikes(), (b) => b.fuel));
-  readonly owners = computed(() => distinct(this.bikes(), (b) => b.owners).sort());
+  // ---- server-side paginated listing state --------------------------------
+  readonly pageSize = 20;
+  readonly page = signal(1);
+  readonly gridView = signal<'grid' | 'list'>('grid');
+  readonly filters = signal<BikeFilters>({ ...DEFAULT_FILTERS });
+  readonly query = signal<BikeQuery>({ keyword: '', sort: 'newest' });
+  readonly items = signal<Bike[]>([]);
+  readonly totalCount = signal(0);
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
+
+  // ---- facets (distinct filter options from the server) -------------------
+  private readonly facetsSource = signal<BikeFacets>({ ...EMPTY_FACETS });
+  readonly brands = computed(() => [...this.facetsSource().brands].sort());
+  readonly models = computed(() => [...this.facetsSource().models].sort());
+  readonly fuels = computed(() => this.facetsSource().fuels);
+  readonly owners = computed(() => [...this.facetsSource().owners].sort());
   readonly ccMinBound = ENGINE_CC_MIN;
   readonly ccMaxBound = ENGINE_CC_MAX;
   readonly mileageBound = BIKE_MILEAGE_MAX;
 
-  readonly filters = signal<BikeFilters>({ ...DEFAULT_FILTERS });
-  readonly query = signal<BikeQuery>({ keyword: '', sort: 'newest' });
-  readonly page = signal(1);
-  readonly gridView = signal<'grid' | 'list'>('grid');
-  readonly wishlist = signal<Set<string>>(new Set());
-  readonly pageSize = 8;
-
-  readonly activeFilterCount = computed(() => {
-    const f = this.filters();
-    return (
-      f.brands.length +
-      f.models.length +
-      (f.ccMin > ENGINE_CC_MIN || f.ccMax < ENGINE_CC_MAX ? 1 : 0) +
-      f.absOptions.length +
-      (f.mileageMax < BIKE_MILEAGE_MAX ? 1 : 0) +
-      f.fuels.length +
-      f.owners.length +
-      (this.query().keyword ? 1 : 0)
-    );
-  });
-
-  readonly filtered = computed(() => {
-    const f = this.filters();
-    const q = this.query();
-    let list = this.bikes();
-
-    if (q.keyword.trim()) {
-      const kw = q.keyword.trim().toLowerCase();
-      list = list.filter((b) =>
-        `${b.brand} ${b.model} ${b.variant} ${b.bodyType} ${b.district}`
-          .toLowerCase()
-          .includes(kw)
-      );
-    }
-    if (f.brands.length) list = list.filter((b) => f.brands.includes(b.brand));
-    if (f.models.length) list = list.filter((b) => f.models.includes(b.model));
-    if (f.fuels.length) list = list.filter((b) => f.fuels.includes(b.fuel));
-    if (f.owners.length) list = list.filter((b) => f.owners.includes(b.owners));
-    if (f.absOptions.length === 1) {
-      const withAbs = f.absOptions[0] === 'With ABS';
-      list = list.filter((b) => b.abs === withAbs);
-    }
-    if (f.ccMin > ENGINE_CC_MIN || f.ccMax < ENGINE_CC_MAX) {
-      list = list.filter((b) => b.engineCC >= f.ccMin && b.engineCC <= f.ccMax);
-    }
-    if (f.mileageMax < BIKE_MILEAGE_MAX) {
-      list = list.filter((b) =>
-        b.fuel === 'Electric' ? true : b.mileage <= f.mileageMax
-      );
-    }
-
-    const sorted = [...list].sort((a, b) => {
-      switch (q.sort) {
-        case 'price-asc': return a.priceInLakh - b.priceInLakh;
-        case 'price-desc': return b.priceInLakh - a.priceInLakh;
-        case 'mileage': return b.mileage - a.mileage;
-        case 'year': return b.year - a.year;
-        default: return Number(b.id.replace(/\D/g, '')) - Number(a.id.replace(/\D/g, '')) || b.year - a.year;
-      }
-    });
-    return sorted;
-  });
-
-  readonly totalCount = computed(() => this.filtered().length);
-
+  // ---- derived list state --------------------------------------------------
   readonly totalPages = computed(() =>
-    Math.max(1, Math.ceil(this.filtered().length / this.pageSize))
+    Math.max(1, Math.ceil(this.totalCount() / this.pageSize))
   );
-
-  readonly pagedBikes = computed(() => {
-    const start = (this.page() - 1) * this.pageSize;
-    return this.filtered().slice(start, start + this.pageSize);
-  });
-
+  readonly pagedBikes = this.items;
   readonly pageNumbers = computed(() => {
     const total = this.totalPages();
     const current = this.page();
@@ -172,16 +121,106 @@ export class BikesFilterService {
     return { from, to };
   });
 
+  readonly activeFilterCount = computed(() => {
+    const f = this.filters();
+    return (
+      f.brands.length +
+      f.models.length +
+      (f.ccMin > ENGINE_CC_MIN || f.ccMax < ENGINE_CC_MAX ? 1 : 0) +
+      f.absOptions.length +
+      (f.mileageMax < BIKE_MILEAGE_MAX ? 1 : 0) +
+      f.fuels.length +
+      f.owners.length +
+      (this.query().keyword ? 1 : 0)
+    );
+  });
+
   readonly isFiltered = computed(() => this.activeFilterCount() > 0);
 
+  readonly wishlist = signal<Set<string>>(new Set());
+
+  // ---- fetch coordination --------------------------------------------------
+  private requestSeq = 0;
+  private keywordTimer: ReturnType<typeof setTimeout> | undefined;
+
+  constructor() {
+    this.loadFacets();
+    effect(() => {
+      void this.filters();
+      void this.query();
+      void this.page();
+      void this.fetchPage();
+    });
+  }
+
+  private loadFacets(): void {
+    this.http
+      .get<BikeFacets>(`${API_URL}/facets?type=bike`)
+      .subscribe({
+        next: (f) => this.facetsSource.set(f),
+        error: () => undefined
+      });
+  }
+
+  private async fetchPage(): Promise<void> {
+    const seq = ++this.requestSeq;
+    const params = this.buildParams();
+    this.loading.set(true);
+    this.error.set(null);
+    try {
+      const res = await firstValueFrom(
+        this.http.get<{ items: CatalogVehicle[]; total?: number }>(
+          `${API_URL}/vehicles?${params}`
+        )
+      );
+      if (seq !== this.requestSeq) return;
+      this.items.set((res?.items ?? []) as unknown as Bike[]);
+      this.totalCount.set(res?.total ?? 0);
+    } catch (err) {
+      if (seq !== this.requestSeq) return;
+      this.error.set(err instanceof Error ? err.message : 'Failed to load bikes');
+      this.items.set([]);
+    } finally {
+      if (seq === this.requestSeq) this.loading.set(false);
+    }
+  }
+
+  private buildParams(): string {
+    const f = this.filters();
+    const q = this.query();
+    const p = new URLSearchParams();
+    p.set('type', 'bike');
+    p.set('page', String(this.page()));
+    p.set('limit', String(this.pageSize));
+
+    for (const b of f.brands) p.append('brand', b);
+    for (const m of f.models) p.append('model', m);
+    for (const x of f.fuels) p.append('fuel', x);
+    for (const o of f.owners) p.append('owners', String(o));
+    if (f.ccMin > ENGINE_CC_MIN) p.set('engineCcMin', String(f.ccMin));
+    if (f.ccMax < ENGINE_CC_MAX) p.set('engineCcMax', String(f.ccMax));
+    if (f.absOptions.length === 1) p.set('abs', f.absOptions[0] === 'With ABS' ? 'true' : 'false');
+    if (f.mileageMax < BIKE_MILEAGE_MAX) p.set('mileageMax', String(f.mileageMax));
+
+    const kw = q.keyword.trim();
+    if (kw) p.set('q', kw);
+    const sort = SORT_MAP[q.sort];
+    if (sort) p.set('sortBy', sort);
+    return p.toString();
+  }
+
+  // ---- actions -------------------------------------------------------------
   updateFilters(partial: Partial<BikeFilters>): void {
     this.filters.update((f) => ({ ...f, ...partial }));
     this.page.set(1);
   }
 
   setKeyword(keyword: string): void {
-    this.query.update((q) => ({ ...q, keyword }));
-    this.page.set(1);
+    clearTimeout(this.keywordTimer);
+    this.keywordTimer = setTimeout(() => {
+      this.query.update((q) => ({ ...q, keyword }));
+      this.page.set(1);
+    }, 300);
   }
 
   setSort(sort: BikeSortKey): void {
@@ -201,11 +240,8 @@ export class BikesFilterService {
   toggleWishlist(id: string): void {
     this.wishlist.update((set) => {
       const next = new Set(set);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   }

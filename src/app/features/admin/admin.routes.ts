@@ -1,19 +1,40 @@
 ﻿import { Routes } from '@angular/router';
-import { AdminDashboardPageComponent } from './dashboard/pages/dashboard.page';
-import { AdminVehiclesPageComponent } from './vehicles/pages/vehicles.page';
-import { AdminCarsPageComponent } from './cars/pages/admin-cars.page';
-import { AdminBikesPageComponent } from './bikes/pages/admin-bikes.page';
-import { AdminOffersPageComponent } from './offers/pages/offers.page';
-import { AdminContactsPageComponent } from './contacts/pages/contacts.page';
-import { AdminSettingsPageComponent } from './settings/pages/settings.page';
 
 export const ADMIN_ROUTES: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-  { path: 'dashboard', component: AdminDashboardPageComponent },
-  { path: 'vehicles', component: AdminVehiclesPageComponent },
-  { path: 'cars', component: AdminCarsPageComponent },
-  { path: 'bikes', component: AdminBikesPageComponent },
-  { path: 'offers', component: AdminOffersPageComponent },
-  { path: 'contacts', component: AdminContactsPageComponent },
-  { path: 'settings', component: AdminSettingsPageComponent }
+  {
+    path: 'dashboard',
+    loadComponent: () =>
+      import('./dashboard/pages/dashboard.page').then((m) => m.AdminDashboardPageComponent)
+  },
+  {
+    path: 'vehicles',
+    loadComponent: () =>
+      import('./vehicles/pages/vehicles.page').then((m) => m.AdminVehiclesPageComponent)
+  },
+  {
+    path: 'cars',
+    loadComponent: () =>
+      import('./cars/pages/admin-cars.page').then((m) => m.AdminCarsPageComponent)
+  },
+  {
+    path: 'bikes',
+    loadComponent: () =>
+      import('./bikes/pages/admin-bikes.page').then((m) => m.AdminBikesPageComponent)
+  },
+  {
+    path: 'offers',
+    loadComponent: () =>
+      import('./offers/pages/offers.page').then((m) => m.AdminOffersPageComponent)
+  },
+  {
+    path: 'contacts',
+    loadComponent: () =>
+      import('./contacts/pages/contacts.page').then((m) => m.AdminContactsPageComponent)
+  },
+  {
+    path: 'settings',
+    loadComponent: () =>
+      import('./settings/pages/settings.page').then((m) => m.AdminSettingsPageComponent)
+  }
 ];

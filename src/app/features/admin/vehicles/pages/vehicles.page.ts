@@ -1,5 +1,6 @@
 ﻿import { Component, computed, inject, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
+import { Router } from '@angular/router';
 import {
   LucidePlus,
   LucideSearch,
@@ -8,12 +9,16 @@ import {
   LucideMapPin,
   LucideEye,
   LucidePencil,
-  LucideTrash2
+  LucideTrash2,
+  LucideLoaderCircle
 } from '@lucide/angular';
 import { RippleDirective } from '../../../cars/directives/ripple.directive';
 import { CarsFilterService } from '../../../cars/services/cars-filter.service';
 import { BikesFilterService } from '../../../bikes/services/bikes-filter.service';
-import { toAdminVehicle } from '../../utils/vehicle.util';
+import { CatalogService } from '../../../../services/catalog.service';
+import { AdminService } from '../../services/admin.service';
+import { toAdminVehicle, AdminVehicle } from '../../utils/vehicle.util';
+import { VehicleFormModalComponent } from '../components/vehicle-form-modal/vehicle-form-modal';
 
 export type AdminTypeFilter = 'all' | 'car' | 'bike';
 
@@ -23,6 +28,7 @@ export type AdminTypeFilter = 'all' | 'car' | 'bike';
   imports: [
     DecimalPipe,
     RippleDirective,
+    VehicleFormModalComponent,
     LucidePlus,
     LucideSearch,
     LucideCar,
@@ -30,7 +36,8 @@ export type AdminTypeFilter = 'all' | 'car' | 'bike';
     LucideMapPin,
     LucideEye,
     LucidePencil,
-    LucideTrash2
+    LucideTrash2,
+    LucideLoaderCircle
   ],
   templateUrl: './vehicles.page.html',
   styleUrl: './vehicles.page.scss'
@@ -38,9 +45,15 @@ export type AdminTypeFilter = 'all' | 'car' | 'bike';
 export class AdminVehiclesPageComponent {
   private readonly carsService = inject(CarsFilterService);
   private readonly bikesService = inject(BikesFilterService);
+  private readonly catalog = inject(CatalogService);
+  private readonly adminService = inject(AdminService);
+  private readonly router = inject(Router);
 
   readonly search = signal('');
   readonly typeFilter = signal<AdminTypeFilter>('all');
+  readonly formOpen = signal(false);
+  readonly formModel = signal<AdminVehicle | null>(null);
+  readonly deletingId = signal<string | null>(null);
 
   readonly vehicles = computed(() => {
     const kw = this.search().trim().toLowerCase();
@@ -73,4 +86,48 @@ export class AdminVehiclesPageComponent {
     { value: 'car', label: 'Cars' },
     { value: 'bike', label: 'Bikes' }
   ];
+
+  constructor() {
+    this.catalog.load();
+  }
+
+  openAdd(): void {
+    this.formModel.set(null);
+    this.formOpen.set(true);
+  }
+
+  openEdit(vehicle: AdminVehicle): void {
+    this.formModel.set(vehicle);
+    this.formOpen.set(true);
+  }
+
+  closeForm(): void {
+    this.formOpen.set(false);
+  }
+
+  onSaved(): void {
+    this.formOpen.set(false);
+  }
+
+  viewVehicle(vehicle: AdminVehicle): void {
+    this.router.navigate(['/vehicles', vehicle.id]);
+  }
+
+  deleteVehicle(vehicle: AdminVehicle): void {
+    const ok = window.confirm(
+      `Delete "${vehicle.brand} ${vehicle.model} ${vehicle.variant}"?\nThis cannot be undone.`
+    );
+    if (!ok) return;
+    this.deletingId.set(vehicle.id);
+    this.adminService.remove(vehicle.id).subscribe({
+      next: () => {
+        this.deletingId.set(null);
+        this.catalog.refresh();
+      },
+      error: () => {
+        this.deletingId.set(null);
+        window.alert('Failed to delete vehicle. Please try again.');
+      }
+    });
+  }
 }

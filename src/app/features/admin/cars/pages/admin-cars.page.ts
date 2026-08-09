@@ -12,6 +12,7 @@ import {
 } from '@lucide/angular';
 import { RippleDirective } from '../../../cars/directives/ripple.directive';
 import { CarsFilterService } from '../../../cars/services/cars-filter.service';
+import { CatalogService } from '../../../../services/catalog.service';
 import { toAdminVehicle } from '../../utils/vehicle.util';
 
 @Component({
@@ -34,6 +35,11 @@ import { toAdminVehicle } from '../../utils/vehicle.util';
 })
 export class AdminCarsPageComponent {
   private readonly carsService = inject(CarsFilterService);
+  private readonly catalog = inject(CatalogService);
+
+  constructor() {
+    this.catalog.load();
+  }
 
   readonly search = signal('');
 

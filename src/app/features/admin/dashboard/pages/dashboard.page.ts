@@ -14,6 +14,7 @@ import {
 import { RippleDirective } from '../../../cars/directives/ripple.directive';
 import { CarsFilterService } from '../../../cars/services/cars-filter.service';
 import { BikesFilterService } from '../../../bikes/services/bikes-filter.service';
+import { CatalogService } from '../../../../services/catalog.service';
 import { AdminOffer, AdminContact } from '../../data/admin.data';
 
 @Component({
@@ -37,7 +38,12 @@ import { AdminOffer, AdminContact } from '../../data/admin.data';
 export class AdminDashboardPageComponent implements OnInit {
   private readonly carsService = inject(CarsFilterService);
   private readonly bikesService = inject(BikesFilterService);
+  private readonly catalog = inject(CatalogService);
   private readonly http = inject(HttpClient);
+
+  constructor() {
+    this.catalog.load();
+  }
 
   readonly totalCars = computed(() => this.carsService.cars().length);
   readonly totalBikes = computed(() => this.bikesService.bikes().length);

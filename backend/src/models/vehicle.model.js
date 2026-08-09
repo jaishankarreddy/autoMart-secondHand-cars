@@ -117,5 +117,7 @@ VehicleSchema.index({ vehicleType: 1, fuel: 1 });
 VehicleSchema.index({ vehicleType: 1, district: 1 });
 VehicleSchema.index({ vehicleType: 1, featured: 1 });
 VehicleSchema.index({ brand: 1, model: 1, variant: 1 });
+VehicleSchema.index({ vehicleType: 1, priceInLakh: 1 });
+VehicleSchema.index({ vehicleType: 1, year: -1 });
 
 module.exports = mongoose.model('Vehicle', VehicleSchema);

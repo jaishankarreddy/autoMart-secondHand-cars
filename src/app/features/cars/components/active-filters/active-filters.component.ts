@@ -74,13 +74,13 @@ export class ActiveFiltersComponent {
         remove: () => this.service.updateFilters({ owners: removeOne(f.owners, o) })
       })
     );
-    if (f.priceMin > this.service.priceMinBound || f.priceMax < this.service.priceMaxBound) {
+    if (f.priceMin > this.service.priceMinBound() || f.priceMax < this.service.priceMaxBound()) {
       chips.push({
         label: `₹${f.priceMin}L – ₹${f.priceMax}L`,
         remove: () =>
           this.service.updateFilters({
-            priceMin: this.service.priceMinBound,
-            priceMax: this.service.priceMaxBound
+            priceMin: this.service.priceMinBound(),
+            priceMax: this.service.priceMaxBound()
           })
       });
     }

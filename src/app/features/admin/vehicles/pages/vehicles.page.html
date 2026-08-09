@@ -8,6 +8,7 @@
     <button
       type="button"
       appRipple
+      (click)="openAdd()"
       class="inline-flex items-center gap-2 overflow-hidden rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-primary transition-all duration-300 hover:bg-primary-hover hover:shadow-lg active:scale-[0.99]"
     >
       <svg lucidePlus class="h-4 w-4"></svg>
@@ -104,14 +105,18 @@
             </td>
             <td class="px-4 py-3.5">
               <div class="flex items-center justify-end gap-1.5">
-                <button type="button" class="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-primary-soft hover:text-primary" aria-label="View">
+                <button type="button" (click)="viewVehicle(vehicle)" class="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-primary-soft hover:text-primary" aria-label="View">
                   <svg lucideEye class="h-4 w-4"></svg>
                 </button>
-                <button type="button" class="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-primary-soft hover:text-primary" aria-label="Edit">
+                <button type="button" (click)="openEdit(vehicle)" class="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-primary-soft hover:text-primary" aria-label="Edit">
                   <svg lucidePencil class="h-4 w-4"></svg>
                 </button>
-                <button type="button" class="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-danger/10 hover:text-danger" aria-label="Delete">
-                  <svg lucideTrash2 class="h-4 w-4"></svg>
+                <button type="button" (click)="deleteVehicle(vehicle)" [disabled]="deletingId() === vehicle.id" class="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-danger/10 hover:text-danger disabled:cursor-not-allowed disabled:opacity-50" aria-label="Delete">
+                  @if (deletingId() === vehicle.id) {
+                    <svg lucideLoaderCircle class="h-4 w-4 animate-spin"></svg>
+                  } @else {
+                    <svg lucideTrash2 class="h-4 w-4"></svg>
+                  }
                 </button>
               </div>
             </td>
@@ -128,3 +133,11 @@
     </table>
   </div>
 </div>
+
+@if (formOpen()) {
+  <app-vehicle-form-modal
+    [model]="formModel()"
+    (saved)="onSaved()"
+    (closed)="closeForm()"
+  ></app-vehicle-form-modal>
+}

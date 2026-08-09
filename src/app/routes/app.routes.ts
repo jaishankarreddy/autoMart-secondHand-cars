@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { PublicLayoutComponent, AdminLayoutComponent, AuthLayoutComponent } from '../layouts';
-import { AdminLoginPageComponent } from '../features/admin/login/pages/admin-login.page';
 
 export const routes: Routes = [
   // Public routes wrapped in PublicLayout
@@ -60,7 +59,10 @@ export const routes: Routes = [
   // Admin login (full-screen, outside the admin layout)
   {
     path: 'admin/login',
-    component: AdminLoginPageComponent
+    loadComponent: () =>
+      import('../features/admin/login/pages/admin-login.page').then(
+        (m) => m.AdminLoginPageComponent
+      )
   },
   // Admin routes wrapped in AdminLayout
   {

@@ -3,6 +3,9 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const { connectDB } = require('./config/db');
 
 const Vehicle = require('./models/vehicle.model');
@@ -16,6 +19,91 @@ const HomepageStat = require('./models/homepage-stat.model');
 const app = express();
 app.use(cors({ origin: process.env.CLIENT_ORIGIN || '*' }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// --- Image uploads -----------------------------------------------------------
+const UPLOADS_DIR = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, UPLOADS_DIR),
+  filename: (_req, file, cb) => {
+    const ext = (path.extname(file.originalname) || '.jpg').toLowerCase();
+    cb(null, `v-${Date.now()}-${Math.round(Math.random() * 1e6)}${ext}`);
+  }
+});
+const upload = multer({
+  storage,
+  limits: { fileSize: 8 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => cb(null, /^image\//.test(file.mimetype))
+});
+// Serve uploaded images under /uploads (proxied by the Angular dev server).
+app.use('/uploads', express.static(UPLOADS_DIR));
+
+// Remove an uploaded image file from disk (best-effort).
+function cleanUpload(imageUrl) {
+  try {
+    const filePath = path.join(UPLOADS_DIR, path.basename(imageUrl));
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  } catch (err) {
+    console.error('Failed to clean uploaded file:', err.message);
+  }
+}
+
+// Fields the admin form may submit (everything else is ignored).
+const VEHICLE_FIELDS = [
+  'vehicleType', 'brand', 'model', 'variant', 'year', 'priceInLakh', 'rating',
+  'featured', 'availability', 'fuel', 'transmission', 'mileage', 'kilometers',
+  'district', 'location', 'owners', 'bodyType', 'color', 'engineCC', 'abs',
+  'engine', 'power', 'registration', 'insurance', 'description'
+];
+
+function toBool(v) {
+  if (v === undefined) return undefined;
+  return v === true || v === 'true' || v === '1';
+}
+
+function buildVehiclePayload(body) {
+  const payload = {};
+  for (const field of VEHICLE_FIELDS) {
+    if (body[field] === undefined) continue;
+    const val = body[field];
+    switch (field) {
+      case 'vehicleType':
+        if (val === 'car' || val === 'bike') payload.vehicleType = val;
+        break;
+      case 'year':
+      case 'priceInLakh':
+      case 'rating':
+      case 'mileage':
+      case 'kilometers':
+      case 'owners':
+      case 'engineCC':
+        payload[field] = Number(val);
+        break;
+      case 'featured':
+      case 'abs':
+        payload[field] = toBool(val);
+        break;
+      case 'description':
+        payload[field] = String(val)
+          .split('\n')
+          .map((s) => s.trim())
+          .filter(Boolean);
+        break;
+      default:
+        payload[field] = String(val).trim();
+    }
+  }
+  return payload;
+}
+
+async function nextVehicleId(vehicleType) {
+  const docs = await Vehicle.find({ vehicleType }, 'id').lean();
+  const nums = docs.map((d) => parseInt(String(d.id).replace(/\D/g, ''), 10) || 0);
+  const next = (nums.length ? Math.max(...nums) : 0) + 1;
+  return `${vehicleType}-${String(next).padStart(2, '0')}`;
+}
 
 // Health
 app.get('/api/health', (req, res) => res.json({ status: 'ok', service: 'automart-api' }));
@@ -24,22 +112,33 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok', service: 'automart
 app.get('/api/vehicles', async (req, res, next) => {
   try {
     const {
-      type, brand, q, minPrice, maxPrice, fuel, transmission, bodyType,
-      district, color, minYear, maxYear, owners, abs, engineCc,
-      featured, sortBy, page = 1, limit = 12
+      type, brand, model, q, minPrice, maxPrice, fuel, transmission, bodyType,
+      district, color, minYear, maxYear, year, owners, abs, engineCc, engineCcMin,
+      engineCcMax, mileageMax, featured, sortBy, page = 1, limit = 12
     } = req.query;
+
+    // Repeated query params (e.g. ?brand=A&brand=B) arrive as arrays → $in.
+    const asArray = (v) => (v === undefined ? undefined : Array.isArray(v) ? v : [v]);
+    const asNumbers = (v) => asArray(v)?.map((x) => Number(x));
 
     const filter = {};
     if (type) filter.vehicleType = type;
-    if (brand) filter.brand = brand;
-    if (fuel) filter.fuel = fuel;
-    if (transmission) filter.transmission = transmission;
-    if (bodyType) filter.bodyType = bodyType;
-    if (district) filter.district = district;
-    if (color) filter.color = color;
-    if (owners) filter.owners = Number(owners);
+    if (asArray(brand)?.length) filter.brand = { $in: asArray(brand) };
+    if (asArray(model)?.length) filter.model = { $in: asArray(model) };
+    if (asArray(fuel)?.length) filter.fuel = { $in: asArray(fuel) };
+    if (asArray(transmission)?.length) filter.transmission = { $in: asArray(transmission) };
+    if (asArray(bodyType)?.length) filter.bodyType = { $in: asArray(bodyType) };
+    if (asArray(district)?.length) filter.district = { $in: asArray(district) };
+    if (asArray(color)?.length) filter.color = { $in: asArray(color) };
+    if (asNumbers(owners)?.length) filter.owners = { $in: asNumbers(owners) };
+    if (asNumbers(year)?.length) filter.year = { $in: asNumbers(year) };
     if (abs !== undefined) filter.abs = abs === 'true';
     if (engineCc) filter.engineCC = Number(engineCc);
+    if (engineCcMin || engineCcMax) {
+      filter.engineCC = { ...(filter.engineCC || {}) };
+      if (engineCcMin) filter.engineCC.$gte = Number(engineCcMin);
+      if (engineCcMax) filter.engineCC.$lte = Number(engineCcMax);
+    }
     if (featured) filter.featured = true;
     if (minPrice || maxPrice) {
       filter.priceInLakh = {};
@@ -51,6 +150,7 @@ app.get('/api/vehicles', async (req, res, next) => {
       if (minYear) filter.year.$gte = Number(minYear);
       if (maxYear) filter.year.$lte = Number(maxYear);
     }
+    if (mileageMax) filter.mileage = { $lte: Number(mileageMax) };
     if (q) {
       const qRegex = new RegExp(q.trim(), 'i');
       filter.$or = [
@@ -65,11 +165,16 @@ app.get('/api/vehicles', async (req, res, next) => {
     if (sortBy === 'price_asc') sort.priceInLakh = 1;
     else if (sortBy === 'price_desc') sort.priceInLakh = -1;
     else if (sortBy === 'year_desc') sort.year = -1;
+    else if (sortBy === 'mileage_desc') sort.mileage = -1;
     else sort.createdAt = -1;
 
     const skip = (Number(page) - 1) * Number(limit);
+    const LIST_PROJECTION =
+      'id vehicleType brand model variant year priceInLakh rating featured availability ' +
+      'fuel transmission mileage kilometers district location owners bodyType color ' +
+      'engineCC abs engine power registration insurance image';
     const [items, total] = await Promise.all([
-      Vehicle.find(filter).sort(sort).skip(skip).limit(Number(limit)).lean(),
+      Vehicle.find(filter).select(LIST_PROJECTION).sort(sort).skip(skip).limit(Number(limit)).lean(),
       Vehicle.countDocuments(filter)
     ]);
 
@@ -94,6 +199,46 @@ app.get('/api/vehicles/:id', async (req, res, next) => {
 app.get('/api/brands', async (_req, res, next) => {
   try {
     res.json(await Brand.find().sort({ name: 1 }).lean());
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/facets?type=car|bike — distinct filter options for the sidebar
+app.get('/api/facets', async (req, res, next) => {
+  try {
+    const type = req.query.type === 'bike' ? 'bike' : 'car';
+    const base = { vehicleType: type };
+    const [brands, models, years, fuels, transmissions, owners, bodyTypes, districts, colors, price] =
+      await Promise.all([
+        Vehicle.distinct('brand', base),
+        Vehicle.distinct('model', base),
+        Vehicle.distinct('year', base),
+        Vehicle.distinct('fuel', base),
+        Vehicle.distinct('transmission', base),
+        Vehicle.distinct('owners', base),
+        Vehicle.distinct('bodyType', base),
+        Vehicle.distinct('district', base),
+        Vehicle.distinct('color', base),
+        Vehicle.aggregate([
+          { $match: base },
+          { $group: { _id: null, min: { $min: '$priceInLakh' }, max: { $max: '$priceInLakh' } } }
+        ])
+      ]);
+    res.json({
+      type,
+      brands,
+      models,
+      years,
+      fuels,
+      transmissions,
+      owners,
+      bodyTypes,
+      districts,
+      colors,
+      priceMin: price[0] ? price[0].min : 0,
+      priceMax: price[0] ? price[0].max : 0
+    });
   } catch (err) {
     next(err);
   }
@@ -263,6 +408,76 @@ app.patch('/api/admin/contacts/:id', async (req, res, next) => {
     if (status) contact.status = status;
     await contact.save();
     res.json(contact);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Admin: create a vehicle (multipart/form-data; optional `image` file)
+app.post('/api/admin/vehicles', upload.single('image'), async (req, res, next) => {
+  try {
+    const type = req.body.vehicleType === 'bike' ? 'bike' : 'car';
+    if (!req.body.brand || !req.body.model || !req.body.year || !req.body.priceInLakh) {
+      return res
+        .status(400)
+        .json({ message: 'vehicleType, brand, model, year and priceInLakh are required' });
+    }
+    const payload = buildVehiclePayload({ ...req.body, vehicleType: type });
+    payload.id = req.body.id || (await nextVehicleId(type));
+    if (!payload.seller) {
+      payload.seller = {
+        name: 'AutoMart Dealer',
+        verified: false,
+        hours: '9 AM – 7 PM',
+        location: payload.district || '',
+        phone: '',
+        whatsapp: ''
+      };
+    }
+    if (req.file) payload.image = `/uploads/${req.file.filename}`;
+    const vehicle = await Vehicle.create(payload);
+    res.status(201).json(vehicle);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Admin: update a vehicle (multipart/form-data; optional new `image` file)
+app.put('/api/admin/vehicles/:id', upload.single('image'), async (req, res, next) => {
+  try {
+    const query = { $or: [{ id: req.params.id }] };
+    if (/^[0-9a-fA-F]{24}$/.test(req.params.id)) query.$or.push({ _id: req.params.id });
+    const vehicle = await Vehicle.findOne(query);
+    if (!vehicle) return res.status(404).json({ message: 'Vehicle not found' });
+
+    const payload = buildVehiclePayload(req.body);
+    delete payload.vehicleType; // type is an identity — not editable via admin form
+if (req.file) {
+      payload.image = `/uploads/${req.file.filename}`;
+      if (vehicle.image && vehicle.image.startsWith('/uploads/')) {
+        cleanUpload(vehicle.image);
+      }
+    }
+    Object.assign(vehicle, payload);
+    await vehicle.save();
+    res.json(vehicle);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Admin: delete a vehicle
+app.delete('/api/admin/vehicles/:id', async (req, res, next) => {
+  try {
+    const query = { $or: [{ id: req.params.id }] };
+    if (/^[0-9a-fA-F]{24}$/.test(req.params.id)) query.$or.push({ _id: req.params.id });
+    const vehicle = await Vehicle.findOne(query);
+    if (!vehicle) return res.status(404).json({ message: 'Vehicle not found' });
+    if (vehicle.image && vehicle.image.startsWith('/uploads/')) {
+      cleanUpload(vehicle.image);
+    }
+    await vehicle.deleteOne();
+    res.json({ message: 'Vehicle deleted', id: req.params.id });
   } catch (err) {
     next(err);
   }

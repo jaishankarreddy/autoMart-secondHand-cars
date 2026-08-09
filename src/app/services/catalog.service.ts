@@ -96,9 +96,30 @@ export class CatalogService {
   }
 
   private async fetchPage(type: string): Promise<CatalogVehicle[]> {
-    const page = await firstValueFrom(
-      this.http.get<{ items: CatalogVehicle[] }>(`${API_URL}/vehicles?type=${type}&limit=200`)
-    );
-    return page?.items ?? [];
+    const out: CatalogVehicle[] = [];
+    const limit = 200;
+    let page = 1;
+    let total = Infinity;
+    // Walk all pages so nothing beyond the first `limit` is ever dropped.
+    while (out.length < total) {
+      const res = await firstValueFrom(
+        this.http.get<{ items: CatalogVehicle[]; total?: number }>(
+          `${API_URL}/vehicles?type=${type}&page=${page}&limit=${limit}`
+        )
+      );
+      const items = res?.items ?? [];
+      total = res?.total ?? items.length;
+      out.push(...items);
+      if (items.length < limit || items.length === 0) break;
+      page += 1;
+    }
+    return out;
+  }
+
+  /** Re-fetch the catalogue (used by the admin after create/update/delete). */
+  refresh(): void {
+    this.startedLoad = false;
+    this.data.set([]);
+    this.load();
   }
 }

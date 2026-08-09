@@ -9,6 +9,7 @@ import { RippleDirective } from '../../cars/directives/ripple.directive';
 import { RevealDirective } from '../../home/directives/reveal.directive';
 import { CarsFilterService } from '../../cars/services/cars-filter.service';
 import { BikesFilterService } from '../../bikes/services/bikes-filter.service';
+import { CatalogService } from '../../../services/catalog.service';
 
 @Component({
   selector: 'app-wishlist-page',
@@ -30,6 +31,11 @@ import { BikesFilterService } from '../../bikes/services/bikes-filter.service';
 export class WishlistPageComponent {
   private readonly carsService = inject(CarsFilterService);
   private readonly bikesService = inject(BikesFilterService);
+  private readonly catalog = inject(CatalogService);
+
+  constructor() {
+    this.catalog.load();
+  }
 
   readonly wishlistedCars = computed(() =>
     this.carsService.cars().filter((c) => this.carsService.wishlist().has(c.id))

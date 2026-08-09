@@ -1,0 +1,106 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+/** Payload for creating/updating a vehicle via the admin API (multipart/form-data). */
+export interface VehicleFormPayload {
+  vehicleType: 'car' | 'bike';
+  brand: string;
+  model: string;
+  variant: string;
+  year: number;
+  priceInLakh: number;
+  fuel: string;
+  transmission: string;
+  mileage: number;
+  kilometers: number;
+  district: string;
+  location: string;
+  owners: number;
+  bodyType: string;
+  color: string;
+  engineCC: number;
+  abs: boolean;
+  engine: string;
+  power: string;
+  registration: string;
+  insurance: string;
+  featured: boolean;
+  availability: 'available' | 'reserved' | 'sold';
+  rating: number;
+  description: string;
+  oldImage?: string;
+  image?: File | null;
+}
+
+export interface ApiVehicle {
+  id: string;
+  vehicleType: string;
+  brand: string;
+  model: string;
+  image: string;
+  [key: string]: unknown;
+}
+
+const API = '/api/admin/vehicles';
+
+@Injectable({ providedIn: 'root' })
+export class AdminService {
+  private readonly http = inject(HttpClient);
+
+  /** Build a multipart FormData body from the form payload (uploaded file is compressed client-side). */
+  toFormData(payload: VehicleFormPayload): FormData {
+    const fd = new FormData();
+    const set = (key: string, value: unknown) => {
+      if (value !== undefined && value !== null) fd.append(key, String(value));
+    };
+    set('vehicleType', payload.vehicleType);
+    set('brand', payload.brand);
+    set('model', payload.model);
+    set('variant', payload.variant);
+    set('year', payload.year);
+    set('priceInLakh', payload.priceInLakh);
+    set('fuel', payload.fuel);
+    set('transmission', payload.transmission);
+    set('mileage', payload.mileage);
+    set('kilometers', payload.kilometers);
+    set('district', payload.district);
+    set('location', payload.location);
+    set('owners', payload.owners);
+    set('bodyType', payload.bodyType);
+    set('color', payload.color);
+    set('engineCC', payload.engineCC ?? 0);
+    set('abs', payload.abs);
+    set('engine', payload.engine);
+    set('power', payload.power);
+    set('registration', payload.registration);
+    set('insurance', payload.insurance);
+    set('featured', payload.featured);
+    set('availability', payload.availability);
+    set('rating', payload.rating ?? 0);
+    set('description', payload.description);
+    if (payload.image) fd.append('image', payload.image, payload.image.name);
+    return fd;
+  }
+
+  create(payload: VehicleFormPayload): Observable<VehicleApiResponse> {
+    return this.http.post<VehicleApiResponse>(API, this.toFormData(payload));
+  }
+
+  update(id: string, payload: VehicleFormPayload): Observable<VehicleApiResponse> {
+    return this.http.put<VehicleApiResponse>(`${API}/${id}`, this.toFormData(payload));
+  }
+
+  remove(id: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${API}/${id}`);
+  }
+}
+
+/** Minimal shape manager needs from the API response. */
+export interface VehicleApiResponse {
+  id: string;
+  vehicleType: string;
+  brand: string;
+  model: string;
+  image?: string;
+}

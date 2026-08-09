@@ -18,6 +18,7 @@ export class BikeGridComponent {
   readonly totalCount = this.service.totalCount;
   readonly totalPages = this.service.totalPages;
   readonly page = this.service.page;
+  readonly loading = this.service.loading;
 
   trackById(_: number, bike: { id: string }): string {
     return bike.id;
