@@ -34,6 +34,17 @@
       <svg lucideHeart class="h-[18px] w-[18px] transition-colors duration-200" [attr.fill]="wishlisted() ? 'currentColor' : 'none'"></svg>
     </button>
 
+    <!-- Compare -->
+    <button
+      type="button"
+      (click)="compareService.toggle(car().id)"
+      [attr.aria-label]="compared() ? 'Remove from compare' : 'Add to compare'"
+      class="absolute right-3 top-[3.25rem] flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-ink shadow-sm backdrop-blur transition-transform duration-200 hover:scale-110 active:scale-95"
+      [class.text-primary]="compared()"
+    >
+      <svg lucideScale class="h-[18px] w-[18px]" [attr.fill]="compared() ? 'currentColor' : 'none'"></svg>
+    </button>
+
     <!-- Rating -->
     @if (car().rating) {
       <span class="absolute bottom-3.5 right-3.5 inline-flex items-center gap-1 rounded-full bg-ink/70 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur">

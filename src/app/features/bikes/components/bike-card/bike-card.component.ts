@@ -1,5 +1,6 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, inject, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import {
   LucideHeart,
   LucideStar,
@@ -8,19 +9,22 @@ import {
   LucideFuel,
   LucideCog,
   LucideMapPin,
-  LucideArrowRight
+  LucideArrowRight,
+  LucideScale
 } from '@lucide/angular';
 import { Bike } from '../../models/bike.model';
 import { PricePipe } from '../../../home/pipes/price.pipe';
 import { TiltDirective } from '../../../home/directives/tilt.directive';
 import { RippleDirective } from '../../../cars/directives/ripple.directive';
-import { BikesFilterService } from '../../services/bikes-filter.service';
+import { WishlistService } from '../../../../services/wishlist.service';
+import { CompareService } from '../../../compare/services/compare.service';
 
 @Component({
   selector: 'app-bike-card',
   standalone: true,
   imports: [
     DecimalPipe,
+    RouterLink,
     LucideHeart,
     LucideStar,
     LucideShieldCheck,
@@ -29,6 +33,7 @@ import { BikesFilterService } from '../../services/bikes-filter.service';
     LucideCog,
     LucideMapPin,
     LucideArrowRight,
+    LucideScale,
     PricePipe,
     TiltDirective,
     RippleDirective
@@ -40,12 +45,14 @@ export class BikeCardComponent {
   readonly bike = input.required<Bike>();
   readonly layout = input<'grid' | 'list'>('grid');
 
-  private readonly filterService = inject(BikesFilterService);
+  private readonly wishlistService = inject(WishlistService);
+  readonly compareService = inject(CompareService);
 
-  readonly wishlisted = () => this.filterService.wishlist().has(this.bike().id);
+  readonly wishlisted = () => this.wishlistService.has(this.bike().id);
+  readonly compared = () => this.compareService.ids().includes(this.bike().id);
 
   toggleWishlist(): void {
-    this.filterService.toggleWishlist(this.bike().id);
+    this.wishlistService.toggle(this.bike().id);
   }
 
   /** Engine label: "149 cc" or "Electric" */

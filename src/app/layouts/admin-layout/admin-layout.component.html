@@ -43,8 +43,8 @@
             }
           </span>
           <span class="nav-label flex-1 truncate">{{ item.label }}</span>
-          @if (item.badge) {
-            <span class="nav-label rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold leading-none text-white">{{ item.badge }}</span>
+          @if (badgeFor(item) > 0) {
+            <span class="nav-label rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold leading-none text-white">{{ badgeFor(item) }}</span>
           }
         </a>
       }
@@ -58,13 +58,14 @@
         <svg lucideExternalLink class="h-5 w-5 shrink-0"></svg>
         <span class="nav-label flex-1 truncate">View website</span>
       </a>
-      <a
-        routerLink="/admin/login"
-        class="admin-nav-link flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-semibold text-white/70 transition-colors duration-200"
+      <button
+        type="button"
+        (click)="signOut()"
+        class="admin-nav-link flex w-full items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-semibold text-white/70 transition-colors duration-200"
       >
         <svg lucideLogOut class="h-5 w-5 shrink-0"></svg>
         <span class="nav-label flex-1 truncate">Sign out</span>
-      </a>
+      </button>
     </div>
   </aside>
 
@@ -115,12 +116,23 @@
             }
           </span>
           <span class="flex-1 truncate">{{ item.label }}</span>
-          @if (item.badge) {
-            <span class="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold leading-none text-white">{{ item.badge }}</span>
+          @if (badgeFor(item) > 0) {
+            <span class="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold leading-none text-white">{{ badgeFor(item) }}</span>
           }
         </a>
       }
     </nav>
+
+    <div class="space-y-1 border-t border-white/10 p-3">
+      <button
+        type="button"
+        (click)="signOut()"
+        class="admin-nav-link flex w-full items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-semibold text-white/70 transition-colors duration-200"
+      >
+        <svg lucideLogOut class="h-5 w-5 shrink-0"></svg>
+        <span class="flex-1 truncate">Sign out</span>
+      </button>
+    </div>
   </aside>
 
   <!-- ===== Main ===== -->
@@ -140,14 +152,20 @@
       </div>
 
       <div class="flex items-center gap-2 sm:gap-3">
-        <div class="relative hidden md:block">
+        <form
+          (submit)="searchSubmit()"
+          class="relative hidden md:block"
+          role="search"
+        >
           <svg lucideSearch class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"></svg>
           <input
             type="text"
-            placeholder="Search…"
+            placeholder="Search vehicles…"
+            [value]="search()"
+            (input)="search.set($any($event.target).value)"
             class="w-56 rounded-xl border border-border bg-surface-2 py-2.5 pl-10 pr-4 text-sm font-medium text-text outline-none transition-colors duration-300 placeholder:text-muted/70 focus:border-primary lg:w-64"
           />
-        </div>
+        </form>
 
         <button
           type="button"
@@ -162,17 +180,55 @@
           }
         </button>
 
-        <button
-          type="button"
-          aria-label="Notifications"
-          class="relative flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text transition-colors hover:bg-surface-2"
-        >
-          <svg lucideBell class="h-4.5 w-4.5"></svg>
-          <span class="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-danger text-[9px] font-bold leading-none text-white">3</span>
-        </button>
+        <div class="relative">
+          <button
+            type="button"
+            (click)="notifyOpen.set(!notifyOpen())"
+            aria-label="Notifications"
+            class="relative flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text transition-colors hover:bg-surface-2"
+          >
+            <svg lucideBell class="h-4.5 w-4.5"></svg>
+            @if (unreadCount() > 0) {
+              <span class="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-danger text-[9px] font-bold leading-none text-white">{{ unreadCount() }}</span>
+            }
+          </button>
 
-        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-xs font-bold text-white shadow-primary sm:h-9 sm:w-9">
-          RK
+          @if (notifyOpen()) {
+            <div class="absolute right-0 top-12 z-50 w-80 rounded-2xl border border-border bg-surface p-2 shadow-2xl">
+              <div class="flex items-center justify-between px-2 py-1.5">
+                <p class="text-sm font-bold text-text">Notifications</p>
+                <button
+                  type="button"
+                  (click)="markAllRead()"
+                  class="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-primary transition-colors hover:bg-primary/10"
+                >
+                  <svg lucideCheckCheck class="h-3.5 w-3.5"></svg>
+                  Mark all read
+                </button>
+              </div>
+              <div class="max-h-72 overflow-y-auto">
+                @for (n of notifications(); track n.id) {
+                  <div class="flex gap-3 rounded-xl px-2 py-2.5 transition-colors hover:bg-surface-2">
+                    <span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary"></span>
+                    <div>
+                      <p class="text-[13px] font-bold leading-tight text-text">{{ n.title }}</p>
+                      <p class="mt-0.5 text-xs leading-snug text-muted">{{ n.detail }}</p>
+                    </div>
+                  </div>
+                }
+                @empty {
+                  <p class="px-2 py-6 text-center text-xs text-muted">You're all caught up.</p>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <div
+          class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-xs font-bold text-white shadow-primary sm:h-9 sm:w-9"
+          [title]="adminName()"
+        >
+          {{ adminInitials() }}
         </div>
       </div>
     </header>

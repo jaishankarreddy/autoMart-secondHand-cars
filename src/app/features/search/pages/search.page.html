@@ -19,7 +19,7 @@
       <div class="max-w-3xl">
         <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-white/70">
           <svg lucideSearch class="h-3.5 w-3.5 text-primary"></svg>
-          32 listings · Karnataka
+          {{ service.totalCount() }} listings · Karnataka
         </span>
         <h1 class="mt-4 font-heading text-4xl font-bold leading-tight sm:text-5xl">
           Find your perfect <span class="gradient-text">vehicle</span>
@@ -57,7 +57,7 @@
     <div class="container-am mx-auto max-w-7xl">
       <form
         class="search-card rounded-[28px] border border-border bg-surface p-5 shadow-lg sm:p-7"
-        (submit)="$event.preventDefault()"
+        (submit)="submit(); $event.preventDefault()"
         appReveal
       >
         <div class="grid gap-4 lg:grid-cols-[1.6fr_1fr_1fr_1fr_auto]">
@@ -144,7 +144,7 @@
   </section>
 
   <!-- ===== Results ===== -->
-  <section class="container-am py-14 sm:py-20">
+  <section class="container-am py-14 sm:py-20" id="search-results">
     <!-- Result bar -->
     <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
       <p class="text-sm text-muted">

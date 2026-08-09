@@ -112,9 +112,15 @@
     <button
       type="submit"
       appRipple
-      class="flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-primary px-6 py-4 text-sm font-bold text-white shadow-primary transition-all duration-300 hover:bg-primary-hover hover:shadow-lg active:scale-[0.99]"
+      [disabled]="loading()"
+      class="flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-primary px-6 py-4 text-sm font-bold text-white shadow-primary transition-all duration-300 hover:bg-primary-hover hover:shadow-lg active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
     >
-      Create Account
+      @if (loading()) {
+        <svg lucideLoaderCircle class="h-4 w-4 animate-spin"></svg>
+        Creating account…
+      } @else {
+        Create Account
+      }
     </button>
 
     <p class="text-center text-sm text-muted">

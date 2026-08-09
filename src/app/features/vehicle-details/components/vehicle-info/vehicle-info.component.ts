@@ -1,8 +1,9 @@
 import { Component, inject, input } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { LucideHeart, LucideMapPin, LucideShare, LucideStar, LucideBadgeCheck, LucideClock } from '@lucide/angular';
+import { LucideHeart, LucideMapPin, LucideShare, LucideStar, LucideBadgeCheck, LucideClock, LucideScale } from '@lucide/angular';
 import { VehicleDetail } from '../../models/vehicle-detail.model';
-import { CarsFilterService } from '../../../cars/services/cars-filter.service';
+import { WishlistService } from '../../../../services/wishlist.service';
+import { CompareService } from '../../../compare/services/compare.service';
 import { RippleDirective } from '../../../cars/directives/ripple.directive';
 
 @Component({
@@ -16,6 +17,7 @@ import { RippleDirective } from '../../../cars/directives/ripple.directive';
     LucideStar,
     LucideBadgeCheck,
     LucideClock,
+    LucideScale,
     RippleDirective
   ],
   templateUrl: './vehicle-info.component.html',
@@ -24,16 +26,18 @@ import { RippleDirective } from '../../../cars/directives/ripple.directive';
 export class VehicleInfoComponent {
   readonly vehicle = input.required<VehicleDetail>();
 
-  private readonly filterService = inject(CarsFilterService);
+  private readonly wishlistService = inject(WishlistService);
+  readonly compareService = inject(CompareService);
 
-  readonly wishlisted = () => this.filterService.wishlist().has(this.vehicle().id);
+  readonly wishlisted = () => this.wishlistService.has(this.vehicle().id);
+  readonly compared = () => this.compareService.ids().includes(this.vehicle().id);
 
   /** Indian-formatted full rupee price, e.g. ₹17,85,000 */
   readonly priceInRupees = () =>
     (this.vehicle().priceInLakh * 100000).toLocaleString('en-IN');
 
   toggleWishlist(): void {
-    this.filterService.toggleWishlist(this.vehicle().id);
+    this.wishlistService.toggle(this.vehicle().id);
   }
 
   share(): void {

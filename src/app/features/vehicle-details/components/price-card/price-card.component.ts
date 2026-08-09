@@ -17,4 +17,8 @@ export class PriceCardComponent {
   get priceInRupees(): string {
     return (this.priceInLakh() * 100000).toLocaleString('en-IN');
   }
+
+  scrollToOffer(): void {
+    document.getElementById('offer-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 }

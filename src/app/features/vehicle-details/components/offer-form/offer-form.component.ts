@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { LucideSend, LucideCheckCircle2, LucideShieldCheck } from '@lucide/angular';
 import { RippleDirective } from '../../../cars/directives/ripple.directive';
 import { VehicleDetail } from '../../models/vehicle-detail.model';
+import { ToastService } from '../../../../services/toast.service';
 
 @Component({
   selector: 'app-offer-form',
@@ -15,6 +16,7 @@ export class OfferFormComponent {
   readonly vehicle = input.required<VehicleDetail>();
 
   private readonly http = inject(HttpClient);
+  private readonly toast = inject(ToastService);
 
   readonly name = signal('');
   readonly phone = signal('');
@@ -24,6 +26,7 @@ export class OfferFormComponent {
 
   submit(): void {
     if (!this.name().trim() || !this.phone().trim() || !this.offerPrice().trim()) {
+      this.toast.error('Please complete the form', 'Your name, phone number and offer price are required.');
       return;
     }
     this.http
@@ -35,8 +38,17 @@ export class OfferFormComponent {
         message: this.message().trim()
       })
       .subscribe({
-        next: () => this.submitted.set(true),
-        error: () => this.submitted.set(true)
+        next: () => {
+          this.submitted.set(true);
+          this.toast.success(
+            'Offer submitted!',
+            `Our experts will contact you within 30 minutes for the ${this.vehicle().brand} ${this.vehicle().model}.`
+          );
+        },
+        error: () => {
+          this.submitted.set(false);
+          this.toast.error('Something went wrong', 'We could not submit your offer. Please try again in a moment.');
+        }
       });
   }
 

@@ -31,6 +31,7 @@
                 </button>
                 <button
                   type="button"
+                  (click)="applyFilters()"
                   appRipple
                   class="flex-1 overflow-hidden rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white shadow-primary transition-all duration-300 hover:bg-primary-hover hover:shadow-lg active:scale-[0.98]"
                 >
@@ -42,7 +43,7 @@
         </aside>
 
         <!-- Grid -->
-        <div class="min-w-0">
+        <div class="min-w-0" id="results-grid">
           <app-bike-grid />
           <app-bike-pagination />
         </div>

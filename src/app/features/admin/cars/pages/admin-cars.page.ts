@@ -8,12 +8,16 @@ import {
   LucideTrash2,
   LucideCog,
   LucideFuel,
-  LucideGauge
+  LucideGauge,
+  LucideLoaderCircle
 } from '@lucide/angular';
 import { RippleDirective } from '../../../cars/directives/ripple.directive';
 import { CarsFilterService } from '../../../cars/services/cars-filter.service';
 import { CatalogService } from '../../../../services/catalog.service';
-import { toAdminVehicle } from '../../utils/vehicle.util';
+import { AdminService } from '../../services/admin.service';
+import { toAdminVehicle, AdminVehicle } from '../../utils/vehicle.util';
+import { VehicleFormModalComponent } from '../../vehicles/components/vehicle-form-modal/vehicle-form-modal';
+import { ToastService } from '../../../../services/toast.service';
 
 @Component({
   selector: 'app-admin-cars-page',
@@ -21,6 +25,7 @@ import { toAdminVehicle } from '../../utils/vehicle.util';
   imports: [
     DecimalPipe,
     RippleDirective,
+    VehicleFormModalComponent,
     LucidePlus,
     LucideSearch,
     LucideMapPin,
@@ -28,7 +33,8 @@ import { toAdminVehicle } from '../../utils/vehicle.util';
     LucideTrash2,
     LucideCog,
     LucideFuel,
-    LucideGauge
+    LucideGauge,
+    LucideLoaderCircle
   ],
   templateUrl: './admin-cars.page.html',
   styleUrl: './admin-cars.page.scss'
@@ -36,12 +42,17 @@ import { toAdminVehicle } from '../../utils/vehicle.util';
 export class AdminCarsPageComponent {
   private readonly carsService = inject(CarsFilterService);
   private readonly catalog = inject(CatalogService);
+  private readonly adminService = inject(AdminService);
+  private readonly toast = inject(ToastService);
 
   constructor() {
     this.catalog.load();
   }
 
   readonly search = signal('');
+  readonly formOpen = signal(false);
+  readonly formModel = signal<AdminVehicle | null>(null);
+  readonly deletingId = signal<string | null>(null);
 
   readonly cars = computed(() => {
     const kw = this.search().trim().toLowerCase();
@@ -55,4 +66,47 @@ export class AdminCarsPageComponent {
   });
 
   readonly totalCount = computed(() => this.cars().length);
+
+  openAdd(): void {
+    this.formModel.set(null);
+    this.formOpen.set(true);
+  }
+
+  openEdit(vehicle: AdminVehicle): void {
+    this.formModel.set(vehicle);
+    this.formOpen.set(true);
+  }
+
+  closeForm(): void {
+    this.formOpen.set(false);
+  }
+
+  onSaved(): void {
+    this.formOpen.set(false);
+    this.toast.success(
+      this.formModel() ? 'Car updated' : 'Car added',
+      this.formModel()
+        ? 'The listing was saved to the catalogue.'
+        : 'Your new car listing is now live on the marketplace.'
+    );
+  }
+
+  deleteVehicle(vehicle: AdminVehicle): void {
+    const ok = window.confirm(
+      `Delete "${vehicle.brand} ${vehicle.model} ${vehicle.variant}"?\nThis cannot be undone.`
+    );
+    if (!ok) return;
+    this.deletingId.set(vehicle.id);
+    this.adminService.remove(vehicle.id).subscribe({
+      next: () => {
+        this.deletingId.set(null);
+        this.catalog.refresh();
+        this.toast.success('Car deleted', `${vehicle.brand} ${vehicle.model} was removed from the catalogue.`);
+      },
+      error: () => {
+        this.deletingId.set(null);
+        this.toast.error('Could not delete car', 'Please try again in a moment.');
+      }
+    });
+  }
 }

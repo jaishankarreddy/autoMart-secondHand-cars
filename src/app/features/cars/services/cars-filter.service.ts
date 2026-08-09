@@ -163,8 +163,6 @@ export class CarsFilterService {
 
   readonly isFiltered = computed(() => this.activeFilterCount() > 0);
 
-  readonly wishlist = signal<Set<string>>(new Set());
-
   // ---- fetch coordination --------------------------------------------------
   private requestSeq = 0;
   private keywordTimer: ReturnType<typeof setTimeout> | undefined;
@@ -265,15 +263,6 @@ export class CarsFilterService {
 
   setGridView(view: 'grid' | 'list'): void {
     this.gridView.set(view);
-  }
-
-  toggleWishlist(id: string): void {
-    this.wishlist.update((set) => {
-      const next = new Set(set);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
   }
 
   resetFilters(): void {

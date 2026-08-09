@@ -25,10 +25,23 @@
     <!-- Wishlist -->
     <button
       type="button"
-      aria-label="Add to wishlist"
+      (click)="toggleWishlist()"
+      [attr.aria-label]="wishlisted() ? 'Remove from wishlist' : 'Add to wishlist'"
       class="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-ink shadow-sm backdrop-blur transition-transform duration-200 hover:scale-110 active:scale-95"
+      [class.wishlisted]="wishlisted()"
     >
-      <svg lucideHeart class="h-[18px] w-[18px] transition-colors duration-200" [attr.fill]="wishlisted() ? 'currentColor' : 'none'" [class.text-danger]="wishlisted()"></svg>
+      <svg lucideHeart class="h-[18px] w-[18px] transition-colors duration-200" [attr.fill]="wishlisted() ? 'currentColor' : 'none'"></svg>
+    </button>
+
+    <!-- Compare -->
+    <button
+      type="button"
+      (click)="compareService.toggle(vehicle().id)"
+      [attr.aria-label]="compared() ? 'Remove from compare' : 'Add to compare'"
+      class="absolute right-3 top-[3.25rem] flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-ink shadow-sm backdrop-blur transition-transform duration-200 hover:scale-110 active:scale-95"
+      [class.text-primary]="compared()"
+    >
+      <svg lucideScale class="h-[18px] w-[18px]" [attr.fill]="compared() ? 'currentColor' : 'none'"></svg>
     </button>
 
     <!-- Price on image -->

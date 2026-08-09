@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, output, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
 import {
   LucideX,
   LucideImagePlus,
@@ -75,11 +75,12 @@ const FUELS = ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'];
   templateUrl: './vehicle-form-modal.html',
   styleUrl: './vehicle-form-modal.scss'
 })
-export class VehicleFormModalComponent {
+export class VehicleFormModalComponent implements OnInit {
   private readonly service = inject(AdminService);
   private readonly catalog = inject(CatalogService);
 
   readonly model = input<AdminVehicle | null>(null);
+  readonly initialType = input<'car' | 'bike'>('car');
   readonly saved = output<void>();
   readonly closed = output<void>();
 
@@ -102,7 +103,7 @@ export class VehicleFormModalComponent {
   readonly availabilityOptions = ['available', 'reserved', 'sold'];
   readonly yesNo = ['false', 'true'];
 
-  constructor() {
+  ngOnInit(): void {
     const m = this.model();
     if (m) {
       this.type.set(m.type);
@@ -127,6 +128,9 @@ export class VehicleFormModalComponent {
         rating: m.rating ? String(m.rating) : '4',
         availability: m.status === 'Sold' ? 'sold' : 'available'
       });
+    } else {
+      this.type.set(this.initialType());
+      this.switchType(this.initialType());
     }
   }
 

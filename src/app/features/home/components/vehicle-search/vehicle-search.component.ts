@@ -1,4 +1,5 @@
-﻿import { Component, signal } from '@angular/core';
+﻿import { Component, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   LucideSearch,
   LucideChevronDown,
@@ -34,6 +35,8 @@ interface SearchOption {
   styleUrl: './vehicle-search.component.scss'
 })
 export class VehicleSearchComponent {
+  private readonly router = inject(Router);
+
   readonly vehicleType = signal('');
   readonly brand = signal('');
   readonly model = signal('');
@@ -61,11 +64,11 @@ export class VehicleSearchComponent {
 
   readonly budgets: SearchOption[] = [
     { value: '', label: 'Any budget' },
-    { value: '0-5', label: 'Under â‚¹5 Lakh' },
-    { value: '5-10', label: 'â‚¹5 - â‚¹10 Lakh' },
-    { value: '10-15', label: 'â‚¹10 - â‚¹15 Lakh' },
-    { value: '15-25', label: 'â‚¹15 - â‚¹25 Lakh' },
-    { value: '25+', label: 'â‚¹25 Lakh+ (Cars only)' }
+    { value: '0-5', label: 'Under ₹5 Lakh' },
+    { value: '5-10', label: '₹5 – ₹10 Lakh' },
+    { value: '10-15', label: '₹10 – ₹15 Lakh' },
+    { value: '15-25', label: '₹15 – ₹25 Lakh' },
+    { value: '25+', label: '₹25 Lakh+ (Cars only)' }
   ];
 
   readonly fuels: SearchOption[] = [
@@ -84,4 +87,15 @@ export class VehicleSearchComponent {
     { value: 'belagavi', label: 'Belagavi' },
     { value: 'kalaburagi', label: 'Kalaburagi' }
   ];
+
+  search(): void {
+    const params: Record<string, string> = {};
+    if (this.vehicleType()) params['type'] = this.vehicleType();
+    if (this.brand()) params['brand'] = this.brand();
+    if (this.model().trim()) params['q'] = this.model().trim();
+    if (this.budget()) params['budget'] = this.budget();
+    if (this.fuel()) params['fuel'] = this.fuel();
+    if (this.location()) params['location'] = this.location();
+    this.router.navigate(['/search'], { queryParams: params });
+  }
 }

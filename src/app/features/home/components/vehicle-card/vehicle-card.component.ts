@@ -1,15 +1,18 @@
 ﻿import { DecimalPipe } from '@angular/common';
-import { Component, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   LucideHeart,
   LucideArrowRight,
   LucideStar,
-  LucideShieldCheck
+  LucideShieldCheck,
+  LucideScale
 } from '@lucide/angular';
 import { Vehicle } from '../../models/vehicle.model';
 import { PricePipe } from '../../pipes/price.pipe';
 import { TiltDirective } from '../../directives/tilt.directive';
+import { WishlistService } from '../../../../services/wishlist.service';
+import { CompareService } from '../../../compare/services/compare.service';
 
 @Component({
   selector: 'app-vehicle-card',
@@ -20,6 +23,7 @@ import { TiltDirective } from '../../directives/tilt.directive';
     LucideArrowRight,
     LucideStar,
     LucideShieldCheck,
+    LucideScale,
     PricePipe,
     DecimalPipe,
     TiltDirective
@@ -29,5 +33,14 @@ import { TiltDirective } from '../../directives/tilt.directive';
 })
 export class VehicleCardComponent {
   readonly vehicle = input.required<Vehicle>();
-  readonly wishlisted = input(false);
+
+  private readonly wishlistService = inject(WishlistService);
+  readonly compareService = inject(CompareService);
+
+  readonly wishlisted = () => this.wishlistService.has(this.vehicle().id);
+  readonly compared = () => this.compareService.ids().includes(this.vehicle().id);
+
+  toggleWishlist(): void {
+    this.wishlistService.toggle(this.vehicle().id);
+  }
 }

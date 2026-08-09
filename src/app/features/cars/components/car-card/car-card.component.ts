@@ -9,12 +9,14 @@ import {
   LucideGauge,
   LucideFuel,
   LucideCog,
-  LucideMapPin
+  LucideMapPin,
+  LucideScale
 } from '@lucide/angular';
 import { Car } from '../../models/car.model';
 import { PricePipe } from '../../../home/pipes/price.pipe';
 import { TiltDirective } from '../../../home/directives/tilt.directive';
-import { CarsFilterService } from '../../services/cars-filter.service';
+import { WishlistService } from '../../../../services/wishlist.service';
+import { CompareService } from '../../../compare/services/compare.service';
 
 @Component({
   selector: 'app-car-card',
@@ -30,6 +32,7 @@ import { CarsFilterService } from '../../services/cars-filter.service';
     LucideFuel,
     LucideCog,
     LucideMapPin,
+    LucideScale,
     PricePipe,
     TiltDirective
   ],
@@ -40,11 +43,13 @@ export class CarCardComponent {
   readonly car = input.required<Car>();
   readonly layout = input<'grid' | 'list'>('grid');
 
-  private readonly filterService = inject(CarsFilterService);
+  private readonly wishlistService = inject(WishlistService);
+  readonly compareService = inject(CompareService);
 
-  readonly wishlisted = () => this.filterService.wishlist().has(this.car().id);
+  readonly wishlisted = () => this.wishlistService.has(this.car().id);
+  readonly compared = () => this.compareService.ids().includes(this.car().id);
 
   toggleWishlist(): void {
-    this.filterService.toggleWishlist(this.car().id);
+    this.wishlistService.toggle(this.car().id);
   }
 }

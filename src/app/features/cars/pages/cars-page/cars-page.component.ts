@@ -10,6 +10,7 @@ import { CarGridComponent } from '../../components/car-grid/car-grid.component';
 import { PaginationComponent } from '../../components/pagination/pagination.component';
 import { RippleDirective } from '../../directives/ripple.directive';
 import { CarsFilterService } from '../../services/cars-filter.service';
+import { ToastService } from '../../../../services/toast.service';
 
 @Component({
   selector: 'app-cars-page',
@@ -31,8 +32,17 @@ import { CarsFilterService } from '../../services/cars-filter.service';
 })
 export class CarsPageComponent {
   private readonly filterService = inject(CarsFilterService);
+  private readonly toast = inject(ToastService);
 
   resetFilters(): void {
     this.filterService.resetFilters();
+  }
+
+  applyFilters(): void {
+    this.toast.success(
+      'Filters applied',
+      `Showing ${this.filterService.totalCount()} matching car${this.filterService.totalCount() === 1 ? '' : 's'}.`
+    );
+    document.getElementById('results-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }

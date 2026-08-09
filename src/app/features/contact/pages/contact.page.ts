@@ -14,6 +14,7 @@ import { FooterComponent } from '../../home/components/footer/footer.component';
 import { FaqComponent } from '../../home/components/faq/faq.component';
 import { RippleDirective } from '../../cars/directives/ripple.directive';
 import { RevealDirective } from '../../home/directives/reveal.directive';
+import { ToastService } from '../../../services/toast.service';
 
 interface ContactChannel {
   icon: 'phone' | 'mail' | 'mapPin' | 'messageCircle';
@@ -44,6 +45,7 @@ interface ContactChannel {
 })
 export class ContactPageComponent {
   private readonly http = inject(HttpClient);
+  private readonly toast = inject(ToastService);
 
   readonly name = signal('');
   readonly email = signal('');
@@ -81,25 +83,37 @@ export class ContactPageComponent {
 
   onSubmit(event: Event): void {
     event.preventDefault();
+    const email = this.email().trim();
     if (
       !this.name().trim() ||
-      !this.email().trim() ||
+      !email ||
       !this.phone().trim() ||
       !this.message().trim()
     ) {
+      this.toast.error('Please complete the form', 'Name, email, phone and message are all required.');
+      return;
+    }
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      this.toast.error('Invalid email', 'Please enter a valid email address.');
       return;
     }
     this.http
       .post('/api/contacts', {
         name: this.name().trim(),
-        email: this.email().trim(),
+        email,
         phone: this.phone().trim(),
         subject: this.subject().trim(),
         message: this.message().trim()
       })
       .subscribe({
-        next: () => this.submitted.set(true),
-        error: () => this.submitted.set(true)
+        next: () => {
+          this.submitted.set(true);
+          this.toast.success('Message sent!', 'Thanks for reaching out — we typically reply within 24 hours.');
+        },
+        error: () => {
+          this.submitted.set(false);
+          this.toast.error('Something went wrong', 'We could not send your message. Please try again shortly.');
+        }
       });
   }
 

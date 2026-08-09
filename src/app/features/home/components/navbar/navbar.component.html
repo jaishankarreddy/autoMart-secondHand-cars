@@ -56,12 +56,37 @@
         }
       </a>
 
-      <a
-        routerLink="/auth/login"
-        class="ml-1.5 hidden items-center rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-primary transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-lg sm:inline-flex"
-      >
-        Login
+      <a routerLink="/compare" aria-label="Compare vehicles" class="icon-btn relative">
+        <svg lucideScale class="h-5 w-5"></svg>
+        @if (compareCount() > 0) {
+          <span class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold leading-none text-white">{{ compareCount() }}</span>
+        }
       </a>
+
+      @if (isLoggedIn()) {
+        <a
+          routerLink="/wishlist"
+          title="{{ userName() }}"
+          class="ml-1.5 hidden h-10 w-10 items-center justify-center rounded-full bg-primary text-xs font-bold text-white shadow-primary transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-lg sm:inline-flex"
+        >
+          {{ userInitials() }}
+        </a>
+        <button
+          type="button"
+          (click)="logout()"
+          class="ml-1.5 hidden items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-text transition-colors duration-200 hover:bg-surface-2 sm:inline-flex"
+        >
+          <svg lucideLogOut class="h-4 w-4"></svg>
+          Logout
+        </button>
+      } @else {
+        <a
+          routerLink="/auth/login"
+          class="ml-1.5 hidden items-center rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-primary transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-lg sm:inline-flex"
+        >
+          Login
+        </a>
+      }
 
       <button
         type="button"
@@ -102,13 +127,32 @@
       </ul>
 
       <div class="border-t border-border p-4">
-        <a
-          routerLink="/auth/login"
-          (click)="menuOpen.set(false)"
-          class="flex w-full items-center justify-center rounded-xl bg-primary px-4 py-3.5 text-base font-semibold text-white shadow-primary transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-lg"
-        >
-          Login
-        </a>
+        @if (isLoggedIn()) {
+          <div class="flex items-center justify-between gap-3 rounded-xl bg-surface-2 px-4 py-3">
+            <div class="flex min-w-0 items-center gap-3">
+              <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
+                {{ userInitials() }}
+              </span>
+              <span class="truncate text-sm font-semibold text-text">{{ userName() }}</span>
+            </div>
+            <button
+              type="button"
+              (click)="logout(); menuOpen.set(false)"
+              aria-label="Logout"
+              class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-surface hover:text-danger"
+            >
+              <svg lucideLogOut class="h-4.5 w-4.5"></svg>
+            </button>
+          </div>
+        } @else {
+          <a
+            routerLink="/auth/login"
+            (click)="menuOpen.set(false)"
+            class="flex w-full items-center justify-center rounded-xl bg-primary px-4 py-3.5 text-base font-semibold text-white shadow-primary transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-lg"
+          >
+            Login
+          </a>
+        }
       </div>
     </div>
   </div>

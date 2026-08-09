@@ -1,5 +1,5 @@
 ﻿import { Component, inject } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   LucideSearch,
   LucideX,
@@ -60,14 +60,31 @@ const TYPE_OPTIONS: { value: SearchVehicleType; label: string }[] = [
   styleUrl: './search.page.scss'
 })
 export class SearchPageComponent {
+  private readonly router = inject(Router);
   readonly service = inject(SearchService);
   readonly budgetOptions = BUDGET_OPTIONS;
   readonly typeOptions = TYPE_OPTIONS;
 
   constructor() {
-    const q = inject(ActivatedRoute).snapshot.queryParamMap.get('q');
-    if (q) {
-      this.service.keyword.set(q);
-    }
+    const route = inject(ActivatedRoute);
+    const q = route.snapshot.queryParamMap;
+    const type = q.get('type');
+    if (type === 'car' || type === 'bike') this.service.type.set(type);
+    if (q.get('brand')) this.service.brand.set(q.get('brand')!);
+    if (q.get('budget')) this.service.budget.set(q.get('budget')!);
+    if (q.get('fuel')) this.service.fuel.set(q.get('fuel')!);
+    if (q.get('q')) this.service.keyword.set(q.get('q')!);
+  }
+
+  submit(): void {
+    const params: Record<string, string> = {};
+    if (this.service.type() !== 'all') params['type'] = this.service.type();
+    if (this.service.brand()) params['brand'] = this.service.brand();
+    if (this.service.budget()) params['budget'] = this.service.budget();
+    if (this.service.fuel()) params['fuel'] = this.service.fuel();
+    const kw = this.service.keyword().trim();
+    if (kw) params['q'] = kw;
+    this.router.navigate(['/search'], { queryParams: params });
+    document.getElementById('search-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }

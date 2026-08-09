@@ -18,6 +18,11 @@
              rotateY(var(--tilt-ry, 0deg));
 }
 
+.wishlisted {
+  background: #fee2e2;
+  color: var(--danger);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .vehicle-card,
   .vehicle-card:hover {

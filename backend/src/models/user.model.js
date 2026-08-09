@@ -18,6 +18,7 @@ const UserSchema = new mongoose.Schema(
     emailVerified: { type: Boolean, default: false },
     phoneVerified: { type: Boolean, default: false },
     avatar: { type: String, default: '' },
+    wishlist: { type: [String], default: [] },
     preferences: {
       notifyOffers: { type: Boolean, default: true },
       notifyNewsletter: { type: Boolean, default: false }

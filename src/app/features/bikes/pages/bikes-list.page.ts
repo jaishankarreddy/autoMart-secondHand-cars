@@ -10,6 +10,7 @@ import { BikeGridComponent } from '../components/bike-grid/bike-grid.component';
 import { BikePaginationComponent } from '../components/pagination/pagination.component';
 import { RippleDirective } from '../../cars/directives/ripple.directive';
 import { BikesFilterService } from '../services/bikes-filter.service';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   selector: 'app-bikes-list-page',
@@ -31,8 +32,17 @@ import { BikesFilterService } from '../services/bikes-filter.service';
 })
 export class BikesListPageComponent {
   private readonly filterService = inject(BikesFilterService);
+  private readonly toast = inject(ToastService);
 
   resetFilters(): void {
     this.filterService.resetFilters();
+  }
+
+  applyFilters(): void {
+    this.toast.success(
+      'Filters applied',
+      `Showing ${this.filterService.totalCount()} matching bike${this.filterService.totalCount() === 1 ? '' : 's'}.`
+    );
+    document.getElementById('results-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }

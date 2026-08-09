@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { PublicLayoutComponent, AdminLayoutComponent, AuthLayoutComponent } from '../layouts';
+import { adminAuthGuard } from '../features/admin/services/admin-auth.guard';
 
 export const routes: Routes = [
   // Public routes wrapped in PublicLayout
@@ -68,6 +69,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminLayoutComponent,
+    canActivate: [adminAuthGuard],
     loadChildren: () => import('@features/admin/admin.routes').then(m => m.ADMIN_ROUTES)
   },
   // Fallback catch-all route

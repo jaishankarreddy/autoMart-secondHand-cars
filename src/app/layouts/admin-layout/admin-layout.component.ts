@@ -1,5 +1,6 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { Router, NavigationEnd, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { filter } from 'rxjs';
 import {
   LucideCar,
@@ -18,14 +19,16 @@ import {
   LucideBell,
   LucideChevronsLeft,
   LucideChevronsRight,
-  LucideSearch
+  LucideSearch,
+  LucideCheckCheck
 } from '@lucide/angular';
+import { AdminAuthService } from '../../features/admin/services/admin-auth.service';
 
 interface NavItem {
   path: string;
   label: string;
   icon: 'dashboard' | 'warehouse' | 'car' | 'bike' | 'offers' | 'mail' | 'settings';
-  badge?: number;
+  badgeKey?: 'vehicles' | 'offers' | 'contacts';
 }
 
 const PAGE_TITLES: Record<string, string> = {
@@ -38,6 +41,14 @@ const PAGE_TITLES: Record<string, string> = {
   settings: 'Settings',
   login: 'Sign in'
 };
+
+interface DashboardSummary {
+  totalCars: number;
+  totalBikes: number;
+  totalVehicles: number;
+  pendingOffers: number;
+  newContacts: number;
+}
 
 @Component({
   selector: 'app-admin-layout',
@@ -62,14 +73,17 @@ const PAGE_TITLES: Record<string, string> = {
     LucideBell,
     LucideChevronsLeft,
     LucideChevronsRight,
-    LucideSearch
+    LucideSearch,
+    LucideCheckCheck
   ],
   templateUrl: './admin-layout.component.html',
   styleUrl: './admin-layout.component.scss'
 })
-export class AdminLayoutComponent {
+export class AdminLayoutComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly http = inject(HttpClient);
+  private readonly auth = inject(AdminAuthService);
 
   readonly collapsed = signal(false);
   readonly mobileOpen = signal(false);
@@ -79,15 +93,41 @@ export class AdminLayoutComponent {
     typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
   );
 
+  readonly search = signal('');
+  readonly notifyOpen = signal(false);
+
+  readonly summary = signal<DashboardSummary | null>(null);
+  readonly unreadCount = signal(3);
+
+  readonly vehiclesBadge = computed(() => this.summary()?.totalVehicles ?? 0);
+  readonly offersBadge = computed(() => this.summary()?.pendingOffers ?? 0);
+  readonly contactsBadge = computed(() => this.summary()?.newContacts ?? 0);
+
+  readonly adminName = computed(() => this.auth.admin()?.name ?? 'Admin User');
+  readonly adminInitials = computed(() =>
+    this.adminName()
+      .split(' ')
+      .map((p) => p.charAt(0))
+      .slice(0, 2)
+      .join('')
+      .toUpperCase()
+  );
+
   readonly navItems: NavItem[] = [
     { path: '/admin/dashboard', label: 'Dashboard', icon: 'dashboard' },
-    { path: '/admin/vehicles', label: 'Vehicles', icon: 'warehouse', badge: 32 },
+    { path: '/admin/vehicles', label: 'Vehicles', icon: 'warehouse', badgeKey: 'vehicles' },
     { path: '/admin/cars', label: 'Cars', icon: 'car' },
     { path: '/admin/bikes', label: 'Bikes', icon: 'bike' },
-    { path: '/admin/offers', label: 'Offers', icon: 'offers', badge: 4 },
-    { path: '/admin/contacts', label: 'Contacts', icon: 'mail', badge: 2 },
+    { path: '/admin/offers', label: 'Offers', icon: 'offers', badgeKey: 'offers' },
+    { path: '/admin/contacts', label: 'Contacts', icon: 'mail', badgeKey: 'contacts' },
     { path: '/admin/settings', label: 'Settings', icon: 'settings' }
   ];
+
+  readonly notifications = signal([
+    { id: 1, title: 'New offer received', detail: 'Ravi Kumar offered ₹16.5 L on Hyundai Creta · 2m ago' },
+    { id: 2, title: 'New enquiry', detail: 'Sneha Patil asked about Honda City · 34m ago' },
+    { id: 3, title: 'Listing viewed', detail: 'Royal Enfield Classic 350 got 120 views today' }
+  ]);
 
   constructor() {
     this.router.events
@@ -96,7 +136,37 @@ export class AdminLayoutComponent {
         const segment = this.router.url.split('?')[0].split('/').filter(Boolean).pop() ?? 'dashboard';
         this.pageTitle.set(PAGE_TITLES[segment] ?? 'Admin');
         this.mobileOpen.set(false);
+        this.notifyOpen.set(false);
       });
+  }
+
+  ngOnInit(): void {
+    this.http.get<DashboardSummary>('/api/admin/dashboard').subscribe({
+      next: (s) => this.summary.set(s),
+      error: () => undefined
+    });
+    this.destroyRef.onDestroy(() => undefined);
+  }
+
+  badgeFor(item: NavItem): number {
+    switch (item.badgeKey) {
+      case 'vehicles': return this.vehiclesBadge();
+      case 'offers': return this.offersBadge();
+      case 'contacts': return this.contactsBadge();
+      default: return 0;
+    }
+  }
+
+  markAllRead(): void {
+    this.unreadCount.set(0);
+    this.notifyOpen.set(false);
+  }
+
+  searchSubmit(): void {
+    const kw = this.search().trim();
+    if (kw) {
+      this.router.navigate(['/search'], { queryParams: { q: kw } });
+    }
   }
 
   toggleSidebar(): void {
@@ -111,5 +181,10 @@ export class AdminLayoutComponent {
     const next = !this.dark();
     this.dark.set(next);
     document.documentElement.classList.toggle('dark', next);
+  }
+
+  signOut(): void {
+    this.auth.logout();
+    this.router.navigate(['/admin/login']);
   }
 }

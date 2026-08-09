@@ -10,6 +10,7 @@ import { RevealDirective } from '../../home/directives/reveal.directive';
 import { CarsFilterService } from '../../cars/services/cars-filter.service';
 import { BikesFilterService } from '../../bikes/services/bikes-filter.service';
 import { CatalogService } from '../../../services/catalog.service';
+import { WishlistService } from '../../../services/wishlist.service';
 
 @Component({
   selector: 'app-wishlist-page',
@@ -32,20 +33,19 @@ export class WishlistPageComponent {
   private readonly carsService = inject(CarsFilterService);
   private readonly bikesService = inject(BikesFilterService);
   private readonly catalog = inject(CatalogService);
+  private readonly wishlistService = inject(WishlistService);
 
   constructor() {
     this.catalog.load();
   }
 
   readonly wishlistedCars = computed(() =>
-    this.carsService.cars().filter((c) => this.carsService.wishlist().has(c.id))
+    this.carsService.cars().filter((c) => this.wishlistService.has(c.id))
   );
 
   readonly wishlistedBikes = computed(() =>
-    this.bikesService.bikes().filter((b) => this.bikesService.wishlist().has(b.id))
+    this.bikesService.bikes().filter((b) => this.wishlistService.has(b.id))
   );
 
-  readonly totalCount = computed(
-    () => this.wishlistedCars().length + this.wishlistedBikes().length
-  );
+  readonly totalCount = computed(() => this.wishlistService.count());
 }

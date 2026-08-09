@@ -16,6 +16,9 @@ import { CarsFilterService } from '../../../cars/services/cars-filter.service';
 import { BikesFilterService } from '../../../bikes/services/bikes-filter.service';
 import { CatalogService } from '../../../../services/catalog.service';
 import { AdminOffer, AdminContact } from '../../data/admin.data';
+import { VehicleFormModalComponent } from '../../vehicles/components/vehicle-form-modal/vehicle-form-modal';
+import { AdminVehicle } from '../../utils/vehicle.util';
+import { ToastService } from '../../../../services/toast.service';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -23,6 +26,7 @@ import { AdminOffer, AdminContact } from '../../data/admin.data';
   imports: [
     RouterLink,
     RippleDirective,
+    VehicleFormModalComponent,
     LucideWarehouse,
     LucideCar,
     LucideBike,
@@ -40,9 +44,29 @@ export class AdminDashboardPageComponent implements OnInit {
   private readonly bikesService = inject(BikesFilterService);
   private readonly catalog = inject(CatalogService);
   private readonly http = inject(HttpClient);
+  private readonly toast = inject(ToastService);
+
+  readonly formOpen = signal(false);
+  readonly formModel = signal<AdminVehicle | null>(null);
+  readonly formType = signal<'car' | 'bike'>('car');
 
   constructor() {
     this.catalog.load();
+  }
+
+  openAddVehicle(): void {
+    this.formModel.set(null);
+    this.formType.set('car');
+    this.formOpen.set(true);
+  }
+
+  closeForm(): void {
+    this.formOpen.set(false);
+  }
+
+  onSaved(): void {
+    this.formOpen.set(false);
+    this.toast.success('Vehicle added', 'Your new listing is now live on the marketplace.');
   }
 
   readonly totalCars = computed(() => this.carsService.cars().length);

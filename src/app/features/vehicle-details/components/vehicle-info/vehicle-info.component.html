@@ -49,6 +49,17 @@
         <svg lucideHeart class="h-5 w-5" [attr.fill]="wishlisted() ? 'currentColor' : 'none'"></svg>
         <span>{{ wishlisted() ? 'Saved' : 'Save' }}</span>
       </button>
+      <button
+        type="button"
+        (click)="compareService.toggle(vehicle().id)"
+        appRipple
+        class="icon-action"
+        [class.icon-action-active]="compared()"
+        [attr.aria-label]="compared() ? 'Remove from compare' : 'Add to compare'"
+      >
+        <svg lucideScale class="h-5 w-5"></svg>
+        <span>{{ compared() ? 'In Compare' : 'Compare' }}</span>
+      </button>
       <button type="button" (click)="share()" appRipple class="icon-action" aria-label="Share this vehicle">
         <svg lucideShare class="h-5 w-5"></svg>
         <span>Share</span>

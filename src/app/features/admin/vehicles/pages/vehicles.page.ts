@@ -19,6 +19,7 @@ import { CatalogService } from '../../../../services/catalog.service';
 import { AdminService } from '../../services/admin.service';
 import { toAdminVehicle, AdminVehicle } from '../../utils/vehicle.util';
 import { VehicleFormModalComponent } from '../components/vehicle-form-modal/vehicle-form-modal';
+import { ToastService } from '../../../../services/toast.service';
 
 export type AdminTypeFilter = 'all' | 'car' | 'bike';
 
@@ -48,6 +49,7 @@ export class AdminVehiclesPageComponent {
   private readonly catalog = inject(CatalogService);
   private readonly adminService = inject(AdminService);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
 
   readonly search = signal('');
   readonly typeFilter = signal<AdminTypeFilter>('all');
@@ -107,6 +109,12 @@ export class AdminVehiclesPageComponent {
 
   onSaved(): void {
     this.formOpen.set(false);
+    this.toast.success(
+      this.formModel() ? 'Vehicle updated' : 'Vehicle added',
+      this.formModel()
+        ? 'The listing was saved to the catalogue.'
+        : 'Your new vehicle listing is now live on the marketplace.'
+    );
   }
 
   viewVehicle(vehicle: AdminVehicle): void {
@@ -123,10 +131,11 @@ export class AdminVehiclesPageComponent {
       next: () => {
         this.deletingId.set(null);
         this.catalog.refresh();
+        this.toast.success('Vehicle deleted', `${vehicle.brand} ${vehicle.model} was removed from the catalogue.`);
       },
       error: () => {
         this.deletingId.set(null);
-        window.alert('Failed to delete vehicle. Please try again.');
+        this.toast.error('Could not delete vehicle', 'Please try again in a moment.');
       }
     });
   }

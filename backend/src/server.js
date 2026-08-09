@@ -6,8 +6,11 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
 const { connectDB } = require('./config/db');
 
+const Admin = require('./models/admin.model');
+const User = require('./models/user.model');
 const Vehicle = require('./models/vehicle.model');
 const Brand = require('./models/brand.model');
 const VehicleOffer = require('./models/vehicle-offer.model');
@@ -107,6 +110,163 @@ async function nextVehicleId(vehicleType) {
 
 // Health
 app.get('/api/health', (req, res) => res.json({ status: 'ok', service: 'automart-api' }));
+
+// --- User authentication ------------------------------------------------------
+const JWT_SECRET = process.env.JWT_SECRET || 'automart-dev-secret-change-me';
+
+function signUserToken(user) {
+  return jwt.sign(
+    { sub: user.id, email: user.email, role: user.role },
+    JWT_SECRET,
+    { expiresIn: '7d' }
+  );
+}
+
+// Require a valid user JWT. Populates req.user.
+function authRequired(req, res, next) {
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  if (!token) {
+    return res.status(401).json({ message: 'You must be logged in to do that.' });
+  }
+  try {
+    const payload = jwt.verify(token, JWT_SECRET);
+    req.userId = payload.sub;
+    next();
+  } catch {
+    return res.status(401).json({ message: 'Your session has expired. Please log in again.' });
+  }
+}
+
+// POST /api/auth/register — create a user account and log them in
+app.post('/api/auth/register', async (req, res, next) => {
+  try {
+    const { name, email, password } = req.body || {};
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Name, email and password are required.' });
+    }
+    if (String(password).length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters.' });
+    }
+    const existing = await User.findOne({ email: String(email).toLowerCase().trim() });
+    if (existing) {
+      return res.status(409).json({ message: 'An account with this email already exists.' });
+    }
+    const user = await User.create({
+      name: String(name).trim(),
+      email: String(email).toLowerCase().trim(),
+      passwordHash: String(password),
+      emailVerified: true
+    });
+    res.status(201).json({ token: signUserToken(user), user: user.toSafeJSON() });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/auth/login — sign a user in
+app.post('/api/auth/login', async (req, res, next) => {
+  try {
+    const { email, password } = req.body || {};
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required.' });
+    }
+    const user = await User.findOne({ email: String(email).toLowerCase().trim() });
+    if (!user || !(await user.comparePassword(String(password)))) {
+      return res.status(401).json({ message: 'Invalid email or password.' });
+    }
+    res.json({ token: signUserToken(user), user: user.toSafeJSON() });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/auth/me — current user from token
+app.get('/api/auth/me', authRequired, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) return res.status(404).json({ message: 'User not found.' });
+    res.json({ user: user.toSafeJSON() });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// --- User wishlist ------------------------------------------------------------
+// GET /api/wishlist — current user's saved vehicles (full catalogue entries)
+app.get('/api/wishlist', authRequired, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) return res.status(404).json({ message: 'User not found.' });
+    const ids = user.wishlist || [];
+    const vehicles = await Vehicle.find({ id: { $in: ids } }).lean();
+    const order = new Map(ids.map((id, i) => [id, i]));
+    vehicles.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
+    res.json({ wishlist: ids, vehicles });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/wishlist/:id — add a vehicle to the user's wishlist
+app.post('/api/wishlist/:id', authRequired, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) return res.status(404).json({ message: 'User not found.' });
+    const vehicle = await Vehicle.findOne({ id: req.params.id });
+    if (!vehicle) return res.status(404).json({ message: 'Vehicle not found.' });
+    if (!user.wishlist.includes(req.params.id)) {
+      user.wishlist.push(req.params.id);
+      await user.save();
+    }
+    res.json({ wishlist: user.wishlist });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE /api/wishlist/:id — remove a vehicle from the user's wishlist
+app.delete('/api/wishlist/:id', authRequired, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) return res.status(404).json({ message: 'User not found.' });
+    user.wishlist = user.wishlist.filter((id) => id !== req.params.id);
+    await user.save();
+    res.json({ wishlist: user.wishlist });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Admin: sign in (issues a short-lived JWT)
+app.post('/api/admin/login', async (req, res, next) => {
+  try {
+    const { email, password } = req.body || {};
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+    const admin = await Admin.findOne({ email: String(email).toLowerCase().trim() });
+    if (!admin || !admin.isActive) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+    const matches = await admin.comparePassword(String(password));
+    if (!matches) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+    admin.lastLoginAt = new Date();
+    await admin.save();
+
+    const token = jwt.sign(
+      { sub: admin.id, email: admin.email, role: admin.role },
+      process.env.JWT_SECRET || 'automart-dev-secret-change-me',
+      { expiresIn: '12h' }
+    );
+
+    res.json({ token, admin: admin.toSafeJSON() });
+  } catch (err) {
+    next(err);
+  }
+});
 
 // GET /api/vehicles — catalogue listing with filters + pagination
 app.get('/api/vehicles', async (req, res, next) => {
