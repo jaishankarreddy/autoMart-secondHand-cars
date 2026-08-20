@@ -1,4 +1,4 @@
-﻿import { Component, inject, signal } from '@angular/core';
+﻿import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   LucideSearch,
@@ -37,7 +37,7 @@ interface SearchOption {
 export class VehicleSearchComponent {
   private readonly router = inject(Router);
 
-  readonly vehicleType = signal('');
+  readonly vehicleType = signal('car');
   readonly brand = signal('');
   readonly model = signal('');
   readonly budget = signal('');
@@ -49,26 +49,50 @@ export class VehicleSearchComponent {
     { value: 'bike', label: 'Bike' }
   ];
 
-  readonly brands: SearchOption[] = [
-    { value: '', label: 'Any brand' },
+  readonly carBrands: SearchOption[] = [
     { value: 'hyundai', label: 'Hyundai' },
     { value: 'toyota', label: 'Toyota' },
-    { value: 'mahindra', label: 'Mahindra' },
-    { value: 'tata', label: 'Tata' },
     { value: 'honda', label: 'Honda' },
+    { value: 'tata', label: 'Tata' },
+    { value: 'mahindra', label: 'Mahindra' },
     { value: 'maruti', label: 'Maruti Suzuki' },
-    { value: 'royal-enfield', label: 'Royal Enfield' },
-    { value: 'tvs', label: 'TVS' },
-    { value: 'hero', label: 'Hero' }
+    { value: 'kia', label: 'Kia' },
+    { value: 'skoda', label: 'Skoda' },
+    { value: 'volkswagen', label: 'Volkswagen' }
   ];
+
+  readonly bikeBrands: SearchOption[] = [
+    { value: 'hero', label: 'Hero' },
+    { value: 'honda', label: 'Honda' },
+    { value: 'bajaj', label: 'Bajaj' },
+    { value: 'yamaha', label: 'Yamaha' },
+    { value: 'tvs', label: 'TVS' },
+    { value: 'royal-enfield', label: 'Royal Enfield' },
+    { value: 'ktm', label: 'KTM' },
+    { value: 'ather', label: 'Ather' },
+    { value: 'ola', label: 'Ola' }
+  ];
+
+  /** Brands are filtered by the selected vehicle type (car vs bike). */
+  readonly brands = computed<SearchOption[]>(() => [
+    { value: '', label: 'Any brand' },
+    ...(this.vehicleType() === 'bike' ? this.bikeBrands : this.carBrands)
+  ]);
+
+  setType(value: string): void {
+    this.vehicleType.set(value);
+    if (this.brand() && !this.brands().some((b) => b.value === this.brand())) {
+      this.brand.set('');
+    }
+  }
 
   readonly budgets: SearchOption[] = [
     { value: '', label: 'Any budget' },
-    { value: '0-5', label: 'Under ₹5 Lakh' },
-    { value: '5-10', label: '₹5 – ₹10 Lakh' },
-    { value: '10-15', label: '₹10 – ₹15 Lakh' },
-    { value: '15-25', label: '₹15 – ₹25 Lakh' },
-    { value: '25+', label: '₹25 Lakh+ (Cars only)' }
+    { value: '0-5', label: 'Under ₹5,00,000' },
+    { value: '5-10', label: '₹5,00,000 – ₹10,00,000' },
+    { value: '10-15', label: '₹10,00,000 – ₹15,00,000' },
+    { value: '15-25', label: '₹15,00,000 – ₹25,00,000' },
+    { value: '25+', label: '₹25,00,000+ (Cars only)' }
   ];
 
   readonly fuels: SearchOption[] = [

@@ -9,7 +9,6 @@ import {
   LucideCheckCircle2,
   LucideClock
 } from '@lucide/angular';
-import { NavbarComponent } from '../../home/components/navbar/navbar.component';
 import { FooterComponent } from '../../home/components/footer/footer.component';
 import { FaqComponent } from '../../home/components/faq/faq.component';
 import { RippleDirective } from '../../cars/directives/ripple.directive';
@@ -27,7 +26,6 @@ interface ContactChannel {
   selector: 'app-contact-page',
   standalone: true,
   imports: [
-    NavbarComponent,
     FooterComponent,
     FaqComponent,
     RippleDirective,

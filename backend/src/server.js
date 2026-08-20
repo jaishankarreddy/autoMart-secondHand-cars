@@ -55,7 +55,7 @@ function cleanUpload(imageUrl) {
 
 // Fields the admin form may submit (everything else is ignored).
 const VEHICLE_FIELDS = [
-  'vehicleType', 'brand', 'model', 'variant', 'year', 'priceInLakh', 'rating',
+  'vehicleType', 'brand', 'model', 'variant', 'year', 'price', 'rating',
   'featured', 'availability', 'fuel', 'transmission', 'mileage', 'kilometers',
   'district', 'location', 'owners', 'bodyType', 'color', 'engineCC', 'abs',
   'engine', 'power', 'registration', 'insurance', 'description'
@@ -76,7 +76,7 @@ function buildVehiclePayload(body) {
         if (val === 'car' || val === 'bike') payload.vehicleType = val;
         break;
       case 'year':
-      case 'priceInLakh':
+      case 'price':
       case 'rating':
       case 'mileage':
       case 'kilometers':
@@ -274,7 +274,7 @@ app.get('/api/vehicles', async (req, res, next) => {
     const {
       type, brand, model, q, minPrice, maxPrice, fuel, transmission, bodyType,
       district, color, minYear, maxYear, year, owners, abs, engineCc, engineCcMin,
-      engineCcMax, mileageMax, featured, sortBy, page = 1, limit = 12
+      engineCcMax, mileageMax, maxKm, minKm, featured, sortBy, page = 1, limit = 12
     } = req.query;
 
     // Repeated query params (e.g. ?brand=A&brand=B) arrive as arrays → $in.
@@ -301,9 +301,9 @@ app.get('/api/vehicles', async (req, res, next) => {
     }
     if (featured) filter.featured = true;
     if (minPrice || maxPrice) {
-      filter.priceInLakh = {};
-      if (minPrice) filter.priceInLakh.$gte = Number(minPrice);
-      if (maxPrice) filter.priceInLakh.$lte = Number(maxPrice);
+      filter.price = {};
+      if (minPrice) filter.price.$gte = Number(minPrice);
+      if (maxPrice) filter.price.$lte = Number(maxPrice);
     }
     if (minYear || maxYear) {
       filter.year = {};
@@ -311,6 +311,11 @@ app.get('/api/vehicles', async (req, res, next) => {
       if (maxYear) filter.year.$lte = Number(maxYear);
     }
     if (mileageMax) filter.mileage = { $lte: Number(mileageMax) };
+    if (maxKm || minKm) {
+      filter.kilometers = {};
+      if (minKm) filter.kilometers.$gte = Number(minKm);
+      if (maxKm) filter.kilometers.$lte = Number(maxKm);
+    }
     if (q) {
       const qRegex = new RegExp(q.trim(), 'i');
       filter.$or = [
@@ -322,15 +327,14 @@ app.get('/api/vehicles', async (req, res, next) => {
     }
 
     const sort = {};
-    if (sortBy === 'price_asc') sort.priceInLakh = 1;
-    else if (sortBy === 'price_desc') sort.priceInLakh = -1;
-    else if (sortBy === 'year_desc') sort.year = -1;
+    if (sortBy === 'price_asc') sort.price = 1;
+    else if (sortBy === 'price_desc') sort.price = -1;
     else if (sortBy === 'mileage_desc') sort.mileage = -1;
-    else sort.createdAt = -1;
+    else sort.createdAt = -1; // newest uploads first (default + 'newest' + 'year_desc')
 
     const skip = (Number(page) - 1) * Number(limit);
     const LIST_PROJECTION =
-      'id vehicleType brand model variant year priceInLakh rating featured availability ' +
+      'id vehicleType brand model variant year price rating featured availability ' +
       'fuel transmission mileage kilometers district location owners bodyType color ' +
       'engineCC abs engine power registration insurance image';
     const [items, total] = await Promise.all([
@@ -369,7 +373,7 @@ app.get('/api/facets', async (req, res, next) => {
   try {
     const type = req.query.type === 'bike' ? 'bike' : 'car';
     const base = { vehicleType: type };
-    const [brands, models, years, fuels, transmissions, owners, bodyTypes, districts, colors, price] =
+    const [brands, models, years, fuels, transmissions, owners, bodyTypes, districts, colors, price, engineCc, mileage, count] =
       await Promise.all([
         Vehicle.distinct('brand', base),
         Vehicle.distinct('model', base),
@@ -382,9 +386,62 @@ app.get('/api/facets', async (req, res, next) => {
         Vehicle.distinct('color', base),
         Vehicle.aggregate([
           { $match: base },
-          { $group: { _id: null, min: { $min: '$priceInLakh' }, max: { $max: '$priceInLakh' } } }
-        ])
+          { $group: { _id: null, min: { $min: '$price' }, max: { $max: '$price' } } }
+        ]),
+        Vehicle.aggregate([
+          { $match: base },
+          { $group: { _id: null, max: { $max: '$engineCC' } } }
+        ]),
+        Vehicle.aggregate([
+          { $match: base },
+          { $group: { _id: null, max: { $max: '$mileage' } } }
+        ]),
+        Vehicle.countDocuments(base)
       ]);
+
+    // Price + KMs-driven bucket counts (used for the bike sidebar).
+    let priceBuckets = [];
+    let kmBuckets = [];
+    if (type === 'bike') {
+      const bucketAgg = await Vehicle.aggregate([
+        { $match: base },
+        {
+          $group: {
+            _id: null,
+            p50: { $sum: { $cond: [{ $lte: ['$price', 50000] }, 1, 0] } },
+            p75: { $sum: { $cond: [{ $lte: ['$price', 75000] }, 1, 0] } },
+            p100: { $sum: { $cond: [{ $lte: ['$price', 100000] }, 1, 0] } },
+            p125: { $sum: { $cond: [{ $lte: ['$price', 125000] }, 1, 0] } },
+            p150: { $sum: { $cond: [{ $lte: ['$price', 150000] }, 1, 0] } },
+            p200: { $sum: { $cond: [{ $lte: ['$price', 200000] }, 1, 0] } },
+            p300: { $sum: { $cond: [{ $lte: ['$price', 300000] }, 1, 0] } },
+            above300: { $sum: { $cond: [{ $gt: ['$price', 300000] }, 1, 0] } },
+            k5: { $sum: { $cond: [{ $lte: ['$kilometers', 5000] }, 1, 0] } },
+            k10: { $sum: { $cond: [{ $lte: ['$kilometers', 10000] }, 1, 0] } },
+            k15: { $sum: { $cond: [{ $lte: ['$kilometers', 15000] }, 1, 0] } },
+            k20: { $sum: { $cond: [{ $lte: ['$kilometers', 20000] }, 1, 0] } }
+          }
+        }
+      ]);
+      const b = bucketAgg[0] || {};
+      priceBuckets = [
+        { threshold: 50000, count: b.p50 ?? 0 },
+        { threshold: 75000, count: b.p75 ?? 0 },
+        { threshold: 100000, count: b.p100 ?? 0 },
+        { threshold: 125000, count: b.p125 ?? 0 },
+        { threshold: 150000, count: b.p150 ?? 0 },
+        { threshold: 200000, count: b.p200 ?? 0 },
+        { threshold: 300000, count: b.p300 ?? 0 },
+        { threshold: null, count: b.above300 ?? 0 }
+      ];
+      kmBuckets = [
+        { threshold: 5000, count: b.k5 ?? 0 },
+        { threshold: 10000, count: b.k10 ?? 0 },
+        { threshold: 15000, count: b.k15 ?? 0 },
+        { threshold: 20000, count: b.k20 ?? 0 }
+      ];
+    }
+
     res.json({
       type,
       brands,
@@ -397,7 +454,13 @@ app.get('/api/facets', async (req, res, next) => {
       districts,
       colors,
       priceMin: price[0] ? price[0].min : 0,
-      priceMax: price[0] ? price[0].max : 0
+      priceMax: price[0] ? price[0].max : 0,
+      engineCcMin: 100,
+      engineCcMax: engineCc[0] ? engineCc[0].max : 650,
+      mileageMax: mileage[0] ? mileage[0].max : 60,
+      count,
+      priceBuckets,
+      kmBuckets
     });
   } catch (err) {
     next(err);
@@ -457,7 +520,7 @@ app.post('/api/offers', async (req, res, next) => {
       name,
       phone,
       offerPrice,
-      askingPrice: vehicle.priceInLakh * 100000,
+      askingPrice: vehicle.price,
       message
     });
     res.status(201).json(offer);
@@ -577,10 +640,10 @@ app.patch('/api/admin/contacts/:id', async (req, res, next) => {
 app.post('/api/admin/vehicles', upload.single('image'), async (req, res, next) => {
   try {
     const type = req.body.vehicleType === 'bike' ? 'bike' : 'car';
-    if (!req.body.brand || !req.body.model || !req.body.year || !req.body.priceInLakh) {
+    if (!req.body.brand || !req.body.model || !req.body.year || !req.body.price) {
       return res
         .status(400)
-        .json({ message: 'vehicleType, brand, model, year and priceInLakh are required' });
+        .json({ message: 'vehicleType, brand, model, year and price are required' });
     }
     const payload = buildVehiclePayload({ ...req.body, vehicleType: type });
     payload.id = req.body.id || (await nextVehicleId(type));

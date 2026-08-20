@@ -6,7 +6,6 @@ import {
   LucideShieldCheck,
   LucideHandshake
 } from '@lucide/angular';
-import { NavbarComponent } from '../../home/components/navbar/navbar.component';
 import { FooterComponent } from '../../home/components/footer/footer.component';
 import { WhyChooseUsComponent } from '../../home/components/why-choose-us/why-choose-us.component';
 import { StatisticsComponent } from '../../home/components/statistics/statistics.component';
@@ -20,7 +19,6 @@ import { RippleDirective } from '../../cars/directives/ripple.directive';
   standalone: true,
   imports: [
     RouterLink,
-    NavbarComponent,
     FooterComponent,
     WhyChooseUsComponent,
     StatisticsComponent,

@@ -25,7 +25,7 @@ export interface ComparableVehicle {
   model: string;
   variant: string;
   year: number;
-  priceInLakh: number;
+  price: number;
   fuel: string;
   transmission: string;
   engine: string;
@@ -66,7 +66,7 @@ export class CompareService {
 
   readonly bestPrice = computed(() => {
     const list = this.vehicles();
-    return list.length ? Math.min(...list.map((v) => v.priceInLakh)) : null;
+    return list.length ? Math.min(...list.map((v) => v.price)) : null;
   });
 
   readonly catalog = computed(() => {
@@ -129,7 +129,7 @@ export class CompareService {
         model: v.model,
         variant: v.variant,
         year: v.year,
-        priceInLakh: v.priceInLakh,
+        price: v.price,
         fuel: v.fuel,
         transmission: v.engineCC ? 'Manual' : 'Electric',
         engine: v.engineCC && v.engineCC > 0 ? `${v.engineCC} cc` : 'Electric',
@@ -154,7 +154,7 @@ export class CompareService {
       model: c.model,
       variant: c.variant,
       year: c.year,
-      priceInLakh: c.priceInLakh,
+      price: c.price,
       fuel: c.fuel,
       transmission: c.transmission,
       engine: '—',

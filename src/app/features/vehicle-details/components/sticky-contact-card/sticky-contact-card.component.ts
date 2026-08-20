@@ -10,7 +10,7 @@ import { RippleDirective } from '../../../cars/directives/ripple.directive';
   styleUrl: './sticky-contact-card.component.scss'
 })
 export class StickyContactCardComponent {
-  readonly priceInLakh = input.required<number>();
+  readonly price = input.required<number>();
   readonly phone = input('+91 98765 43210');
   readonly whatsapp = input('919876543210');
 }

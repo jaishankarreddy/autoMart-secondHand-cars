@@ -1,4 +1,4 @@
-<section class="bg-surface-2/60 py-20 sm:py-28" appReveal>
+<section class="bg-[#ecebe5]/50 py-20 sm:py-28" appReveal>
   <div class="container-am">
     <app-section-heading
       class="mx-auto text-center"
@@ -10,29 +10,29 @@
 
     <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       @for (t of testimonials(); track t.name) {
-        <figure class="testimonial-card relative flex flex-col rounded-2xl border border-border bg-surface p-7 shadow-sm am-card">
-          <svg lucideQuote class="absolute right-6 top-6 h-9 w-9 text-primary/15"></svg>
+        <figure class="testimonial-card relative flex flex-col rounded-2xl border border-[#e5e2da] bg-white p-7 shadow-sm am-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg">
+          <svg lucideQuote class="absolute right-6 top-6 h-9 w-9 text-[#eb7138]/15"></svg>
 
           <div class="flex items-center gap-1">
             @for (s of stars(t.rating); track s) {
-              <svg lucideStar class="h-4 w-4 text-accent" [attr.fill]="'currentColor'"></svg>
+              <svg lucideStar class="h-4 w-4 text-[#d7fa4c]" [attr.fill]="'currentColor'"></svg>
             }
           </div>
 
-          <blockquote class="mt-4 flex-1 text-sm leading-relaxed text-text/90">
+          <blockquote class="mt-4 flex-1 text-sm leading-relaxed text-[#152329]/90">
             &ldquo;{{ t.quote }}&rdquo;
           </blockquote>
 
           <figcaption class="mt-6 flex items-center gap-3">
             <span
-              class="flex h-11 w-11 items-center justify-center rounded-full font-heading text-sm font-bold text-white"
+              class="flex h-11 w-11 items-center justify-center rounded-full font-heading text-sm font-bold text-white shadow-sm"
               [style.background]="t.color"
             >
               {{ initials(t.name) }}
             </span>
             <div>
-              <div class="text-sm font-semibold text-text">{{ t.name }}</div>
-              <div class="text-xs text-muted">{{ t.role }}</div>
+              <div class="text-sm font-semibold text-[#152329]">{{ t.name }}</div>
+              <div class="text-xs text-[#5e6b6a]">{{ t.role }}</div>
             </div>
           </figcaption>
         </figure>

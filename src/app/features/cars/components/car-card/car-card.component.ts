@@ -4,7 +4,6 @@ import { RouterLink } from '@angular/router';
 import {
   LucideHeart,
   LucideArrowRight,
-  LucideStar,
   LucideShieldCheck,
   LucideGauge,
   LucideFuel,
@@ -26,7 +25,6 @@ import { CompareService } from '../../../compare/services/compare.service';
     DecimalPipe,
     LucideHeart,
     LucideArrowRight,
-    LucideStar,
     LucideShieldCheck,
     LucideGauge,
     LucideFuel,

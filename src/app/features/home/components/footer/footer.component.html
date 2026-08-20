@@ -1,14 +1,14 @@
-<footer class="border-t border-border bg-ink text-white">
+<footer class="border-t border-[#2f454d] bg-[#14272c] text-white">
   <div class="container-am py-16 lg:py-20">
     <div class="grid gap-12 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1.3fr]">
       <!-- Brand -->
       <div class="max-w-xs">
         <a routerLink="/home" class="flex items-center gap-3">
-          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
+          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#d7fa4c] text-[#14272c]">
             <svg lucideCar class="h-6 w-6"></svg>
           </span>
           <span class="font-heading text-xl font-bold">
-            Auto<span class="text-primary">Mart</span>
+            Auto<span class="text-[#d7fa4c]">Mart</span>
           </span>
         </a>
         <p class="mt-5 text-sm leading-relaxed text-white/60">
@@ -29,8 +29,8 @@
         <ul class="mt-6 space-y-3.5">
           @for (link of quickLinks; track link.label) {
             <li>
-              <a routerLink="{{ link.path }}" class="group inline-flex items-center gap-1.5 text-sm text-white/75 transition-colors hover:text-white">
-                <span class="text-primary transition-transform duration-200 group-hover:translate-x-0.5">›</span>
+              <a routerLink="{{ link.path }}" class="group inline-flex items-center gap-1.5 text-sm text-white/75 transition-colors hover:text-[#d7fa4c]">
+                <span class="text-[#d7fa4c] transition-transform duration-200 group-hover:translate-x-0.5">›</span>
                 {{ link.label }}
               </a>
             </li>
@@ -43,26 +43,26 @@
         <h3 class="font-heading text-sm font-semibold uppercase tracking-wider text-white/50">Vehicles</h3>
         <ul class="mt-6 space-y-3.5">
           <li>
-            <a routerLink="/cars" class="group inline-flex items-center gap-1.5 text-sm text-white/75 transition-colors hover:text-white">
-              <span class="text-primary transition-transform duration-200 group-hover:translate-x-0.5">›</span>
+            <a routerLink="/cars" class="group inline-flex items-center gap-1.5 text-sm text-white/75 transition-colors hover:text-[#d7fa4c]">
+              <span class="text-[#d7fa4c] transition-transform duration-200 group-hover:translate-x-0.5">›</span>
               Used Cars
             </a>
           </li>
           <li>
-            <a routerLink="/bikes" class="group inline-flex items-center gap-1.5 text-sm text-white/75 transition-colors hover:text-white">
-              <span class="text-primary transition-transform duration-200 group-hover:translate-x-0.5">›</span>
+            <a routerLink="/bikes" class="group inline-flex items-center gap-1.5 text-sm text-white/75 transition-colors hover:text-[#d7fa4c]">
+              <span class="text-[#d7fa4c] transition-transform duration-200 group-hover:translate-x-0.5">›</span>
               Used Bikes
             </a>
           </li>
           <li>
-            <a routerLink="/compare" class="group inline-flex items-center gap-1.5 text-sm text-white/75 transition-colors hover:text-white">
-              <span class="text-primary transition-transform duration-200 group-hover:translate-x-0.5">›</span>
+            <a routerLink="/compare" class="group inline-flex items-center gap-1.5 text-sm text-white/75 transition-colors hover:text-[#d7fa4c]">
+              <span class="text-[#d7fa4c] transition-transform duration-200 group-hover:translate-x-0.5">›</span>
               Compare Vehicles
             </a>
           </li>
           <li>
-            <a routerLink="/search" class="group inline-flex items-center gap-1.5 text-sm text-white/75 transition-colors hover:text-white">
-              <span class="text-primary transition-transform duration-200 group-hover:translate-x-0.5">›</span>
+            <a routerLink="/search" class="group inline-flex items-center gap-1.5 text-sm text-white/75 transition-colors hover:text-[#d7fa4c]">
+              <span class="text-[#d7fa4c] transition-transform duration-200 group-hover:translate-x-0.5">›</span>
               Advanced Search
             </a>
           </li>
@@ -74,20 +74,20 @@
         <h3 class="font-heading text-sm font-semibold uppercase tracking-wider text-white/50">Get in Touch</h3>
         <ul class="mt-6 space-y-4 text-sm text-white/75">
           <li class="flex items-start gap-3">
-            <svg lucideMapPin class="mt-0.5 h-5 w-5 shrink-0 text-primary"></svg>
+            <svg lucideMapPin class="mt-0.5 h-5 w-5 shrink-0 text-[#d7fa4c]"></svg>
             <span>MG Road, Bengaluru,<br />Karnataka 560001</span>
           </li>
           <li class="flex items-center gap-3">
-            <svg lucidePhoneCall class="h-5 w-5 shrink-0 text-primary"></svg>
-            <a href="tel:+919876543210" class="transition-colors hover:text-white">+91 98765 43210</a>
+            <svg lucidePhoneCall class="h-5 w-5 shrink-0 text-[#d7fa4c]"></svg>
+            <a href="tel:+919876543210" class="transition-colors hover:text-[#d7fa4c]">+91 98765 43210</a>
           </li>
           <li class="flex items-center gap-3">
-            <svg lucideMail class="h-5 w-5 shrink-0 text-primary"></svg>
-            <a href="mailto:hello@automart.in" class="transition-colors hover:text-white">hello@automart.in</a>
+            <svg lucideMail class="h-5 w-5 shrink-0 text-[#d7fa4c]"></svg>
+            <a href="mailto:hello@automart.in" class="transition-colors hover:text-[#d7fa4c]">hello@automart.in</a>
           </li>
           <li class="flex items-center gap-3">
-            <svg lucideMessageCircle class="h-5 w-5 shrink-0 text-primary"></svg>
-            <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-white">
+            <svg lucideMessageCircle class="h-5 w-5 shrink-0 text-[#d7fa4c]"></svg>
+            <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-[#d7fa4c]">
               WhatsApp Us
             </a>
           </li>
@@ -97,14 +97,14 @@
   </div>
 
   <!-- Bottom bar -->
-  <div class="border-t border-white/10">
+  <div class="border-t border-[#2f454d]">
     <div class="container-am flex flex-col items-center justify-between gap-4 py-7 sm:flex-row">
       <p class="text-center text-xs text-white/50 sm:text-left">
         &copy; {{ year }} AutoMart. All rights reserved. Made with care in Karnataka.
       </p>
       <div class="flex items-center gap-6">
         @for (link of legalLinks; track link.label) {
-          <a routerLink="{{ link.path }}" class="text-xs text-white/50 transition-colors hover:text-white">{{ link.label }}</a>
+          <a routerLink="{{ link.path }}" class="text-xs text-white/50 transition-colors hover:text-[#d7fa4c]">{{ link.label }}</a>
         }
       </div>
     </div>

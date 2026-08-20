@@ -10,7 +10,7 @@ export interface CatalogVehicle {
   model: string;
   variant: string;
   year: number;
-  priceInLakh: number;
+  price: number;
   fuel: string;
   transmission: string;
   mileage: number;

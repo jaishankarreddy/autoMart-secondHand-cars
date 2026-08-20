@@ -97,7 +97,7 @@ export class AdminOffersPageComponent implements OnInit {
   }
 
   formatPrice(value: number): string {
-    return `₹${(value / 100000).toFixed(1)} L`;
+    return `₹${Math.round(value).toLocaleString('en-IN')}`;
   }
 
   private load(): void {

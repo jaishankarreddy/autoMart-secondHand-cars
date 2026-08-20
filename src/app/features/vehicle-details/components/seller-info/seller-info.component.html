@@ -6,11 +6,11 @@
     <div class="flex items-center justify-between gap-3">
       <div class="flex items-center gap-3">
         <!-- Avatar -->
-        <span class="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-teal-700 text-white shadow-primary">
+        <span class="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-ink-2 text-[#d7fa4c] shadow-primary">
           <svg lucideShieldCheck class="h-6 w-6"></svg>
           @if (seller().verified) {
             <span class="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-sm">
-              <svg lucideBadgeCheck class="h-4 w-4 text-primary" [attr.fill]="'#4f46e5'"></svg>
+              <svg lucideBadgeCheck class="h-4 w-4 text-primary" [attr.fill]="'#14272c'"></svg>
             </span>
           }
         </span>
@@ -28,7 +28,7 @@
       <!-- Deals -->
       <div class="text-right">
         <span class="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2.5 py-1 text-xs font-semibold text-accent">
-          <svg lucideStar class="h-3 w-3" [color]="'#f59e0b'" [attr.fill]="'#f59e0b'"></svg>
+          <svg lucideStar class="h-3 w-3" [color]="'#d7fa4c'" [attr.fill]="'#d7fa4c'"></svg>
           4.8
         </span>
         <p class="mt-1.5 text-[11px] font-medium text-muted">{{ seller().deals }}+ deals</p>

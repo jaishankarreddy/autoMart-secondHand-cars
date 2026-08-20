@@ -10,15 +10,13 @@
 
     <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       @for (feature of features; track feature.title; let i = $index) {
-        <div
-          class="feature-card group relative overflow-hidden rounded-2xl border border-border bg-surface p-7 shadow-sm am-card {{ bentoClass(i) }}"
-        >
+        <div class="feature-card {{ cardClass(i) }}">
           <!-- soft gradient blob on hover -->
-          <div class="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary-soft opacity-0 blur-2xl transition-opacity duration-700 ease-smooth group-hover:opacity-100"></div>
+          <div class="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[#d7fa4c]/40 opacity-0 blur-2xl transition-opacity duration-700 ease-smooth group-hover:opacity-100"></div>
 
           <!-- decorative ring on featured cards -->
           @if (i === 0 || i === 5) {
-            <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
+            <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#d7fa4c] to-transparent"></div>
           }
 
           <div class="feature-icon relative">
@@ -44,11 +42,11 @@
             }
           </div>
 
-          <h3 class="relative mt-5 font-heading text-lg font-bold text-text">{{ feature.title }}</h3>
-          <p class="relative mt-2 text-sm leading-relaxed text-muted">{{ feature.description }}</p>
+          <h3 class="relative mt-5 font-heading text-lg font-bold {{ i === 5 ? 'text-white' : 'text-[#152329]' }}">{{ feature.title }}</h3>
+          <p class="relative mt-2 text-sm leading-relaxed {{ i === 5 ? 'text-white/70' : 'text-[#5e6b6a]' }}">{{ feature.description }}</p>
 
           @if (i === 5) {
-            <div class="relative mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary">
+            <div class="relative mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#d7fa4c]">
               Book doorstep delivery
               <svg class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
             </div>

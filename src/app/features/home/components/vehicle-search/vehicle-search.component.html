@@ -15,9 +15,8 @@
             <select
               class="search-select"
               [value]="vehicleType()"
-              (change)="vehicleType.set($any($event.target).value)"
+              (change)="setType($any($event.target).value)"
             >
-              <option value="" disabled>Select type</option>
               @for (opt of vehicleTypes; track opt.value) {
                 <option [value]="opt.value">{{ opt.label }}</option>
               }
@@ -34,7 +33,7 @@
           </span>
           <div class="relative">
             <select class="search-select" [value]="brand()" (change)="brand.set($any($event.target).value)">
-              @for (opt of brands; track opt.value) {
+              @for (opt of brands(); track opt.value) {
                 <option [value]="opt.value">{{ opt.label }}</option>
               }
             </select>

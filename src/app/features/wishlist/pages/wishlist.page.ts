@@ -1,7 +1,6 @@
 ﻿import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LucideHeart, LucideCar, LucideBike } from '@lucide/angular';
-import { NavbarComponent } from '../../home/components/navbar/navbar.component';
 import { FooterComponent } from '../../home/components/footer/footer.component';
 import { CarCardComponent } from '../../cars/components/car-card/car-card.component';
 import { BikeCardComponent } from '../../bikes/components/bike-card/bike-card.component';
@@ -17,7 +16,6 @@ import { WishlistService } from '../../../services/wishlist.service';
   standalone: true,
   imports: [
     RouterLink,
-    NavbarComponent,
     FooterComponent,
     CarCardComponent,
     BikeCardComponent,

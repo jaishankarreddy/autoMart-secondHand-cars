@@ -18,7 +18,7 @@ export interface VehicleFormModel {
   model: string;
   variant: string;
   year: string;
-  priceInLakh: string;
+  price: string;
   fuel: string;
   transmission: string;
   bodyType: string;
@@ -41,7 +41,7 @@ export interface VehicleFormModel {
 }
 
 const EMPTY_FORM: VehicleFormModel = {
-  brand: '', model: '', variant: '', year: '', priceInLakh: '', fuel: 'Petrol',
+  brand: '', model: '', variant: '', year: '', price: '', fuel: 'Petrol',
   transmission: 'Manual', bodyType: '', color: 'White', district: 'Bengaluru', location: '',
   mileage: '', kilometers: '', owners: '1', engineCC: '', abs: 'false', engine: '',
   power: '', registration: '', insurance: '', rating: '4', featured: 'false',
@@ -115,7 +115,7 @@ export class VehicleFormModalComponent implements OnInit {
         model: m.model,
         variant: m.variant,
         year: String(m.year),
-        priceInLakh: String(m.priceInLakh),
+        price: String(m.price),
         fuel: m.fuel,
         transmission: m.transmission.replace(/ km\/l.*/, ''),
         bodyType: m.bodyType,
@@ -168,7 +168,7 @@ export class VehicleFormModalComponent implements OnInit {
 
   buildPayload(): VehicleFormPayload | null {
     const f = this.form();
-    if (!f.brand.trim() || !f.model.trim() || !f.year || !f.priceInLakh) {
+    if (!f.brand.trim() || !f.model.trim() || !f.year || !f.price) {
       this.error.set('Brand, Model, Year and Price are required.');
       return null;
     }
@@ -178,7 +178,7 @@ export class VehicleFormModalComponent implements OnInit {
       model: f.model.trim(),
       variant: f.variant.trim(),
       year: parseInt(f.year, 10) || 0,
-      priceInLakh: parseFloat(f.priceInLakh) || 0,
+      price: parseFloat(f.price) || 0,
       fuel: f.fuel,
       transmission: f.transmission,
       mileage: parseFloat(f.mileage) || 0,

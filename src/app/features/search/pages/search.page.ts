@@ -9,7 +9,6 @@ import {
   LucideBike,
   LucideSlidersHorizontal
 } from '@lucide/angular';
-import { NavbarComponent } from '../../home/components/navbar/navbar.component';
 import { FooterComponent } from '../../home/components/footer/footer.component';
 import { CarCardComponent } from '../../cars/components/car-card/car-card.component';
 import { BikeCardComponent } from '../../bikes/components/bike-card/bike-card.component';
@@ -24,11 +23,11 @@ interface Option {
 
 const BUDGET_OPTIONS: Option[] = [
   { value: '', label: 'Any budget' },
-  { value: '0-5', label: 'Under ₹5 Lakh' },
-  { value: '5-10', label: '₹5 – ₹10 Lakh' },
-  { value: '10-15', label: '₹10 – ₹15 Lakh' },
-  { value: '15-25', label: '₹15 – ₹25 Lakh' },
-  { value: '25+', label: '₹25 Lakh+' }
+  { value: '0-5', label: 'Under ₹5,00,000' },
+  { value: '5-10', label: '₹5,00,000 – ₹10,00,000' },
+  { value: '10-15', label: '₹10,00,000 – ₹15,00,000' },
+  { value: '15-25', label: '₹15,00,000 – ₹25,00,000' },
+  { value: '25+', label: '₹25,00,000+' }
 ];
 
 const TYPE_OPTIONS: { value: SearchVehicleType; label: string }[] = [
@@ -42,7 +41,6 @@ const TYPE_OPTIONS: { value: SearchVehicleType; label: string }[] = [
   standalone: true,
   imports: [
     RouterLink,
-    NavbarComponent,
     FooterComponent,
     CarCardComponent,
     BikeCardComponent,

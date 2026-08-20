@@ -9,7 +9,7 @@ export interface VehicleFormPayload {
   model: string;
   variant: string;
   year: number;
-  priceInLakh: number;
+  price: number;
   fuel: string;
   transmission: string;
   mileage: number;
@@ -59,7 +59,7 @@ export class AdminService {
     set('model', payload.model);
     set('variant', payload.variant);
     set('year', payload.year);
-    set('priceInLakh', payload.priceInLakh);
+    set('price', payload.price);
     set('fuel', payload.fuel);
     set('transmission', payload.transmission);
     set('mileage', payload.mileage);

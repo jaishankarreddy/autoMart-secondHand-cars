@@ -3,7 +3,6 @@ import { Component, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   LucideHeart,
-  LucideStar,
   LucideShieldCheck,
   LucideGauge,
   LucideFuel,
@@ -26,7 +25,6 @@ import { CompareService } from '../../../compare/services/compare.service';
     DecimalPipe,
     RouterLink,
     LucideHeart,
-    LucideStar,
     LucideShieldCheck,
     LucideGauge,
     LucideFuel,

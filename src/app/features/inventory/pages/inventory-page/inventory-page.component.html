@@ -1,0 +1,249 @@
+<main class="inventory-page">
+  <section class="inventory-hero" id="top">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <div class="eyebrow dark"><svg lucideShieldCheck size="14"></svg> Curated, checked, clear</div>
+        <h1>Find your next<br /><em>great drive.</em></h1>
+        <p>A considered collection of pre-owned cars and bikes,<br class="desktop-only" /> ready for the road ahead.</p>
+      </div>
+      <div class="hero-side-note"><span class="hero-line"></span><span>Choose your<br /><strong>next chapter.</strong></span></div>
+    </div>
+  </section>
+
+  <section class="type-switcher" id="inventory">
+    <button [class.type-active]="type() === 'Car'" (click)="changeType('Car')"><svg lucideCarFront size="18"></svg> Cars <span>{{ carCount() }}</span></button>
+    <button [class.type-active]="type() === 'Bike'" (click)="changeType('Bike')"><svg lucideBike size="18"></svg> Bikes <span>{{ bikeCount() }}</span></button>
+  </section>
+
+  <section class="inventory-toolbar">
+    <div class="search-box"><svg lucideSearch size="18"></svg><input [value]="search()" (input)="setSearchValue($event)" placeholder="Search by brand, model or keyword" /></div>
+    <div class="sort-box"><svg lucideArrowDownUp size="16"></svg><select [value]="sort()" (change)="setSortValue($event)"><option>Newest first</option><option>Price: low to high</option><option>Price: high to low</option></select><svg lucideChevronDown size="15"></svg></div>
+    <div class="result-count"><strong>{{ total() }}</strong> vehicles found</div>
+    <div class="view-switch">
+      <button [class.selected-view]="view() === 'grid'" (click)="view.set('grid')" aria-label="Grid view"><svg lucideGrid2X2 size="17"></svg></button>
+      <button [class.selected-view]="view() === 'list'" (click)="view.set('list')" aria-label="List view"><svg lucideList size="18"></svg></button>
+    </div>
+  </section>
+
+  @if (activeFilterPills().length > 0) {
+    <section class="active-filters" aria-label="Active filters">
+      <span class="active-filters-label">Applied filters</span>
+      <div class="filter-pills">
+        @for (pill of activeFilterPills(); track pill.id) {
+          <button class="filter-pill" type="button" (click)="removeActiveFilter(pill.id)">
+            {{ pill.label }} <svg lucideX size="13"></svg>
+          </button>
+        }
+        <button class="clear-filter-pills" type="button" (click)="clearFilters()">Clear all</button>
+      </div>
+    </section>
+  }
+
+  <div class="mobile-filter-button"><button (click)="filtersOpen.set(true)"><svg lucideFilter size="16"></svg> Filters <span>{{ activeFilterCount() }}</span></button></div>
+
+  <section class="inventory-layout">
+    <aside class="filter-sidebar" [class.filter-open]="filtersOpen()">
+      <div class="filter-header">
+        <div><span class="section-kicker">REFINE YOUR SEARCH</span><h2>Filters</h2></div>
+        <button class="close-filters" (click)="filtersOpen.set(false)" aria-label="Close filters"><svg lucideX size="19"></svg></button>
+      </div>
+
+      @if (brands().length > 0) {
+        <div class="filter-group">
+          <div class="filter-title">Brand <svg lucideChevronDown size="16"></svg></div>
+          @for (item of brands(); track item) {
+            <label class="checkbox-row"><input type="checkbox" [checked]="isSelected(selectedBrands, item)" (change)="toggleBrand(item)" /><span class="fake-check"><svg lucideCheck size="12"></svg></span>{{ item }}</label>
+          }
+        </div>
+      }
+
+      @if (type() === 'Bike' && models().length > 0) {
+        <div class="filter-group">
+          <div class="filter-title">Model <svg lucideChevronDown size="16"></svg></div>
+          @for (item of models(); track item) {
+            <label class="checkbox-row"><input type="checkbox" [checked]="isSelected(selectedModels, item)" (change)="toggleModel(item)" /><span class="fake-check"><svg lucideCheck size="12"></svg></span>{{ item }}</label>
+          }
+        </div>
+      }
+
+      @if (years().length > 0) {
+        <div class="filter-group">
+          <div class="filter-title">Year <svg lucideChevronDown size="16"></svg></div>
+          @for (item of years(); track item) {
+            <label class="checkbox-row"><input type="checkbox" [checked]="isSelected(selectedYears, item)" (change)="toggleYear(item)" /><span class="fake-check"><svg lucideCheck size="12"></svg></span>{{ item }}</label>
+          }
+        </div>
+      }
+
+      @if (type() === 'Bike') {
+        <div class="filter-group">
+          <div class="filter-title">Price <svg lucideChevronDown size="16"></svg></div>
+          @for (bucket of priceBuckets(); track bucket.value) {
+            <label class="checkbox-row"><input type="checkbox" [checked]="priceBucket() === bucket.value" (change)="setPriceBucket(bucket.value)" /><span class="fake-check"><svg lucideCheck size="12"></svg></span>{{ bucket.label }}<small>{{ bucket.count }}</small></label>
+          }
+        </div>
+        <div class="filter-group">
+          <div class="filter-title">KMs Driven <svg lucideChevronDown size="16"></svg></div>
+          @for (bucket of kmBuckets(); track bucket.value) {
+            <label class="checkbox-row"><input type="checkbox" [checked]="kmBucket() === bucket.value" (change)="setKmBucket(bucket.value)" /><span class="fake-check"><svg lucideCheck size="12"></svg></span>{{ bucket.label }}<small>{{ bucket.count }}</small></label>
+          }
+        </div>
+      } @else {
+        <div class="filter-group">
+          <div class="filter-title">Budget <svg lucideChevronDown size="16"></svg></div>
+          <div class="price-range">
+            <div><span>Up to</span><strong>₹{{ priceMax().toLocaleString('en-IN') }}</strong></div>
+            <input type="range" [min]="maxPriceOfType() * 0.05" [max]="maxPriceOfType()" [value]="priceMax()" (input)="setPriceValue($event)" />
+          </div>
+          <div class="range-labels"><span>₹{{ (maxPriceOfType() * 0.05).toLocaleString('en-IN') }}</span><span>₹{{ maxPriceOfType().toLocaleString('en-IN') }}</span></div>
+        </div>
+      }
+
+      @if (type() === 'Bike') {
+        <div class="filter-group">
+          <div class="filter-title">Engine CC <svg lucideChevronDown size="16"></svg></div>
+          <div class="price-range">
+            <div><span>Min</span><strong>{{ ccMin() }} CC</strong></div>
+            <input type="range" min="100" [max]="maxCcOfType()" [value]="ccMin()" (input)="setCcMinValue($event)" />
+          </div>
+          <div class="price-range">
+            <div><span>Max</span><strong>{{ ccMax() }} CC</strong></div>
+            <input type="range" min="100" [max]="maxCcOfType()" [value]="ccMax()" (input)="setCcMaxValue($event)" />
+          </div>
+          <div class="range-labels"><span>100 CC</span><span>{{ maxCcOfType() }} CC</span></div>
+        </div>
+      }
+
+      @if (fuels().length > 0) {
+        <div class="filter-group">
+          <div class="filter-title">Fuel type <svg lucideChevronDown size="16"></svg></div>
+          @for (item of fuels(); track item) {
+            <label class="checkbox-row"><input type="checkbox" [checked]="isSelected(selectedFuels, item)" (change)="toggleFuel(item)" /><span class="fake-check"><svg lucideCheck size="12"></svg></span>{{ item }}</label>
+          }
+        </div>
+      }
+
+      @if (transmissions().length > 0) {
+        <div class="filter-group">
+          <div class="filter-title">Transmission <svg lucideChevronDown size="16"></svg></div>
+          @for (item of transmissions(); track item) {
+            <label class="checkbox-row"><input type="checkbox" [checked]="isSelected(selectedTransmissions, item)" (change)="toggleTransmission(item)" /><span class="fake-check"><svg lucideCheck size="12"></svg></span>{{ item }}</label>
+          }
+        </div>
+      }
+
+      @if (bodyTypes().length > 0) {
+        <div class="filter-group">
+          <div class="filter-title">Body type <svg lucideChevronDown size="16"></svg></div>
+          @for (item of bodyTypes(); track item) {
+            <label class="checkbox-row"><input type="checkbox" [checked]="isSelected(selectedBodyTypes, item)" (change)="toggleBodyType(item)" /><span class="fake-check"><svg lucideCheck size="12"></svg></span>{{ item }}</label>
+          }
+        </div>
+      }
+
+      @if (locations().length > 0) {
+        <div class="filter-group">
+          <div class="filter-title">Location <svg lucideChevronDown size="16"></svg></div>
+          @for (item of locations(); track item) {
+            <label class="checkbox-row"><input type="checkbox" [checked]="isSelected(selectedLocations, item)" (change)="toggleLocation(item)" /><span class="fake-check"><svg lucideCheck size="12"></svg></span>{{ item }}</label>
+          }
+        </div>
+      }
+
+      @if (colors().length > 0) {
+        <div class="filter-group">
+          <div class="filter-title">Colour <svg lucideChevronDown size="16"></svg></div>
+          @for (item of colors(); track item) {
+            <label class="checkbox-row"><input type="checkbox" [checked]="isSelected(selectedColors, item)" (change)="toggleColor(item)" /><span class="fake-check"><svg lucideCheck size="12"></svg></span>{{ item }}</label>
+          }
+        </div>
+      }
+
+      @if (type() === 'Bike') {
+        <div class="filter-group">
+          <div class="filter-title">ABS <svg lucideChevronDown size="16"></svg></div>
+          @for (option of ['With ABS', 'Without ABS']; track option) {
+            <label class="checkbox-row"><input type="radio" name="abs" [checked]="absOption() === option" (change)="setAbsOption(option)" /><span class="fake-check"><svg lucideCheck size="12"></svg></span>{{ option }}</label>
+          }
+        </div>
+      }
+
+      @if (ownerOptions().length > 0) {
+        <div class="filter-group">
+          <div class="filter-title">Owners <svg lucideChevronDown size="16"></svg></div>
+          @for (item of ownerOptions(); track item) {
+            <label class="checkbox-row"><input type="checkbox" [checked]="isSelected(selectedOwners, item)" (change)="toggleOwner(item)" /><span class="fake-check"><svg lucideCheck size="12"></svg></span>{{ item }} owner{{ item > 1 ? 's' : '' }}</label>
+          }
+        </div>
+      }
+
+      <div class="filter-group">
+        <div class="filter-title">Mileage <svg lucideChevronDown size="16"></svg></div>
+        <div class="price-range">
+          <div><span>Up to</span><strong>{{ mileageMax() }} km/l</strong></div>
+          <input type="range" min="5" [max]="maxMileageOfType()" [value]="mileageMax()" (input)="setMileageValue($event)" />
+        </div>
+        <div class="range-labels"><span>5 km/l</span><span>{{ maxMileageOfType() }} km/l</span></div>
+      </div>
+
+      <button class="clear-filters" [class.clear-disabled]="!hasActiveFilters()" [disabled]="!hasActiveFilters()" (click)="clearFilters()">Clear all filters</button>
+    </aside>
+
+    @if (filtersOpen()) {
+      <button class="filter-backdrop" (click)="filtersOpen.set(false)" aria-label="Close filters"></button>
+    }
+
+    <div class="results-area" [class.list-view]="view() === 'list'">
+      <div class="results-heading">
+        <div><span class="section-kicker">HANDPICKED FOR YOU</span><h2>{{ type() === 'Car' ? 'Cars worth making room for.' : 'Bikes with a story to tell.' }}</h2></div>
+        <button class="location-button"><svg lucideMapPin size="15"></svg> All locations <svg lucideChevronDown size="14"></svg></button>
+      </div>
+
+      @if (loadingResults()) {
+        <div class="results-loading"><svg lucideLoaderCircle size="22"></svg> Loading vehicles…</div>
+      } @else if (results().length > 0) {
+        <div class="listing-grid">
+          @for (vehicle of results(); track vehicle.id) {
+            <article class="listing-card">
+              <div class="listing-image" [style.background-image]="'url(' + vehicle.image + ')'">
+                @if (vehicle.featured) {
+                  <span class="featured-badge"><svg lucideSparkles size="12"></svg> Featured</span>
+                }
+                <button class="save-button" [class.saved]="isSaved(vehicle.id)" (click)="toggleSave(vehicle.id)" [attr.aria-label]="isSaved(vehicle.id) ? 'Remove from saved' : 'Save vehicle'"><svg lucideHeart size="17" [attr.fill]="isSaved(vehicle.id) ? 'currentColor' : 'none'"></svg></button>
+              </div>
+              <div class="listing-content">
+                <div class="listing-location"><span>{{ vehicle.brand }}</span><svg lucideMapPin size="13"></svg> {{ vehicle.location }}</div>
+                <h3>{{ vehicle.model }}</h3>
+                <p class="listing-trim">{{ vehicle.trim }} <span>•</span> {{ vehicle.type }}</p>
+                <div class="spec-row">
+                  <span><svg lucideGauge size="15"></svg> {{ vehicle.km }}</span>
+                  <span><svg lucideFuel size="15"></svg> {{ vehicle.fuel }}</span>
+                  <span><svg lucideCalendarDays size="15"></svg> {{ vehicle.year }}</span>
+                </div>
+                <div class="listing-footer">
+                  <strong>₹{{ vehicle.price.toLocaleString('en-IN') }}</strong>
+                  <a routerLink="/vehicles/{{ vehicle.id }}" aria-label="View details for {{ vehicle.brand }} {{ vehicle.model }}"><svg lucideArrowRight size="17"></svg></a>
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+        @if (hasMore()) {
+          <div class="load-more-wrap">
+            <button class="load-more" (click)="loadMore()" [disabled]="loadingMore()">
+              <svg lucideLoaderCircle size="17" [class.spin]="loadingMore()"></svg>
+              {{ loadingMore() ? 'Loading more…' : 'Load more vehicles' }}
+            </button>
+          </div>
+        }
+      } @else {
+        <div class="empty-state"><svg lucideSearch size="25"></svg><h3>No vehicles match that search</h3><p>Try widening your budget or clearing a filter.</p><button (click)="clearFilters()">Reset search</button></div>
+      }
+    </div>
+  </section>
+
+  <footer>
+    <a class="brand" routerLink="/home"><span class="brand-symbol"><svg lucideCarFront size="18"></svg></span>AutoMart<span>.</span></a>
+    <p>Move with confidence.</p>
+  </footer>
+</main>

@@ -5,7 +5,7 @@ import { CatalogService, CatalogVehicle } from '../../../services/catalog.servic
 
 export type SearchVehicleType = 'all' | 'car' | 'bike';
 
-const BUDGET_MAX = 25;
+const BUDGET_MAX = 2500000;
 
 @Injectable({ providedIn: 'root' })
 export class SearchService {
@@ -67,7 +67,7 @@ export class SearchService {
       if (type !== 'all' && v.vehicleType !== type) return false;
       if (brand && v.brand !== brand) return false;
       if (fuel && v.fuel !== fuel) return false;
-      if (budget && !this.matchesBudget(v.priceInLakh, budget)) return false;
+      if (budget && !this.matchesBudget(v.price, budget)) return false;
       if (kw) {
         const hay = `${v.brand} ${v.model} ${v.variant} ${v.bodyType} ${v.fuel} ${v.district}`
           .toLowerCase();
@@ -79,10 +79,10 @@ export class SearchService {
 
   private matchesBudget(price: number, range: string): boolean {
     switch (range) {
-      case '0-5': return price >= 0 && price < 5;
-      case '5-10': return price >= 5 && price < 10;
-      case '10-15': return price >= 10 && price < 15;
-      case '15-25': return price >= 15 && price < BUDGET_MAX;
+      case '0-5': return price >= 0 && price < 500000;
+      case '5-10': return price >= 500000 && price < 1000000;
+      case '10-15': return price >= 1000000 && price < 1500000;
+      case '15-25': return price >= 1500000 && price < BUDGET_MAX;
       case '25+': return price >= BUDGET_MAX;
       default: return true;
     }

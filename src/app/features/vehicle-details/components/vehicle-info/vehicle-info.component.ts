@@ -1,6 +1,6 @@
 import { Component, inject, input } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { LucideHeart, LucideMapPin, LucideShare, LucideStar, LucideBadgeCheck, LucideClock, LucideScale } from '@lucide/angular';
+import { LucideHeart, LucideMapPin, LucideShare, LucideBadgeCheck, LucideClock, LucideScale } from '@lucide/angular';
 import { VehicleDetail } from '../../models/vehicle-detail.model';
 import { WishlistService } from '../../../../services/wishlist.service';
 import { CompareService } from '../../../compare/services/compare.service';
@@ -14,7 +14,6 @@ import { RippleDirective } from '../../../cars/directives/ripple.directive';
     LucideHeart,
     LucideMapPin,
     LucideShare,
-    LucideStar,
     LucideBadgeCheck,
     LucideClock,
     LucideScale,
@@ -34,7 +33,7 @@ export class VehicleInfoComponent {
 
   /** Indian-formatted full rupee price, e.g. ₹17,85,000 */
   readonly priceInRupees = () =>
-    (this.vehicle().priceInLakh * 100000).toLocaleString('en-IN');
+    Math.round(this.vehicle().price).toLocaleString('en-IN');
 
   toggleWishlist(): void {
     this.wishlistService.toggle(this.vehicle().id);

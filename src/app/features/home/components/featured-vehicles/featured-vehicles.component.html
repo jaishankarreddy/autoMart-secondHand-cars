@@ -1,0 +1,43 @@
+<section class="content-section" id="featured-vehicles" appReveal>
+  <div class="section-heading">
+    <div>
+      <span class="section-kicker">FEATURED VEHICLES</span>
+      <h2>{{ heading().title }}</h2>
+      <p class="featured-subtitle">{{ heading().subtitle }}</p>
+    </div>
+    <a routerLink="{{ heading().link }}" class="text-link">View all {{ heading().linkLabel }} <svg lucideArrowRight size="16"></svg></a>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-tabs">
+      @for (type of ['All', 'Cars', 'Bikes']; track type) {
+        <button [class.filter-active]="activeType() === type" (click)="setType(type)">
+          @if (type === 'Cars') { <svg lucideCarFront size="15"></svg> }
+          @if (type === 'Bikes') { <svg lucideBike size="15"></svg> }
+          {{ type }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="vehicle-grid">
+    @for (vehicle of visibleVehicles(); track vehicle.id) {
+      <article class="vehicle-card" [routerLink]="['/vehicles', vehicle.id]">
+        <div class="vehicle-image" [style.background-image]="'url(' + vehicle.image + ')'">
+          <span class="vehicle-tag">{{ vehicle.tag }}</span>
+          <button class="heart-button" [class.wishlisted]="wishlisted(vehicle.id)" (click)="$event.stopPropagation(); toggleWishlist(vehicle.id)" [attr.aria-label]="wishlisted(vehicle.id) ? 'Remove from wishlist' : 'Add to wishlist'"><svg lucideHeart size="17" [attr.fill]="wishlisted(vehicle.id) ? 'currentColor' : 'none'"></svg></button>
+          <button class="compare-button" [class.compared]="compared(vehicle.id)" (click)="$event.stopPropagation(); compareService.toggle(vehicle.id)" [attr.aria-label]="compared(vehicle.id) ? 'Remove from compare' : 'Add to compare'"><svg lucideScale size="16" [attr.fill]="compared(vehicle.id) ? 'currentColor' : 'none'"></svg></button>
+        </div>
+        <div class="vehicle-details">
+          <div class="vehicle-type">{{ vehicle.type }} <span>•</span> AutoMart inspected</div>
+          <h3>{{ vehicle.name }}</h3>
+          <div class="vehicle-meta">{{ vehicle.meta }}</div>
+          <div class="vehicle-bottom">
+            <strong>{{ vehicle.price }}</strong>
+            <a aria-label="View {{ vehicle.name }}"><svg lucideArrowRight size="17"></svg></a>
+          </div>
+        </div>
+      </article>
+    }
+  </div>
+</section>

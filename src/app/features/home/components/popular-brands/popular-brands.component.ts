@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, inject, signal } from '@angular/core';
+﻿import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { LucideArrowRight } from '@lucide/angular';
@@ -16,13 +16,26 @@ interface ApiBrand {
   selector: 'app-popular-brands',
   standalone: true,
   imports: [RouterLink, LucideArrowRight, SectionHeadingComponent, RevealDirective],
-  templateUrl: './popular-brands.component.html'
+  templateUrl: './popular-brands.component.html',
+  styleUrls: ['./popular-brands.component.scss']
 })
 export class PopularBrandsComponent implements OnInit {
   private readonly http = inject(HttpClient);
 
   readonly brands = signal<ApiBrand[]>([]);
   readonly failedLogos = signal<Set<string>>(new Set());
+
+  /** Split the flat brand list into three horizontally scrolling rows. */
+  readonly rows = computed<ApiBrand[][]>(() => {
+    const list = this.brands();
+    if (list.length === 0) return [];
+    const third = Math.ceil(list.length / 3);
+    const rows: ApiBrand[][] = [];
+    for (let i = 0; i < list.length; i += third) {
+      rows.push(list.slice(i, i + third));
+    }
+    return rows;
+  });
 
   ngOnInit(): void {
     this.http.get<ApiBrand[]>('/api/brands').subscribe({

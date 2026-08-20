@@ -1,10 +1,7 @@
 import { Component } from '@angular/core';
-import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { HeroComponent } from '../../components/hero/hero.component';
-import { VehicleSearchComponent } from '../../components/vehicle-search/vehicle-search.component';
+import { LandingComponent } from '../../components/landing/landing.component';
 import { PopularBrandsComponent } from '../../components/popular-brands/popular-brands.component';
-import { FeaturedCarsComponent } from '../../components/featured-cars/featured-cars.component';
-import { FeaturedBikesComponent } from '../../components/featured-bikes/featured-bikes.component';
+import { FeaturedVehiclesComponent } from '../../components/featured-vehicles/featured-vehicles.component';
 import { WhyChooseUsComponent } from '../../components/why-choose-us/why-choose-us.component';
 import { StatisticsComponent } from '../../components/statistics/statistics.component';
 import { TestimonialsComponent } from '../../components/testimonials/testimonials.component';
@@ -16,12 +13,9 @@ import { FooterComponent } from '../../components/footer/footer.component';
   selector: 'app-home-page',
   standalone: true,
   imports: [
-    NavbarComponent,
-    HeroComponent,
-    VehicleSearchComponent,
+    LandingComponent,
     PopularBrandsComponent,
-    FeaturedCarsComponent,
-    FeaturedBikesComponent,
+    FeaturedVehiclesComponent,
     WhyChooseUsComponent,
     StatisticsComponent,
     TestimonialsComponent,

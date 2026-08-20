@@ -46,7 +46,7 @@
 
     <!-- Price on image -->
     <div class="absolute bottom-3.5 left-3.5 text-white">
-      <div class="font-heading text-[22px] font-bold leading-none drop-shadow">{{ vehicle().priceInLakh | price }}</div>
+      <div class="font-heading text-[22px] font-bold leading-none drop-shadow">{{ vehicle().price | price }}</div>
       <div class="mt-1 text-[11px] font-medium text-white/75">Drive-away · RC & insurance</div>
     </div>
   </div>
@@ -55,12 +55,6 @@
   <div class="flex flex-1 flex-col p-5">
     <div class="flex items-center justify-between">
       <span class="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">{{ vehicle().brand }}</span>
-      @if (vehicle().rating) {
-        <span class="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-xs font-semibold text-accent">
-          <svg lucideStar class="h-3 w-3" [color]="'#f59e0b'" [attr.fill]="'#f59e0b'"></svg>
-          {{ vehicle().rating }}
-        </span>
-      }
     </div>
 
     <h3 class="mt-1.5 font-heading text-lg font-bold leading-snug text-text">{{ vehicle().model }}</h3>

@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { SiteNavbarComponent } from '../../ui/site-navbar/site-navbar.component';
 
 @Component({
   selector: 'app-public-layout',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, SiteNavbarComponent],
   template: `
+    <app-site-navbar />
     <router-outlet />
   `,
   styles: `

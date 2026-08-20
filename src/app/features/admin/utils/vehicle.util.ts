@@ -7,7 +7,7 @@ export interface AdminVehicle {
   brand: string;
   model: string;
   variant: string;
-  priceInLakh: number;
+  price: number;
   fuel: string;
   transmission: string;
   engine: string;
@@ -35,7 +35,7 @@ export function toAdminVehicle(v: Car | Bike): AdminVehicle {
       brand: c.brand,
       model: c.model,
       variant: c.variant,
-      priceInLakh: c.priceInLakh,
+      price: c.price,
       fuel: c.fuel,
       transmission: c.transmission,
       engine: '—',
@@ -59,7 +59,7 @@ export function toAdminVehicle(v: Car | Bike): AdminVehicle {
     brand: b.brand,
     model: b.model,
     variant: b.variant,
-    priceInLakh: b.priceInLakh,
+    price: b.price,
     fuel: b.fuel,
     transmission: b.engineCC === 0 ? 'Electric' : 'Manual',
     engine: b.engineCC > 0 ? `${b.engineCC} cc` : 'Electric',

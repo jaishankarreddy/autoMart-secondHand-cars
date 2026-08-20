@@ -6,6 +6,7 @@
 
 /* 2. Google Fonts (must come before Tailwind so imports stay at the top) */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 /* 1. Tailwind CSS v4 core */
 @import "tailwindcss";
@@ -45,8 +46,8 @@
   --color-danger: var(--danger);
 
   /* Typography */
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-heading: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
 
   /* Custom Breakpoint */
   --breakpoint-uw: 1920px;

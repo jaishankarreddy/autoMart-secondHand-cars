@@ -55,7 +55,7 @@
                 </div>
               </div>
             </td>
-            <td class="px-4 py-3.5 font-semibold text-text">₹{{ bike.priceInLakh | number: '1.2-2' }} L</td>
+            <td class="px-4 py-3.5 font-semibold text-text">₹{{ bike.price | number: '1.0-0' }}</td>
             <td class="px-4 py-3.5">
               <span class="inline-flex items-center gap-1.5 text-muted">
                 @if (bike.engine === 'Electric') {

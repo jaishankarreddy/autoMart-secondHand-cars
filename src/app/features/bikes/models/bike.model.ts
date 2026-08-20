@@ -16,8 +16,8 @@ export interface Bike {
   model: string;
   variant: string;
   year: number;
-  /** Price expressed in Lakhs (e.g. 0.62 = ₹0.62 Lakh) */
-  priceInLakh: number;
+  /** Price in full Indian Rupees (e.g. 62000 = ₹62,000) */
+  price: number;
   /** Engine displacement in cc. 0 for electric bikes. */
   engineCC: number;
   fuel: BikeFuel;

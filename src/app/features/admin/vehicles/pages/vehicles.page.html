@@ -89,7 +89,7 @@
                 {{ vehicle.type }}
               </span>
             </td>
-            <td class="px-4 py-3.5 font-semibold text-text">₹{{ vehicle.priceInLakh | number: '1.1-1' }} L</td>
+            <td class="px-4 py-3.5 font-semibold text-text">₹{{ vehicle.price | number: '1.0-0' }}</td>
             <td class="px-4 py-3.5 text-muted">{{ vehicle.year }} · {{ vehicle.fuel }}</td>
             <td class="px-4 py-3.5 text-muted">{{ vehicle.mileage }}</td>
             <td class="px-4 py-3.5">

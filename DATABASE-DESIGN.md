@@ -169,7 +169,7 @@ const AVAILABILITIES  = ['available','reserved','sold']
 | `model`        | String    | required                                 |
 | `variant`      | String    | default ''                               |
 | `year`         | Number    | required                                 |
-| `priceInLakh`  | Number    | required, `index` - INR in lakhs (e.g. 16.8) |
+| `price`       | Number    | required, `index` - INR in rupees (e.g. 1680000) |
 | `rating`       | Number    | 0-5 default 0                            |
 | `featured`     | Boolean   | default false, `index`                   |
 | `availability` | String    | enum, default `available`, `index`      |
@@ -205,7 +205,7 @@ const AVAILABILITIES  = ['available','reserved','sold']
 ```js
 { vehicleType:1, brand:1 }    { vehicleType:1, fuel:1 }   { vehicleType:1, district:1 }
 { vehicleType:1, featured:1} { brand:1, model:1, variant:1 }
-{ vehicleType:1, priceInLakh:1} { vehicleType:1, year:-1 }
+{ vehicleType:1, price:1} { vehicleType:1, year:-1 }
 ```
 
 ### 5.2 `Brand` (`brands`)
@@ -423,7 +423,7 @@ featured, sortBy, page, limit
 ```
 - Repeated params (e.g. `?brand=A&brand=B`, `?owners=1&owners=2`) are collected into MongoDB `$in` queries.
 - `abs`/`featured` treated as booleans; `engineCcMin/Max` (>= / <=), `mileageMax` (<=),
-  `minPrice/maxPrice` on `priceInLakh`, `minYear/maxYear` on `year`.
+  `minPrice/maxPrice` on `price`, `minYear/maxYear` on `year`.
 - `q` does a case-insensitive regex across `brand`, `model`, `variant`, `district`.
 - `sortBy`: `price_asc`, `price_desc`, `year_desc`, `mileage_desc`, else `createdAt` desc.
 - `page`/`limit` implement **skip + limit** pagination.

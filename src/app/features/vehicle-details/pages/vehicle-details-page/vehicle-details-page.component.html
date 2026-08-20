@@ -1,80 +1,198 @@
-<app-navbar />
+<div class="app-shell">
+  @if (loading() && !vehicle()) {
+    <main id="top" class="skeleton-main">
+      <div class="skeleton-block skeleton-hero"></div>
+      <div class="skeleton-block skeleton-title"></div>
+      <div class="skeleton-block skeleton-specs"></div>
+    </main>
+  } @else if (vehicle(); as vehicle) {
+    <main id="top">
+      <div class="page-grid">
+        <section class="content-column">
+          <div class="breadcrumbs">
+            <span>Inventory</span><svg lucideChevronRight size="14"></svg>
+            <span>{{ isBike() ? 'Bikes' : 'Cars' }}</span><svg lucideChevronRight size="14"></svg>
+            <strong>{{ vehicle.brand }} {{ vehicle.model }}</strong>
+          </div>
 
-<main>
-  <!-- Breadcrumb -->
-  <div class="container-am pt-24 sm:pt-28">
-    <app-breadcrumb [items]="breadcrumbItems()" />
-  </div>
-
-  @if (vehicle(); as vehicle) {
-    <!-- Image gallery -->
-    <section class="container-am mt-5">
-      <app-image-gallery [images]="vehicle.images" [alt]="vehicle.brand + ' ' + vehicle.model" />
-    </section>
-
-    <!-- Main content -->
-    <section class="container-am mt-8 pb-16 sm:mt-10 sm:pb-24">
-      <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <!-- Left column -->
-        <div class="min-w-0 space-y-8">
-          <app-vehicle-info [vehicle]="vehicle" />
-          <app-quick-specs [vehicle]="vehicle" />
-          <app-features [features]="vehicle.features" />
-
-          <!-- Description -->
-          <article class="rounded-2xl border border-border bg-surface p-5 shadow-sm sm:p-7">
-            <div class="flex items-center gap-2.5">
-              <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-soft text-primary">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-              </span>
-              <h2 class="font-heading text-lg font-bold text-text sm:text-xl">About this Vehicle</h2>
+          <section class="gallery-card">
+            <div class="hero-image" [style.background-image]="'url(' + primaryImage() + ')'">
+              <div class="image-shade"></div>
+              <div class="gallery-top">
+                <span class="inspected"><svg lucideShieldCheck size="14"></svg> 200-point inspected</span>
+                <span class="photo-count">01 / {{ photos().length }}</span>
+              </div>
+              <div class="gallery-bottom">
+                <span>{{ vehicle.featured ? 'Featured listing' : 'Verified listing' }}</span>
+                <button (click)="showAllPhotos.set(!showAllPhotos())">
+                  {{ showAllPhotos() ? 'Hide photos' : 'View all photos' }} <svg lucideArrowUpRight size="14"></svg>
+                </button>
+              </div>
             </div>
-            <div class="prose-detail mt-5">
-              @for (paragraph of vehicle.description; track $index) {
+            @if (showAllPhotos()) {
+              <div class="thumbnail-row">
+                @for (photo of photos(); track photo; let i = $index) {
+                  <button
+                    class="{{ i === 0 ? 'selected' : '' }}"
+                    [style.background-image]="'url(' + photo + ')'"
+                    [attr.aria-label]="'View photo ' + (i + 1)"></button>
+                }
+              </div>
+            }
+          </section>
+
+          <section class="title-section">
+            <div class="status-row">
+              <span class="status featured"><svg lucideSparkles size="13"></svg> {{ vehicle.featured ? 'Featured' : 'Verified' }}</span>
+              <span class="status available"><svg lucideCircleCheck size="13"></svg> {{ vehicle.availability }}</span>
+            </div>
+            <div class="title-row">
+              <div>
+                <h1>{{ vehicle.brand }} {{ vehicle.model }}</h1>
+                <p>{{ vehicle.variant }}</p>
+              </div>
+              <div class="title-actions">
+                <button class="save-button" (click)="toggleSaved()">
+                  <svg lucideHeart size="17" [attr.fill]="saved() ? 'currentColor' : 'none'"></svg>
+                  <span>{{ saved() ? 'Saved' : 'Save' }}</span>
+                </button>
+                <button class="share-button" (click)="share()"><svg lucideShare2 size="17"></svg> <span>Share</span></button>
+              </div>
+            </div>
+            <div class="vehicle-meta">
+              <span><svg lucideMapPin size="15"></svg> {{ vehicle.district }}</span><i></i>
+              <span>{{ vehicle.year }}</span><i></i>
+              <span>{{ formatDistance(vehicle.kilometers) }}</span><i></i>
+              <span>{{ vehicle.fuel }} · {{ vehicle.transmission }}</span>
+            </div>
+          </section>
+
+          <section class="panel specs-panel">
+            <div class="panel-heading">
+              <span class="heading-icon"><svg lucideSlidersHorizontal size="17"></svg></span>
+              <div><h2>Quick specifications</h2><p>The details that matter at a glance</p></div>
+            </div>
+            <div class="spec-grid">
+              @for (spec of specs(); track spec.label) {
+                <div class="spec-item">
+                  <span class="spec-icon">
+                    @switch (spec.icon) {
+                      @case ('calendar') { <svg lucideCalendarDays size="17"></svg> }
+                      @case ('fuel') { <svg lucideFuel size="17"></svg> }
+                      @case ('sliders') { <svg lucideSlidersHorizontal size="17"></svg> }
+                      @case ('route') { <svg lucideRoute size="17"></svg> }
+                      @case ('users') { <svg lucideUsers size="17"></svg> }
+                      @case ('gauge') { <svg lucideGauge size="17"></svg> }
+                      @case ('zap') { <svg lucideZap size="17"></svg> }
+                      @case ('palette') { <svg lucidePalette size="17"></svg> }
+                      @case ('shield') { <svg lucideShieldCheck size="17"></svg> }
+                    }
+                  </span>
+                  <div><small>{{ spec.label }}</small><strong>{{ spec.value }}</strong></div>
+                </div>
+              }
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-heading">
+              <span class="heading-icon"><svg lucideSparkles size="17"></svg></span>
+              <h2>Features</h2>
+            </div>
+            <div class="feature-list">
+              @for (feature of features(); track feature) {
+                <span><svg lucideCheck size="14"></svg> {{ feature }}</span>
+              }
+            </div>
+          </section>
+
+          <section class="panel about-panel">
+            <div class="panel-heading">
+              <span class="heading-icon"><svg lucideBadgeCheck size="17"></svg></span>
+              <h2>About this vehicle</h2>
+            </div>
+            <div class="description">
+              @for (paragraph of vehicle.description; track paragraph) {
                 <p>{{ paragraph }}</p>
               }
             </div>
-          </article>
+          </section>
 
-          <app-seller-info [seller]="vehicle.seller" />
-          <app-offer-form [vehicle]="vehicle" />
-        </div>
+          <section class="panel seller-panel">
+            <div class="seller-main">
+              <div class="seller-avatar"><svg lucideShieldCheck size="25"></svg></div>
+              <div>
+                <span class="verified-label"><svg lucideBadgeCheck size="13"></svg> AutoMart verified</span>
+                <h2>{{ vehicle.seller.name }}</h2>
+                <p><svg lucideClock3 size="13"></svg> Typically replies within 30 minutes</p>
+              </div>
+            </div>
+            <div class="seller-buttons">
+              <button><svg lucidePhone size="16"></svg> Call</button>
+              <button><svg lucideMessageCircle size="16"></svg> WhatsApp</button>
+            </div>
+          </section>
 
-        <!-- Right column: sticky price card -->
-        <aside class="lg:block">
-          <div class="price-sticky">
-            <app-price-card
-              [priceInLakh]="vehicle.priceInLakh"
-              [phone]="vehicle.seller.phone"
-              [whatsapp]="vehicle.seller.whatsapp"
-            />
+          <section class="panel offer-panel" id="offer">
+            <div class="panel-heading">
+              <span class="heading-icon"><svg lucideTag size="17"></svg></span>
+              <div><h2>Make an offer</h2><p>Our vehicle experts will respond within 30 minutes.</p></div>
+            </div>
+            @if (offerSent()) {
+              <div class="success-message">
+                <svg lucideCircleCheck size="29"></svg>
+                <h3>Your offer is on its way.</h3>
+                <p>Our team will reach out shortly to discuss the next step.</p>
+              </div>
+            } @else {
+              <form (ngSubmit)="submitOffer($event)">
+                <div class="form-grid">
+                  <label>Full name
+                    <input required placeholder="e.g. Ravi Kumar" [value]="name()" (input)="name.set($any($event.target).value)" />
+                  </label>
+                  <label>Phone number
+                    <input required placeholder="e.g. 98765 43210" [value]="phone()" (input)="phone.set($any($event.target).value)" />
+                  </label>
+                </div>
+                <label>Your offer price (₹)
+                  <input required type="number" placeholder="e.g. 1434500" [value]="offerPrice()" (input)="offerPrice.set($any($event.target).value)" />
+                </label>
+                <label>Message <em>(optional)</em>
+                  <textarea placeholder="Anything we should know?" [value]="message()" (input)="message.set($any($event.target).value)"></textarea>
+                </label>
+                <button class="submit-button" type="submit">Submit offer <svg lucideSend size="15"></svg></button>
+                <small class="form-note">By submitting, you agree to be contacted by AutoMart. No payment is taken online.</small>
+              </form>
+            }
+          </section>
+        </section>
+
+        <aside class="price-sidebar">
+          <div class="price-card">
+            <span class="eyebrow">PRICE</span>
+            <div class="price-large">{{ formatPrice(vehicle.price) }} <small>Drive-away</small></div>
+            <p>Inclusive of RTO, roadworthiness &amp; warranty</p>
+            <button class="offer-button" (click)="scrollToOffer()"><svg lucideTag size="16"></svg> Offer price</button>
+            <a class="primary-action" [href]="'tel:' + phoneLink()"><svg lucidePhone size="16"></svg> Call now</a>
+            <a class="secondary-action" [href]="'https://wa.me/' + whatsappLink()" target="_blank"><svg lucideMessageCircle size="16"></svg> WhatsApp</a>
+            <button class="secondary-action"><svg lucideCalendarDays size="16"></svg> Schedule a visit</button>
+            <div class="trust-row">
+              <svg lucideShieldCheck size="22"></svg>
+              <div><strong>AutoMart certified</strong><span>200-point inspected</span></div>
+            </div>
+          </div>
+          <div class="sidebar-note">
+            <svg lucideBadgeCheck size="17"></svg>
+            <div><strong>Clear, considered buying</strong><span>Every vehicle is checked before it reaches you.</span></div>
           </div>
         </aside>
       </div>
-    </section>
-
-    <app-similar-vehicles [vehicles]="similar()" />
-  } @else {
-    <!-- Loading skeleton -->
-    <section class="container-am mt-6">
-      <div class="skeleton h-72 rounded-2xl sm:h-96"></div>
-      <div class="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <div class="space-y-6">
-          <div class="skeleton h-40 rounded-2xl"></div>
-          <div class="skeleton h-64 rounded-2xl"></div>
-          <div class="skeleton h-64 rounded-2xl"></div>
-        </div>
-        <div class="skeleton hidden h-96 rounded-2xl lg:block"></div>
-      </div>
-    </section>
+    </main>
   }
-</main>
-
-<app-footer />
+</div>
 
 <app-sticky-contact-card
-  class="lg:hidden"
-  [priceInLakh]="contactPrice()"
+  [price]="contactPrice()"
   [phone]="contactPhone()"
-  [whatsapp]="contactWhatsapp()"
-/>
+  [whatsapp]="contactWhatsapp()" />
+<app-footer />

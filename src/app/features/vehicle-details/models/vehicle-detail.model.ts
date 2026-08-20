@@ -19,12 +19,13 @@ export interface FeatureGroup {
 
 export interface VehicleDetail {
   id: string;
+  vehicleType?: 'car' | 'bike';
   brand: string;
   model: string;
   variant: string;
   year: number;
-  /** Price expressed in Lakhs (e.g. 17.85 = ₹17.85 Lakh) */
-  priceInLakh: number;
+  /** Price in full Indian Rupees (e.g. 1785000 = ₹17,85,000) */
+  price: number;
   fuel: string;
   transmission: string;
   /** Mileage in km/l */
@@ -36,6 +37,8 @@ export interface VehicleDetail {
   owners: number;
   bodyType: string;
   color: string;
+  abs?: boolean;
+  image?: string;
   availability: VehicleAvailability;
   featured: boolean;
   rating: number;

@@ -16,7 +16,7 @@
 
   &:hover {
     transform: translateY(-2px);
-    border-color: color-mix(in srgb, var(--primary) 30%, var(--border));
+    border-color: #152a30;
     box-shadow: var(--shadow-md);
   }
 }
@@ -26,6 +26,6 @@
 }
 
 .faq-item.open {
-  border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
-  box-shadow: var(--shadow-md);
+  border-color: #d7fa4c;
+  box-shadow: 0 12px 28px rgba(20, 39, 44, 0.1);
 }

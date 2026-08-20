@@ -8,8 +8,8 @@ export interface Vehicle {
   brand: string;
   model: string;
   year: number;
-  /** Price expressed in Lakhs (e.g. 16.8 = ₹16.8 Lakh) */
-  priceInLakh: number;
+  /** Price in full Indian Rupees (e.g. 1680000 = ₹16,80,000) */
+  price: number;
   fuel: FuelType;
   transmission: Transmission;
   /** Mileage in km/l */

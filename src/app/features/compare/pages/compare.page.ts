@@ -8,10 +8,8 @@ import {
   LucideSearch,
   LucideScale,
   LucideCar,
-  LucideBike,
-  LucideStar
+  LucideBike
 } from '@lucide/angular';
-import { NavbarComponent } from '../../home/components/navbar/navbar.component';
 import { FooterComponent } from '../../home/components/footer/footer.component';
 import { PricePipe } from '../../home/pipes/price.pipe';
 import { RippleDirective } from '../../cars/directives/ripple.directive';
@@ -24,7 +22,6 @@ import { CompareService, ComparableVehicle } from '../services/compare.service';
   imports: [
     DecimalPipe,
     RouterLink,
-    NavbarComponent,
     FooterComponent,
     PricePipe,
     RippleDirective,
@@ -35,8 +32,7 @@ import { CompareService, ComparableVehicle } from '../services/compare.service';
     LucideSearch,
     LucideScale,
     LucideCar,
-    LucideBike,
-    LucideStar
+    LucideBike
   ],
   templateUrl: './compare.page.html',
   styleUrl: './compare.page.scss'
@@ -59,6 +55,6 @@ export class ComparePageComponent {
   }
 
   isBest(v: ComparableVehicle): boolean {
-    return this.service.vehicles().length > 1 && v.priceInLakh === this.service.bestPrice();
+    return this.service.vehicles().length > 1 && v.price === this.service.bestPrice();
   }
 }
