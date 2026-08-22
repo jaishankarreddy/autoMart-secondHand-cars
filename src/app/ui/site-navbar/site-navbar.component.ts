@@ -55,6 +55,7 @@ export class SiteNavbarComponent {
     const url = this.currentUrl();
     return {
       cars: url.startsWith('/cars') || url.startsWith('/bikes'),
+      brands: url.startsWith('/brands'),
       about: url.startsWith('/about'),
       contact: url.startsWith('/contact'),
       home: url === '/' || url.startsWith('/home')

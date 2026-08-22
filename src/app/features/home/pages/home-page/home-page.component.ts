@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { LandingComponent } from '../../components/landing/landing.component';
 import { PopularBrandsComponent } from '../../components/popular-brands/popular-brands.component';
+import { BrandDirectoryComponent } from '../../components/brand-directory/brand-directory.component';
 import { FeaturedVehiclesComponent } from '../../components/featured-vehicles/featured-vehicles.component';
 import { WhyChooseUsComponent } from '../../components/why-choose-us/why-choose-us.component';
 import { StatisticsComponent } from '../../components/statistics/statistics.component';
@@ -15,6 +16,7 @@ import { FooterComponent } from '../../components/footer/footer.component';
   imports: [
     LandingComponent,
     PopularBrandsComponent,
+    BrandDirectoryComponent,
     FeaturedVehiclesComponent,
     WhyChooseUsComponent,
     StatisticsComponent,

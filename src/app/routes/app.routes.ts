@@ -42,6 +42,10 @@ export const routes: Routes = [
         loadChildren: () => import('@features/wishlist/wishlist.routes').then(m => m.WISHLIST_ROUTES)
       },
       {
+        path: 'brands',
+        loadChildren: () => import('@features/brands/brands.routes').then(m => m.BRANDS_ROUTES)
+      },
+      {
         path: 'about',
         loadChildren: () => import('@features/about/about.routes').then(m => m.ABOUT_ROUTES)
       },

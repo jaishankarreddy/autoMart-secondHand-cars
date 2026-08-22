@@ -2,6 +2,7 @@
   <a class="brand" routerLink="/home"><span class="brand-symbol"><svg lucideCarFront size="19"></svg></span>AutoMart<span>.</span></a>
   <nav>
     <a routerLink="/cars" [class.active-link]="navActive().cars">Find a vehicle</a>
+    <a routerLink="/brands" [class.active-link]="navActive().brands">Brands</a>
     <a routerLink="/about" [class.active-link]="navActive().about">Why AutoMart</a>
     <a routerLink="/contact" [class.active-link]="navActive().contact">Help</a>
     <!-- Sell your vehicle (coming soon)
@@ -31,6 +32,7 @@
       </div>
       <nav class="mobile-nav-links">
         <a routerLink="/cars" [class.active-link]="navActive().cars" (click)="menuOpen.set(false)">Find a vehicle</a>
+        <a routerLink="/brands" [class.active-link]="navActive().brands" (click)="menuOpen.set(false)">Brands</a>
         <a routerLink="/about" [class.active-link]="navActive().about" (click)="menuOpen.set(false)">Why AutoMart</a>
         <a routerLink="/contact" [class.active-link]="navActive().contact" (click)="menuOpen.set(false)">Help</a>
         <!-- Sell your vehicle (coming soon)

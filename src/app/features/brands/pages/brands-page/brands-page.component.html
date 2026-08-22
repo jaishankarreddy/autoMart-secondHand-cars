@@ -1,0 +1,161 @@
+<section class="brand-hero" id="top">
+  <div class="hero-orb orb-one"></div>
+  <div class="hero-orb orb-two"></div>
+  <div class="hero-copy">
+    <div class="eyebrow"><svg lucideSparkles size="13"></svg> Find your kind of drive</div>
+    <h1>Some brands just<br /><em>feel like you.</em></h1>
+    <p>From everyday companions to weekend dream machines —<br class="desktop-only" /> discover vehicles from the names you trust.</p>
+  </div>
+  <div class="hero-note">
+    <span class="note-line"></span>
+    <span>Carefully chosen.<br /><strong>Always AutoMart checked.</strong></span>
+  </div>
+</section>
+
+<section class="brand-explorer" id="brands">
+  <div class="explorer-head">
+    <div>
+      <span class="section-kicker">SHOP BY BRAND</span>
+      <h2>Choose your favourite.</h2>
+    </div>
+    <div class="type-toggle">
+      <button [class.active]="type() === 'Cars'" (click)="setType('Cars')">
+        <svg lucideCarFront size="16"></svg> Cars <span>14</span>
+      </button>
+      <button [class.active]="type() === 'Bikes'" (click)="setType('Bikes')">
+        <svg lucideBike size="17"></svg> Bikes <span>06</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="explorer-tools">
+    <div class="brand-search">
+      <svg lucideSearch size="17"></svg>
+      <input
+        [value]="query()"
+        (input)="onQueryChange($any($event.target).value)"
+        [placeholder]="'Search ' + type().toLowerCase() + ' brands'"
+      />
+      @if (query()) {
+        <button (click)="clearQuery()" aria-label="Clear search">
+          <svg lucideX size="15"></svg>
+        </button>
+      }
+    </div>
+    <button class="all-brands-button" (click)="toggleShowAll()">
+      {{ showAll() ? 'Show featured' : 'View all brands' }}
+      <svg lucideArrowRight size="15"></svg>
+    </button>
+  </div>
+
+  <div class="marquee-window">
+    <div class="fade-edge fade-left"></div>
+    <div class="fade-edge fade-right"></div>
+    @for (row of repeatedMarqueeRows(); track $index) {
+      <div class="brand-row" [class]="'marquee-row-' + ($index + 1)">
+        <div class="brand-track">
+          @for (brand of row; track $index) {
+            <button class="brand-card" (click)="selectBrand(brand)">
+              <span class="brand-logo-tile">
+                @if (brand.logo && !failedLogos().has(brand.name)) {
+                  <img [src]="brand.logo" [alt]="brand.name" loading="lazy" class="brand-logo-img" (error)="onLogoError(brand.name)" />
+                } @else {
+                  <span class="brand-mark" [style.color]="brand.color">
+                    @if (isRings(brand.mark)) {
+                      <span class="rings">&#x25C9;&#x25C9;&#x25C9;&#x25C9;</span>
+                    } @else {
+                      {{ brand.mark }}
+                    }
+                  </span>
+                }
+              </span>
+              <span class="brand-card-name">{{ brand.name }}</span>
+              <span class="brand-card-arrow"><svg lucideArrowRight size="14"></svg></span>
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</section>
+
+<section class="directory-section" id="inventory">
+  <div class="directory-heading">
+    <div>
+      <span class="section-kicker">THE FULL DIRECTORY</span>
+      <h2>Every name, one place.</h2>
+    </div>
+    <span class="directory-count">{{ filtered().length }} {{ type().toLowerCase() }} brands &middot; {{ totalVehicles() }} vehicles</span>
+  </div>
+
+  <div class="directory-grid">
+    @for (brand of directoryBrands(); track brand.name) {
+      <button class="directory-card" (click)="selectBrand(brand)">
+        <span class="directory-mark">
+          @if (brand.logo && !failedLogos().has(brand.name)) {
+            <img [src]="brand.logo" [alt]="brand.name" loading="lazy" class="directory-logo-img" (error)="onLogoError(brand.name)" />
+          } @else {
+            <span class="brand-mark compact-mark" [style.color]="brand.color">
+              @if (isRings(brand.mark)) {
+                <span class="rings">&#x25C9;&#x25C9;&#x25C9;&#x25C9;</span>
+              } @else {
+                {{ brand.mark }}
+              }
+            </span>
+          }
+        </span>
+        <span class="directory-details">
+          <strong>{{ brand.name }}</strong>
+          <small>{{ brand.description }}</small>
+        </span>
+        <span class="directory-stock">
+          {{ brand.count }} vehicles <svg lucideChevronRight size="14"></svg>
+        </span>
+      </button>
+    }
+  </div>
+
+  @if (filtered().length > 8) {
+    <button class="directory-expand" (click)="toggleShowAll()">
+      {{ showAll() ? 'Show fewer brands' : 'View all ' + filtered().length + ' brands' }}
+      <svg lucideChevronDown size="15" [class.flipped]="showAll()"></svg>
+    </button>
+  }
+</section>
+
+<section class="brand-cta" id="sell">
+  <div>
+    <span class="section-kicker">A BETTER WAY TO BUY</span>
+    <h2>Meet the vehicle<br /><em>you were looking for.</em></h2>
+  </div>
+  <a routerLink="/cars">Explore {{ type().toLowerCase() }}s <svg lucideArrowRight size="16"></svg></a>
+</section>
+
+<app-footer />
+
+@if (selectedBrand(); as brand) {
+  <div class="brand-modal-backdrop" (click)="onBackdropClick($event)">
+    <section class="brand-modal" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="closeModal()" aria-label="Close">
+        <svg lucideX size="18"></svg>
+      </button>
+      <span class="modal-logo">
+        @if (brand.logo && !failedLogos().has(brand.name)) {
+          <img [src]="brand.logo" [alt]="brand.name" class="modal-logo-img" (error)="onLogoError(brand.name)" />
+        } @else {
+          <span class="brand-mark" [style.color]="brand.color">
+            @if (isRings(brand.mark)) {
+              <span class="rings">&#x25C9;&#x25C9;&#x25C9;&#x25C9;</span>
+            } @else {
+              {{ brand.mark }}
+            }
+          </span>
+        }
+      </span>
+      <span class="section-kicker">{{ brand.type.toUpperCase() }} BRAND</span>
+      <h2>{{ brand.name }}</h2>
+      <p>{{ brand.description }}. Explore {{ brand.count }} AutoMart-checked {{ brand.type.toLowerCase() }} in stock.</p>
+      <a routerLink="/cars" (click)="closeModal()">View {{ brand.name }} vehicles <svg lucideArrowRight size="15"></svg></a>
+    </section>
+  </div>
+}

@@ -368,6 +368,30 @@ app.get('/api/brands', async (_req, res, next) => {
   }
 });
 
+// GET /api/brands/directory — brands with vehicle counts for home-page directory
+app.get('/api/brands/directory', async (_req, res, next) => {
+  try {
+    const counts = await Vehicle.aggregate([
+      { $group: { _id: '$brand', count: { $sum: 1 } } }
+    ]);
+    const countMap = new Map(counts.map((c) => [c._id, c.count]));
+    const brands = await Brand.find().sort({ name: 1 }).lean();
+    const result = brands
+      .map((b) => ({
+        name: b.name,
+        code: b.code,
+        color: b.color,
+        logo: b.logo,
+        type: b.type,
+        count: countMap.get(b.name) || 0
+      }))
+      .filter((b) => b.count > 0);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // GET /api/facets?type=car|bike — distinct filter options for the sidebar
 app.get('/api/facets', async (req, res, next) => {
   try {

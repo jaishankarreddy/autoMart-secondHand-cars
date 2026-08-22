@@ -17,7 +17,7 @@
 }
 .section-heading h2 {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-size: clamp(1.875rem, 4vw, 2.6rem);
   font-weight: 600;
   letter-spacing: -0.04em;
   line-height: 1;
@@ -61,7 +61,7 @@
   border-radius: 24px;
   color: #6c7774;
   display: flex;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   gap: 7px;
   padding: 9px 18px;
@@ -153,7 +153,7 @@
 }
 .vehicle-type {
   color: #eb7138;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -170,7 +170,7 @@
 }
 .vehicle-meta {
   color: #8a948f;
-  font-size: 13px;
+  font-size: 12px;
 }
 .vehicle-bottom {
   align-items: center;

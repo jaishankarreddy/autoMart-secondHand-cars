@@ -1,49 +1,35 @@
-<section class="py-20 sm:py-28" appReveal>
-  <div class="container-am">
-    <div class="flex flex-wrap items-end justify-between gap-4">
-      <app-section-heading
-        eyebrow="Popular Brands"
-        title="Shop by your favourite brand"
-        subtitle="From everyday hatchbacks to premium cruisers — find trusted vehicles from the brands you love."
-      />
-      <a routerLink="/cars" class="group mb-1 inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition-colors hover:text-primary-hover">
-        View all brands
-        <svg lucideArrowRight class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"></svg>
-      </a>
+<section class="brand-explorer" id="brands">
+  <div class="explorer-head">
+    <div>
+      <span class="section-kicker">Popular Brands</span>
+      <h2>Shop by your favourite brand</h2>
+      <p class="section-description">From everyday hatchbacks to premium cruisers — find trusted vehicles from the brands you love.</p>
     </div>
+  </div>
 
-    <!-- Marquee icon wall -->
-    <main class="icon-wall mt-12">
-      <div class="top-fade"></div>
-      <div class="side-fade side-fade-left"></div>
-      <div class="side-fade side-fade-right"></div>
-      <section class="marquee" aria-label="Popular brands">
-        @for (row of rows(); track $index) {
-          <div class="marquee-row" [class.row-even]="$index % 2 === 1">
-            <div class="marquee-track">
-              @for (duplicate of [0, 1, 2]; track duplicate) {
-                @for (app of row; track app.name) {
-                  <div class="app-tile" [attr.aria-label]="app.name">
-                    <div class="app-icon">
-                      @if (app.logo && !failedLogos().has(app.name)) {
-                        <img
-                          [src]="app.logo"
-                          [alt]="app.name"
-                          loading="lazy"
-                          class="app-img"
-                          (error)="onLogoError(app.name)"
-                        />
-                      } @else {
-                        <span class="app-code" [style.color]="app.color">{{ app.code }}</span>
-                      }
-                    </div>
-                  </div>
+  <div class="marquee-window">
+    <div class="fade-edge fade-left"></div>
+    <div class="fade-edge fade-right"></div>
+    @for (row of repeatedMarqueeRows(); track $index) {
+      <div class="brand-row" [class]="'marquee-row-' + ($index + 1)">
+        <div class="brand-track">
+          @for (brand of row; track $index) {
+            <a class="brand-card" [routerLink]="[brand.type === 'Bikes' ? '/bikes' : '/cars']" [queryParams]="{ brand: brand.name }">
+              <span class="brand-logo-tile">
+                @if (brand.logo && !failedLogos().has(brand.name)) {
+                  <img [src]="brand.logo" [alt]="brand.name" loading="lazy" class="brand-logo-img" (error)="onLogoError(brand.name)" />
+                } @else {
+                  <span class="brand-mark" [style.color]="brand.color">
+                    @if (isRings(brand.mark)) { <span class="rings">&#x25C9;&#x25C9;&#x25C9;&#x25C9;</span> } @else { {{ brand.mark }} }
+                  </span>
                 }
-              }
-            </div>
-          </div>
-        }
-      </section>
-    </main>
+              </span>
+              <span class="brand-card-name">{{ brand.name }}</span>
+              <span class="brand-card-arrow"><svg lucideArrowRight size="14"></svg></span>
+            </a>
+          }
+        </div>
+      </div>
+    }
   </div>
 </section>

@@ -1,0 +1,50 @@
+<section class="directory-section" appReveal>
+  <div class="container-am">
+    <div class="directory-heading">
+      <app-section-heading
+        eyebrow="SHOP BY BRAND"
+        title="Every name, one place."
+        [subtitle]="totalCount() + ' verified vehicles from ' + brands().length + ' trusted brands across Karnataka'"
+      />
+      <a routerLink="/brands" class="group mb-1 inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition-colors hover:text-primary-hover">
+        View all brands
+        <svg lucideArrowRight class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"></svg>
+      </a>
+    </div>
+
+    <div class="directory-grid">
+      @for (brand of visibleBrands(); track brand.name) {
+        <a class="directory-card" [routerLink]="brandLink(brand)">
+          <span class="directory-mark">
+            @if (getLogo(brand) && !failedLogos().has(brand.name)) {
+              <img
+                [src]="getLogo(brand)"
+                [alt]="brand.name"
+                loading="lazy"
+                class="directory-logo"
+                (error)="onLogoError(brand.name)"
+              />
+            } @else {
+              <span class="directory-code" [style.color]="brand.color">{{ brand.code }}</span>
+            }
+          </span>
+          <span class="directory-details">
+            <strong>{{ brand.name }}</strong>
+            <small>{{ brand.type === 'bike' ? 'Bikes' : brand.type === 'car' ? 'Cars' : 'Cars & Bikes' }}</small>
+          </span>
+          <span class="directory-stock">
+            {{ brand.count }} vehicles
+            <svg lucideChevronRight size="14"></svg>
+          </span>
+        </a>
+      }
+    </div>
+
+    @if (brands().length > initialCount) {
+      <button class="directory-expand" (click)="toggleShowAll()">
+        {{ showAll() ? 'Show fewer brands' : 'View all ' + brands().length + ' brands' }}
+        <svg lucideChevronDown size="15" [class.flipped]="showAll()"></svg>
+      </button>
+    }
+  </div>
+</section>

@@ -1,140 +1,42 @@
-.icon-wall {
-  position: relative;
-  display: grid;
-  gap: 1rem;
-  overflow: hidden;
-  padding: 1.25rem 0;
+:host { display: block; }
+
+@keyframes glide-right { from { transform: translateX(-18%); } to { transform: translateX(0); } }
+@keyframes glide-left { from { transform: translateX(0); } to { transform: translateX(-18%); } }
+
+.brand-explorer { background: #fbfaf7; margin: 0; padding: 80px 0 72px; position: relative; }
+.section-kicker { color: #eb7138; font-size: 12px; font-weight: 700; letter-spacing: 0.11em; }
+.explorer-head, .explorer-tools { align-items: flex-end; display: flex; justify-content: space-between; margin: 0 auto; max-width: 1240px; padding: 0 1rem; }
+.explorer-head h2 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.875rem, 4vw, 2.6rem); font-weight: 600; letter-spacing: -0.04em; line-height: 1.08; margin: 11px 0 0; }
+.section-description { color: #748079; font-size: 16px; line-height: 1.6; margin: 12px 0 0; max-width: 610px; }
+.marquee-window { margin-top: 35px; overflow: hidden; padding: 10px 0 4px; position: relative; }
+.brand-row { margin-bottom: 18px; overflow: visible; }
+.brand-track { display: flex; gap: 17px; width: max-content; }
+.marquee-row-1 .brand-track, .marquee-row-3 .brand-track { animation: glide-right 42s linear infinite; }
+.marquee-row-2 .brand-track { animation: glide-left 46s linear infinite; }
+.brand-card { align-items: center; background: rgba(255, 255, 255, 0.96); border: 1px solid #e6e7e1; border-radius: 16px; box-shadow: 0 9px 20px rgba(35, 55, 45, 0.06); display: flex; height: 88px; min-width: 190px; padding: 13px 14px; position: relative; transition: transform 0.25s ease, box-shadow 0.25s ease; }
+.brand-card:hover { box-shadow: 0 14px 28px rgba(35, 55, 45, 0.13); transform: translateY(-5px); }
+.brand-logo-tile { align-items: center; background: #f6f6f2; border: 1px solid #ecece7; border-radius: 12px; display: flex; height: 60px; justify-content: center; overflow: hidden; width: 60px; }
+.brand-logo-img { height: 36px; object-fit: contain; width: 36px; }
+.brand-mark { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: -0.06em; }
+.rings { font-size: 11px; letter-spacing: -5px; transform: scaleX(1.15); }
+.brand-card-name { color: #32423f; font-size: 14px; font-weight: 700; margin-left: 12px; max-width: 93px; text-align: left; white-space: normal; }
+.brand-card-arrow { align-items: center; background: #f1f2ed; border-radius: 50%; color: #73817b; display: flex; height: 25px; justify-content: center; margin-left: auto; opacity: 0; transform: translateX(-4px); transition: opacity 0.2s ease, transform 0.2s ease; width: 25px; }
+.brand-card:hover .brand-card-arrow { opacity: 1; transform: translateX(0); }
+.fade-edge { bottom: 0; pointer-events: none; position: absolute; top: 0; width: 14%; z-index: 3; }
+.fade-left { background: linear-gradient(90deg, #fbfaf7 8%, rgba(251, 250, 247, 0.83) 35%, transparent); left: 0; }
+.fade-right { background: linear-gradient(270deg, #fbfaf7 8%, rgba(251, 250, 247, 0.83) 35%, transparent); right: 0; }
+
+@media (max-width: 700px) {
+  .brand-explorer { padding: 55px 0 52px; }
+  .explorer-head { align-items: flex-start; flex-direction: column; gap: 20px; }
+  .brand-card { min-width: 178px; }
 }
 
-/* Soft vertical fade at the top so rows dissolve in/out */
-.top-fade {
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: 1.25rem;
-  z-index: 2;
-  pointer-events: none;
-  background: linear-gradient(to bottom, var(--bg) 0%, transparent 100%);
-}
-
-/* Horizontal fades on each side for a seamless loop illusion */
-.side-fade {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 4rem;
-  z-index: 3;
-  pointer-events: none;
-}
-
-.side-fade-left {
-  left: 0;
-  background: linear-gradient(to right, var(--bg) 0%, transparent 100%);
-}
-
-.side-fade-right {
-  right: 0;
-  background: linear-gradient(to left, var(--bg) 0%, transparent 100%);
-}
-
-.marquee {
-  display: grid;
-  gap: 1rem;
-}
-
-.marquee-row {
-  overflow: hidden;
-  mask-image: linear-gradient(to right, transparent 0, #000 6rem, #000 calc(100% - 6rem), transparent 100%);
-}
-
-/* Alternating rows scroll in opposite directions */
-.marquee-track {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  width: max-content;
-  animation: am-marquee 42s linear infinite;
-}
-
-.row-even .marquee-track {
-  animation-direction: reverse;
-}
-
-.app-tile {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 6.25rem;
-  height: 6.25rem;
-  border-radius: 1.25rem;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.app-tile:hover {
-  transform: translateY(-4px) scale(1.05);
-}
-
-.app-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 4.5rem;
-  height: 4.5rem;
-  border-radius: 1rem;
-  background: linear-gradient(145deg, var(--surface), var(--surface-2));
-  overflow: hidden;
-}
-
-.app-img {
-  width: 2.6rem;
-  height: 2.6rem;
-  object-fit: contain;
-}
-
-.app-code {
-  font-family: var(--font-heading);
-  font-size: 1.1rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-
-@keyframes am-marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-@media (max-width: 640px) {
-  .app-tile {
-    width: 4.75rem;
-    height: 4.75rem;
-    border-radius: 1rem;
-  }
-  .app-icon {
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 0.75rem;
-  }
-  .app-img {
-    width: 2rem;
-    height: 2rem;
-  }
-  .marquee-track {
-    animation-duration: 30s;
-  }
+@media (min-width: 640px) {
+  .explorer-head { padding-inline: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .marquee-track {
-    animation: none;
-  }
-  .app-tile:hover {
-    transform: none;
-  }
+  .marquee-row-1 .brand-track, .marquee-row-2 .brand-track, .marquee-row-3 .brand-track { animation: none; }
+  .brand-card:hover { transform: none; }
 }
