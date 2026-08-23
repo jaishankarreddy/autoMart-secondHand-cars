@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: '', // Set via build command or index.html injection
+  apiUrl: 'https://automart-backend-6p87.onrender.com',
 };
