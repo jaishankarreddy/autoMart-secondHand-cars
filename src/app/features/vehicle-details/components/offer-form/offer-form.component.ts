@@ -1,5 +1,6 @@
 import { Component, input, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { API_BASE } from '@config/api';
 import { LucideSend, LucideCheckCircle2, LucideShieldCheck } from '@lucide/angular';
 import { RippleDirective } from '../../../cars/directives/ripple.directive';
 import { VehicleDetail } from '../../models/vehicle-detail.model';
@@ -30,7 +31,7 @@ export class OfferFormComponent {
       return;
     }
     this.http
-      .post('/api/offers', {
+      .post(`${API_BASE}/offers`, {
         vehicleId: this.vehicle().id,
         name: this.name().trim(),
         phone: this.phone().trim(),

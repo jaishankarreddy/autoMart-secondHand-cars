@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_BASE } from '@config/api';
 
 /** Payload for creating/updating a vehicle via the admin API (multipart/form-data). */
 export interface VehicleFormPayload {
@@ -42,7 +43,7 @@ export interface ApiVehicle {
   [key: string]: unknown;
 }
 
-const API = '/api/admin/vehicles';
+const API = `${API_BASE}/admin/vehicles`;
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {

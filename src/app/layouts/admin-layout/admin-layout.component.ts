@@ -1,6 +1,7 @@
 import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { Router, NavigationEnd, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { API_BASE } from '@config/api';
 import { filter } from 'rxjs';
 import {
   LucideCar,
@@ -141,7 +142,7 @@ export class AdminLayoutComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.http.get<DashboardSummary>('/api/admin/dashboard').subscribe({
+    this.http.get<DashboardSummary>(`${API_BASE}/admin/dashboard`).subscribe({
       next: (s) => this.summary.set(s),
       error: () => undefined
     });

@@ -1,5 +1,6 @@
 ﻿import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { API_BASE } from '@config/api';
 import { RouterLink } from '@angular/router';
 import {
   LucideWarehouse,
@@ -82,11 +83,11 @@ export class AdminDashboardPageComponent implements OnInit {
   readonly latestContacts = computed(() => this.contacts().slice(0, 4));
 
   ngOnInit(): void {
-    this.http.get<AdminOffer[]>('/api/admin/offers').subscribe({
+    this.http.get<AdminOffer[]>(`${API_BASE}/admin/offers`).subscribe({
       next: (list) => this.offers.set(list.map((o) => ({ ...o, date: this.formatDate(o.date) }))),
       error: () => this.offers.set([])
     });
-    this.http.get<AdminContact[]>('/api/admin/contacts').subscribe({
+    this.http.get<AdminContact[]>(`${API_BASE}/admin/contacts`).subscribe({
       next: (list) => this.contacts.set(list.map((c) => ({ ...c, date: this.formatDate(c.date) }))),
       error: () => this.contacts.set([])
     });

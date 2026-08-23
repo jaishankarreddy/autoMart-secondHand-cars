@@ -1,5 +1,6 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { API_BASE } from '@config/api';
 import {
   LucideArrowUpRight,
   LucideBadgeCheck,
@@ -167,7 +168,7 @@ export class VehicleDetailsPageComponent {
       return;
     }
     this.http
-      .post('/api/offers', {
+      .post(`${API_BASE}/offers`, {
         vehicleId: v.id,
         name: this.name().trim(),
         phone: this.phone().trim(),

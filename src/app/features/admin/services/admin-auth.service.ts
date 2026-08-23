@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { API_BASE } from '@config/api';
 
 const TOKEN_KEY = 'automart-admin-token';
 const ADMIN_KEY = 'automart-admin';
@@ -26,7 +27,7 @@ export class AdminAuthService {
 
   login(email: string, password: string): Observable<AdminLoginResponse> {
     return this.http
-      .post<AdminLoginResponse>('/api/admin/login', { email, password })
+      .post<AdminLoginResponse>(`${API_BASE}/admin/login`, { email, password })
       .pipe(
         tap((res) => {
           if (typeof window !== 'undefined') {

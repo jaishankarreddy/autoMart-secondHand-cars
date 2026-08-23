@@ -1,6 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { API_BASE } from '@config/api';
 
 /** Shape returned by the Node backend `/api/vehicles` documents. */
 export interface CatalogVehicle {
@@ -43,8 +44,6 @@ export interface CatalogVehicle {
     deals?: number;
   };
 }
-
-const API_URL = '/api';
 
 @Injectable({ providedIn: 'root' })
 export class CatalogService {
@@ -104,7 +103,7 @@ export class CatalogService {
     while (out.length < total) {
       const res = await firstValueFrom(
         this.http.get<{ items: CatalogVehicle[]; total?: number }>(
-          `${API_URL}/vehicles?type=${type}&page=${page}&limit=${limit}`
+          `${API_BASE}/vehicles?type=${type}&page=${page}&limit=${limit}`
         )
       );
       const items = res?.items ?? [];

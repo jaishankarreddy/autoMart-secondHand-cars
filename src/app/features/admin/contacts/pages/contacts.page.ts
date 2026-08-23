@@ -1,5 +1,6 @@
 ﻿import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { API_BASE } from '@config/api';
 import {
   LucideSearch,
   LucideMail,
@@ -73,7 +74,7 @@ export class AdminContactsPageComponent implements OnInit {
     this.contacts.update((list) =>
       list.map((c) => (c.id === id ? { ...c, status: 'Replied' } : c))
     );
-    this.http.patch(`/api/admin/contacts/${id}`, { status: 'Replied' }).subscribe({
+    this.http.patch(`${API_BASE}/admin/contacts/${id}`, { status: 'Replied' }).subscribe({
       error: () => this.load()
     });
   }
@@ -82,7 +83,7 @@ export class AdminContactsPageComponent implements OnInit {
     this.contacts.update((list) =>
       list.map((c) => (c.id === id ? { ...c, status: 'New' } : c))
     );
-    this.http.patch(`/api/admin/contacts/${id}`, { status: 'New' }).subscribe({
+    this.http.patch(`${API_BASE}/admin/contacts/${id}`, { status: 'New' }).subscribe({
       error: () => this.load()
     });
   }
@@ -97,7 +98,7 @@ export class AdminContactsPageComponent implements OnInit {
   }
 
   private load(): void {
-    this.http.get<AdminContact[]>('/api/admin/contacts').subscribe({
+    this.http.get<AdminContact[]>(`${API_BASE}/admin/contacts`).subscribe({
       next: (list) => this.contacts.set(list.map((c) => ({ ...c, date: this.formatDate(c.date) }))),
       error: () => this.contacts.set([])
     });

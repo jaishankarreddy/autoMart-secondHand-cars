@@ -1,5 +1,6 @@
 ﻿import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { API_BASE } from '@config/api';
 import {
   LucideSearch,
   LucideCheck,
@@ -34,7 +35,7 @@ export class AdminOffersPageComponent implements OnInit {
   readonly statusFilter = signal<OfferFilter>('all');
 
   ngOnInit(): void {
-    this.http.get<AdminOffer[]>('/api/admin/offers').subscribe({
+    this.http.get<AdminOffer[]>(`${API_BASE}/admin/offers`).subscribe({
       next: (list) => this.offers.set(list.map((o) => ({ ...o, date: this.formatDate(o.date) }))),
       error: () => this.offers.set([])
     });
@@ -80,7 +81,7 @@ export class AdminOffersPageComponent implements OnInit {
     this.offers.update((list) =>
       list.map((o) => (o.id === id ? { ...o, status } : o))
     );
-    this.http.patch(`/api/admin/offers/${id}`, { status }).subscribe({
+    this.http.patch(`${API_BASE}/admin/offers/${id}`, { status }).subscribe({
       error: () => {
         this.load();
       }
@@ -101,7 +102,7 @@ export class AdminOffersPageComponent implements OnInit {
   }
 
   private load(): void {
-    this.http.get<AdminOffer[]>('/api/admin/offers').subscribe({
+    this.http.get<AdminOffer[]>(`${API_BASE}/admin/offers`).subscribe({
       next: (list) => this.offers.set(list.map((o) => ({ ...o, date: this.formatDate(o.date) }))),
       error: () => this.offers.set([])
     });

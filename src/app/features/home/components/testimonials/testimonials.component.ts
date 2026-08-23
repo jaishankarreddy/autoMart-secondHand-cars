@@ -1,5 +1,6 @@
 ﻿import { Component, OnInit, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { API_BASE } from '@config/api';
 import { LucideStar, LucideQuote } from '@lucide/angular';
 import { SectionHeadingComponent } from '../section-heading/section-heading.component';
 import { RevealDirective } from '../../directives/reveal.directive';
@@ -24,7 +25,7 @@ export class TestimonialsComponent implements OnInit {
   readonly testimonials = signal<ApiTestimonial[]>([]);
 
   ngOnInit(): void {
-    this.http.get<ApiTestimonial[]>('/api/testimonials').subscribe({
+    this.http.get<ApiTestimonial[]>(`${API_BASE}/testimonials`).subscribe({
       next: (list) => this.testimonials.set(list),
       error: () => this.testimonials.set([])
     });

@@ -1,5 +1,6 @@
 import { Component, ElementRef, inject, signal, AfterViewInit, OnDestroy, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { API_BASE } from '@config/api';
 import { RevealDirective } from '../../directives/reveal.directive';
 
 interface StatData {
@@ -30,7 +31,7 @@ export class StatisticsComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly stats = signal<StatData[]>([]);
 
   ngOnInit(): void {
-    this.http.get<ApiStat[]>('/api/homestats?section=section').subscribe({
+    this.http.get<ApiStat[]>(`${API_BASE}/homestats?section=section`).subscribe({
       next: (list) => this.stats.set(list.map((s) => this.toStat(s))),
       error: () => this.stats.set([])
     });

@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { CatalogVehicle } from '../../../services/catalog.service';
+import { API_BASE } from '@config/api';
 
 /** Server-side filter option lists + bounds for one vehicle type. */
 export interface InventoryFacets {
@@ -33,21 +34,19 @@ export interface VehiclePage {
   totalPages: number;
 }
 
-const API_URL = '/api';
-
 @Injectable({ providedIn: 'root' })
 export class InventoryService {
   private readonly http = inject(HttpClient);
 
   fetchVehicles(params: URLSearchParams): Promise<VehiclePage> {
     return firstValueFrom(
-      this.http.get<VehiclePage>(`${API_URL}/vehicles?${params.toString()}`)
+      this.http.get<VehiclePage>(`${API_BASE}/vehicles?${params.toString()}`)
     );
   }
 
   fetchFacets(type: 'car' | 'bike'): Promise<InventoryFacets> {
     return firstValueFrom(
-      this.http.get<InventoryFacets>(`${API_URL}/facets?type=${type}`)
+      this.http.get<InventoryFacets>(`${API_BASE}/facets?type=${type}`)
     );
   }
 }

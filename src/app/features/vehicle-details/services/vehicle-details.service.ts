@@ -1,6 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CatalogService, CatalogVehicle } from '../../../services/catalog.service';
+import { API_BASE } from '@config/api';
 import { VehicleDetail } from '../models/vehicle-detail.model';
 import { Car } from '../../cars/models/car.model';
 
@@ -34,7 +35,7 @@ export class VehicleDetailsService {
     this.catalog.load();
 
     this.http
-      .get<CatalogVehicle>(`/api/vehicles/${id}`)
+      .get<CatalogVehicle>(`${API_BASE}/vehicles/${id}`)
       .subscribe({
         next: (v) => {
           this.detailSource.set(v as unknown as VehicleDetail);

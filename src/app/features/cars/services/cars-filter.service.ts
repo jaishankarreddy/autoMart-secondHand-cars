@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { Car } from '../models/car.model';
 import { CatalogService, CatalogVehicle } from '../../../services/catalog.service';
+import { API_BASE } from '@config/api';
 
 export type CarSortKey =
   | 'newest'
@@ -74,8 +75,6 @@ const SORT_MAP: Record<CarSortKey, string> = {
   mileage: 'mileage_desc',
   year: 'year_desc'
 };
-
-const API_URL = '/api';
 
 @Injectable({ providedIn: 'root' })
 export class CarsFilterService {
@@ -179,7 +178,7 @@ export class CarsFilterService {
 
   private loadFacets(): void {
     this.http
-      .get<VehicleFacets>(`${API_URL}/facets?type=car`)
+      .get<VehicleFacets>(`${API_BASE}/facets?type=car`)
       .subscribe({
         next: (f) => this.facetsSource.set(f),
         error: () => undefined
@@ -194,7 +193,7 @@ export class CarsFilterService {
     try {
       const res = await firstValueFrom(
         this.http.get<{ items: CatalogVehicle[]; total?: number }>(
-          `${API_URL}/vehicles?${params}`
+          `${API_BASE}/vehicles?${params}`
         )
       );
       if (seq !== this.requestSeq) return;

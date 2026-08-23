@@ -1,5 +1,6 @@
 ﻿import { Component, OnInit, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { API_BASE } from '@config/api';
 import { LucidePlus, LucideMinus } from '@lucide/angular';
 import { SectionHeadingComponent } from '../section-heading/section-heading.component';
 import { RevealDirective } from '../../directives/reveal.directive';
@@ -23,7 +24,7 @@ export class FaqComponent implements OnInit {
   readonly openIndex = signal(0);
 
   ngOnInit(): void {
-    this.http.get<ApiFaq[]>('/api/faqs').subscribe({
+    this.http.get<ApiFaq[]>(`${API_BASE}/faqs`).subscribe({
       next: (list) => this.faqs.set(list),
       error: () => this.faqs.set([])
     });

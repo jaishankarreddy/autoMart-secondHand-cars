@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ToastService } from './toast.service';
 import { AuthService } from '../features/auth/services/auth.service';
+import { API_BASE } from '@config/api';
 
 @Injectable({ providedIn: 'root' })
 export class WishlistService {
@@ -35,7 +36,7 @@ export class WishlistService {
   }
 
   load(): void {
-    this.http.get<{ wishlist: string[] }>('/api/wishlist').subscribe({
+    this.http.get<{ wishlist: string[] }>(`${API_BASE}/wishlist`).subscribe({
       next: (res) => this.ids.set(res.wishlist ?? []),
       error: () => undefined
     });
@@ -63,8 +64,8 @@ export class WishlistService {
     this.ids.update((list) => (added ? [...list, id] : list.filter((x) => x !== id)));
 
     const request = added
-      ? this.http.post(`/api/wishlist/${id}`, {})
-      : this.http.delete(`/api/wishlist/${id}`);
+      ? this.http.post(`${API_BASE}/wishlist/${id}`, {})
+      : this.http.delete(`${API_BASE}/wishlist/${id}`);
 
     request.subscribe({
       error: () => {

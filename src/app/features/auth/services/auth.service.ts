@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { API_BASE } from '@config/api';
 
 const TOKEN_KEY = 'automart-user-token';
 const USER_KEY = 'automart-user';
@@ -27,13 +28,13 @@ export class AuthService {
   readonly user = signal<AuthUser | null>(this.readUser());
 
   login(email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>('/api/auth/login', { email, password }).pipe(
+    return this.http.post<AuthResponse>(`${API_BASE}/auth/login`, { email, password }).pipe(
       tap((res) => this.persist(res))
     );
   }
 
   register(name: string, email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>('/api/auth/register', { name, email, password }).pipe(
+    return this.http.post<AuthResponse>(`${API_BASE}/auth/register`, { name, email, password }).pipe(
       tap((res) => this.persist(res))
     );
   }

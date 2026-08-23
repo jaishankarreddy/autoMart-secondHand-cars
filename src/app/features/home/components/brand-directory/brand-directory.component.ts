@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { API_BASE } from '@config/api';
 import { RouterLink } from '@angular/router';
 import {
   LucideArrowRight,
@@ -83,7 +84,7 @@ export class BrandDirectoryComponent implements OnInit {
   );
 
   ngOnInit(): void {
-    this.http.get<BrandDirectoryEntry[]>('/api/brands/directory').subscribe({
+    this.http.get<BrandDirectoryEntry[]>(`${API_BASE}/brands/directory`).subscribe({
       next: (list) => {
         const enriched = list.map((b) => ({
           ...b,

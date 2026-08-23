@@ -1,5 +1,6 @@
 ﻿import { Component, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { API_BASE } from '@config/api';
 import {
   LucidePhone,
   LucideMail,
@@ -96,7 +97,7 @@ export class ContactPageComponent {
       return;
     }
     this.http
-      .post('/api/contacts', {
+      .post(`${API_BASE}/contacts`, {
         name: this.name().trim(),
         email,
         phone: this.phone().trim(),
