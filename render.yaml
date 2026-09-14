@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: automart-backend
+    name: ayracars-backend
     runtime: node
     plan: free
     rootDir: backend
@@ -18,4 +18,10 @@ services:
       - key: JWT_EXPIRES_IN
         value: 7d
       - key: CLIENT_ORIGIN
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
         sync: false

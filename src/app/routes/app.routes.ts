@@ -52,6 +52,18 @@ export const routes: Routes = [
       {
         path: 'contact',
         loadChildren: () => import('@features/contact/contact.routes').then(m => m.CONTACT_ROUTES)
+      },
+      {
+        path: 'sell',
+        loadChildren: () => import('@features/sell/sell.routes').then(m => m.SELL_ROUTES)
+      },
+      {
+        path: 'privacy',
+        loadChildren: () => import('@features/common/common.routes').then(m => m.COMMON_ROUTES)
+      },
+      {
+        path: 'terms',
+        loadChildren: () => import('@features/common/common.routes').then(m => m.COMMON_ROUTES)
       }
     ]
   },

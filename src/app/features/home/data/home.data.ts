@@ -125,7 +125,7 @@ export const TESTIMONIALS: Testimonial[] = [
   {
     name: 'Divya Rao',
     role: 'Bought Apache 200 · Belagavi',
-    quote: 'As a first-time buyer I was nervous, but AutoMart made everything simple, safe and stress-free.',
+    quote: 'As a first-time buyer I was nervous, but Ayra Cars made everything simple, safe and stress-free.',
     rating: 5,
     color: '#dc2626'
   }

@@ -3,12 +3,12 @@ const IMG = (id, w = 1200) =>
   `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
 
 const SELLER = {
-  name: 'AutoMart Certified',
+  name: 'Ayra Cars Certified',
   verified: true,
   hours: '9:00 AM – 8:00 PM, all days',
-  location: 'MG Road, Bengaluru',
+  location: 'Vasanthapura, Bangalore',
   phone: '+91 98765 43210',
-  whatsapp: '919876543210',
+  whatsapp: '919844555308',
   deals: 1200
 };
 
@@ -33,7 +33,7 @@ const VEHICLE_DETAILS = [
       'This Hyundai Creta SX (O) 1.5 Turbo is a beautifully maintained, single-owner SUV finished in a showroom-fresh Polar White. Bought new from the dealership in 2023 and driven a smooth 32,000 km, it offers the perfect blend of muscular presence and everyday practicality that has made the Creta India’s favourite compact SUV.',
       'Under the bonnet sits the refined 1.5-litre diesel heart, paired with a slick 7-speed DCT automatic. It delivers punchy low-end torque for effortless city commutes and composed highway cruising, all while returning an efficient 17.4 km/l.',
       'Inside, you get a 10.25-inch touchscreen with Android Auto and Apple CarPlay, a panoramic sunroof, ventilated front seats, ambient lighting and a Bose premium sound system.',
-      'This unit has passed AutoMart’s rigorous 200-point inspection, including engine diagnostics, body & paint audit, and a full paperwork & RC verification.'
+      'This unit has passed Ayra Cars’s rigorous 200-point inspection, including engine diagnostics, body & paint audit, and a full paperwork & RC verification.'
     ],
     features: [
       { key: 'safety', icon: 'shieldCheck', title: 'Safety', items: ['6 Airbags', 'ABS with EBD', 'Electronic Stability Control', 'Hill-start Assist', 'ISOFIX Child Mounts', 'Rear Parking Sensors & Camera'] },

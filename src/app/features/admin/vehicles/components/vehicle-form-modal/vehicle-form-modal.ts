@@ -86,9 +86,10 @@ export class VehicleFormModalComponent implements OnInit {
 
   readonly form = signal<VehicleFormModel>({ ...EMPTY_FORM });
   readonly type = signal<'car' | 'bike'>('car');
-  readonly photo = signal<File | null>(null);
-  readonly photoPreview = signal<string | null>(null);
-  readonly existingImage = signal<string>('');
+  readonly photos = signal<{ file: File; preview: string }[]>([]);
+  readonly existingImages = signal<string[]>([]);
+  readonly maxImages = 10;
+  readonly totalImages = computed(() => this.photos().length + this.existingImages().length);
   readonly saving = signal(false);
   readonly error = signal('');
 
@@ -107,7 +108,9 @@ export class VehicleFormModalComponent implements OnInit {
     const m = this.model();
     if (m) {
       this.type.set(m.type);
-      this.existingImage.set(m.image);
+      const existing = [m.image, ...(m.images ?? [])]
+        .filter((img): img is string => !!img);
+      this.existingImages.set(existing);
       const f = this.form();
       this.form.set({
         ...f,
@@ -147,23 +150,36 @@ export class VehicleFormModalComponent implements OnInit {
     }));
   }
 
-  onPhotoPicked(event: Event): void {
-    const files = (event.target as HTMLInputElement).files as FileList | null;
-    const file = files && files[0];
-    if (!file) return;
-    compressImage(file)
+  onPhotosPicked(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files ?? []);
+    input.value = '';
+    if (!files.length) return;
+    const room = this.maxImages - this.totalImages();
+    if (room <= 0) {
+      this.error.set(`You can upload a maximum of ${this.maxImages} images.`);
+      return;
+    }
+    if (files.length > room) {
+      this.error.set(`Only ${this.maxImages} images allowed — keeping the first ${room}.`);
+    }
+    Promise.all(files.slice(0, room).map((f) => compressImage(f)))
       .then((compressed) => {
-        this.photo.set(compressed);
-        this.photoPreview.set(URL.createObjectURL(compressed));
+        this.photos.update((list) => [
+          ...list,
+          ...compressed.map((file) => ({ file, preview: URL.createObjectURL(file) }))
+        ]);
         this.error.set('');
       })
-      .catch(() => this.error.set('Could not process that image.'));
+      .catch(() => this.error.set('Could not process those images.'));
   }
 
-  removePhoto(): void {
-    this.photo.set(null);
-    this.photoPreview.set(null);
-    this.existingImage.set('');
+  removePhoto(index: number): void {
+    this.photos.update((list) => list.filter((_, i) => i !== index));
+  }
+
+  removeExistingImage(index: number): void {
+    this.existingImages.update((list) => list.filter((_, i) => i !== index));
   }
 
   buildPayload(): VehicleFormPayload | null {
@@ -198,7 +214,8 @@ export class VehicleFormModalComponent implements OnInit {
       availability: f.availability as 'available' | 'reserved' | 'sold',
       rating: parseFloat(f.rating) || 0,
       description: f.description,
-      image: this.photo()
+      images: this.photos().map((p) => p.file),
+      existingImages: this.existingImages()
     };
   }
 

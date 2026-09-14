@@ -14,7 +14,6 @@ export class WishlistService {
 
   private readonly ids = signal<string[]>([]);
 
-  /** Current set of wishlisted vehicle ids for the signed-in user. */
   readonly wishlist = this.ids;
 
   constructor() {
@@ -38,15 +37,10 @@ export class WishlistService {
   load(): void {
     this.http.get<{ wishlist: string[] }>(`${API_BASE}/wishlist`).subscribe({
       next: (res) => this.ids.set(res.wishlist ?? []),
-      error: () => undefined
+      error: (err) => console.error('[Wishlist] load failed:', err)
     });
   }
 
-  /**
-   * Adds/removes a vehicle from the signed-in user's wishlist.
-   * When the user is logged out it redirects to the login page instead.
-   * Returns `true` if the item was added, `false` otherwise.
-   */
   toggle(id: string, opts?: { silent?: boolean }): boolean {
     if (!this.auth.isAuthenticated()) {
       if (!opts?.silent) {
@@ -60,19 +54,28 @@ export class WishlistService {
 
     const added = !this.has(id);
 
-    // Optimistic update, rolled back on failure.
+    // Optimistic update
     this.ids.update((list) => (added ? [...list, id] : list.filter((x) => x !== id)));
 
     const request = added
-      ? this.http.post(`${API_BASE}/wishlist/${id}`, {})
-      : this.http.delete(`${API_BASE}/wishlist/${id}`);
+      ? this.http.post<{ wishlist: string[] }>(`${API_BASE}/wishlist/${id}`, {})
+      : this.http.delete<{ wishlist: string[] }>(`${API_BASE}/wishlist/${id}`);
 
     request.subscribe({
-      error: () => {
-        this.ids.update((list) => (added ? list.filter((x) => x !== id) : [...list, id]));
-        if (!opts?.silent) {
-          this.toast.error('Could not update wishlist', 'Please try again in a moment.');
+      next: (res) => {
+        // Sync with server response
+        if (res?.wishlist) {
+          this.ids.set(res.wishlist);
         }
+      },
+      error: (err) => {
+        // Rollback optimistic update
+        this.ids.update((list) => (added ? list.filter((x) => x !== id) : [...list, id]));
+        const message = err?.error?.message || 'Could not update wishlist. Please try again.';
+        if (!opts?.silent) {
+          this.toast.error('Wishlist error', message);
+        }
+        console.error('[Wishlist] toggle failed:', err);
       }
     });
 

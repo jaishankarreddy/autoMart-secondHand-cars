@@ -16,7 +16,7 @@ const TESTIMONIALS = [
   { name: 'Arjun Nair', role: 'Sold Royal Enfield · Mangaluru', quote: 'I sold my Classic 350 within 24 hours. Fair offer, doorstep pickup and instant payment. Could not ask for more.', rating: 5, color: '#f59e0b' },
   { name: 'Kavya Gowda', role: 'Bought Brezza · Hubballi', quote: 'WhatsApp support is genuinely quick. They sent detailed videos before I even visited the centre.', rating: 5, color: '#16a34a' },
   { name: 'Imran Shaikh', role: 'Bought XUV700 · Kalaburagi', quote: 'Cleanest used car I have ever bought. The warranty and after-sales support feel like buying brand new.', rating: 4, color: '#7c3aed' },
-  { name: 'Divya Rao', role: 'Bought Apache 200 · Belagavi', quote: 'As a first-time buyer I was nervous, but AutoMart made everything simple, safe and stress-free.', rating: 5, color: '#dc2626' }
+  { name: 'Divya Rao', role: 'Bought Apache 200 · Belagavi', quote: 'As a first-time buyer I was nervous, but Ayra Cars made everything simple, safe and stress-free.', rating: 5, color: '#dc2626' }
 ];
 
 const FAQS = [

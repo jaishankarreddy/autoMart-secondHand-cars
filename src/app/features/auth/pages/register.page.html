@@ -1,107 +1,75 @@
 <div class="rounded-3xl border border-border bg-surface p-7 shadow-[0_24px_60px_rgba(10,15,30,0.1)] sm:p-9">
   <div class="flex items-center gap-3">
     <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-soft text-primary">
-      <svg lucideUserPlus class="h-5 w-5"></svg>
+      <svg lucideSmartphone class="h-5 w-5"></svg>
     </span>
     <div>
       <h1 class="font-heading text-2xl font-bold leading-tight text-text">Create your account</h1>
-      <p class="mt-0.5 text-sm text-muted">Join AutoMart in under a minute</p>
+      <p class="mt-0.5 text-sm text-muted">Enter your mobile number and set a password</p>
     </div>
   </div>
 
   <form class="mt-7 space-y-5" (submit)="onSubmit($event)">
     <div class="field-group">
-      <label for="register-name" class="field-label">Full Name</label>
-      <div class="relative">
-        <svg lucideUser class="field-icon"></svg>
+      <label for="reg-phone" class="field-label">Mobile Number</label>
+      <div class="phone-input-wrap">
+        <span class="phone-prefix">+91</span>
         <input
-          id="register-name"
-          type="text"
-          class="field-input has-icon"
-          placeholder="e.g. Ravi Kumar"
-          autocomplete="name"
-          [value]="name()"
-          (input)="name.set($any($event.target).value)"
+          id="reg-phone"
+          type="tel"
+          class="field-input phone-input"
+          placeholder="98445 55308"
+          autocomplete="tel"
+          maxlength="10"
+          [value]="phone()"
+          (input)="phone.set($any($event.target).value)"
         />
       </div>
     </div>
 
     <div class="field-group">
-      <label for="register-email" class="field-label">Email or Phone</label>
+      <label for="reg-password" class="field-label">Create Password</label>
       <div class="relative">
-        <svg lucideMail class="field-icon"></svg>
+        <svg lucideLock class="field-icon"></svg>
         <input
-          id="register-email"
-          type="text"
+          id="reg-password"
+          [type]="showPassword() ? 'text' : 'password'"
+          class="field-input has-icon pr-12"
+          placeholder="Min. 6 characters"
+          autocomplete="new-password"
+          [value]="password()"
+          (input)="password.set($any($event.target).value)"
+        />
+        <button
+          type="button"
+          (click)="showPassword.set(!showPassword())"
+          aria-label="Toggle password visibility"
+          class="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-muted transition-colors hover:text-primary"
+        >
+          @if (showPassword()) {
+            <svg lucideEyeOff class="h-4.5 w-4.5"></svg>
+          } @else {
+            <svg lucideEye class="h-4.5 w-4.5"></svg>
+          }
+        </button>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label for="reg-confirm" class="field-label">Confirm Password</label>
+      <div class="relative">
+        <svg lucideLock class="field-icon"></svg>
+        <input
+          id="reg-confirm"
+          [type]="showPassword() ? 'text' : 'password'"
           class="field-input has-icon"
-          placeholder="you@example.com"
-          autocomplete="username"
-          [value]="email()"
-          (input)="email.set($any($event.target).value)"
+          placeholder="Re-enter password"
+          autocomplete="new-password"
+          [value]="confirmPassword()"
+          (input)="confirmPassword.set($any($event.target).value)"
         />
       </div>
     </div>
-
-    <div class="grid gap-5 sm:grid-cols-2">
-      <div class="field-group">
-        <label for="register-password" class="field-label">Password</label>
-        <div class="relative">
-          <svg lucideLock class="field-icon"></svg>
-          <input
-            id="register-password"
-            [type]="showPassword() ? 'text' : 'password'"
-            class="field-input has-icon pr-12"
-            placeholder="Min. 6 characters"
-            autocomplete="new-password"
-            [value]="password()"
-            (input)="password.set($any($event.target).value)"
-          />
-          <button
-            type="button"
-            (click)="showPassword.set(!showPassword())"
-            aria-label="Toggle password visibility"
-            class="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-muted transition-colors hover:text-primary"
-          >
-            @if (showPassword()) {
-              <svg lucideEyeOff class="h-4.5 w-4.5"></svg>
-            } @else {
-              <svg lucideEye class="h-4.5 w-4.5"></svg>
-            }
-          </button>
-        </div>
-      </div>
-
-      <div class="field-group">
-        <label for="register-confirm" class="field-label">Confirm Password</label>
-        <div class="relative">
-          <svg lucideLock class="field-icon"></svg>
-          <input
-            id="register-confirm"
-            type="password"
-            class="field-input has-icon"
-            placeholder="Re-enter password"
-            autocomplete="new-password"
-            [value]="confirm()"
-            (input)="confirm.set($any($event.target).value)"
-          />
-        </div>
-      </div>
-    </div>
-
-    <label class="flex cursor-pointer select-none items-start gap-2.5 text-sm text-muted">
-      <input
-        type="checkbox"
-        class="mt-0.5 h-4 w-4 shrink-0 rounded border-border accent-[var(--primary)]"
-        [checked]="terms()"
-        (change)="terms.set($any($event.target).checked)"
-      />
-      <span>
-        I agree to the
-        <a href="#" class="font-semibold text-primary transition-colors hover:text-primary-hover">Terms of Service</a>
-        and
-        <a href="#" class="font-semibold text-primary transition-colors hover:text-primary-hover">Privacy Policy</a>
-      </span>
-    </label>
 
     @if (error()) {
       <p class="rounded-xl border border-danger/30 bg-danger/5 px-4 py-3 text-sm font-medium text-danger">

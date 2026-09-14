@@ -1,15 +1,20 @@
 ﻿import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { LucideHeart, LucideCar, LucideBike } from '@lucide/angular';
+import { LucideHeart, LucideArrowRight, LucideScale } from '@lucide/angular';
 import { FooterComponent } from '../../home/components/footer/footer.component';
-import { CarCardComponent } from '../../cars/components/car-card/car-card.component';
-import { BikeCardComponent } from '../../bikes/components/bike-card/bike-card.component';
-import { RippleDirective } from '../../cars/directives/ripple.directive';
-import { RevealDirective } from '../../home/directives/reveal.directive';
-import { CarsFilterService } from '../../cars/services/cars-filter.service';
-import { BikesFilterService } from '../../bikes/services/bikes-filter.service';
-import { CatalogService } from '../../../services/catalog.service';
+import { CatalogService, CatalogVehicle } from '../../../services/catalog.service';
 import { WishlistService } from '../../../services/wishlist.service';
+import { CompareService } from '../../compare/services/compare.service';
+
+interface DisplayVehicle {
+  id: string;
+  name: string;
+  type: string;
+  price: string;
+  meta: string;
+  image: string;
+  tag: string;
+}
 
 @Component({
   selector: 'app-wishlist-page',
@@ -17,33 +22,51 @@ import { WishlistService } from '../../../services/wishlist.service';
   imports: [
     RouterLink,
     FooterComponent,
-    CarCardComponent,
-    BikeCardComponent,
-    RippleDirective,
-    RevealDirective,
     LucideHeart,
-    LucideCar,
-    LucideBike
+    LucideArrowRight,
+    LucideScale
   ],
-  templateUrl: './wishlist.page.html'
+  templateUrl: './wishlist.page.html',
+  styleUrl: './wishlist.page.scss'
 })
 export class WishlistPageComponent {
-  private readonly carsService = inject(CarsFilterService);
-  private readonly bikesService = inject(BikesFilterService);
   private readonly catalog = inject(CatalogService);
   private readonly wishlistService = inject(WishlistService);
+  readonly compareService = inject(CompareService);
 
   constructor() {
     this.catalog.load();
   }
 
-  readonly wishlistedCars = computed(() =>
-    this.carsService.cars().filter((c) => this.wishlistService.has(c.id))
-  );
+  private toDisplay(v: CatalogVehicle): DisplayVehicle {
+    return {
+      id: v.id,
+      name: `${v.year} ${v.brand} ${v.model}`,
+      type: v.vehicleType === 'car' ? 'Car' : 'Bike',
+      price: `₹${Math.round(v.price).toLocaleString('en-IN')}`,
+      meta: `${v.kilometers?.toLocaleString('en-IN') ?? 0} km  •  ${v.transmission}`,
+      image: v.image,
+      tag: 'Saved'
+    };
+  }
 
-  readonly wishlistedBikes = computed(() =>
-    this.bikesService.bikes().filter((b) => this.wishlistService.has(b.id))
+  readonly wishlistedVehicles = computed<DisplayVehicle[]>(() =>
+    this.catalog.vehicles()
+      .filter((v) => this.wishlistService.has(v.id))
+      .map((v) => this.toDisplay(v))
   );
 
   readonly totalCount = computed(() => this.wishlistService.count());
+
+  wishlisted(id: string): boolean {
+    return this.wishlistService.has(id);
+  }
+
+  toggleWishlist(id: string): void {
+    this.wishlistService.toggle(id);
+  }
+
+  compared(id: string): boolean {
+    return this.compareService.ids().includes(id);
+  }
 }

@@ -1,21 +1,21 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Car } from '../../cars/models/car.model';
 import { Bike } from '../../bikes/models/bike.model';
 import { CatalogService, CatalogVehicle } from '../../../services/catalog.service';
 import { ToastService } from '../../../services/toast.service';
+import { API_BASE } from '@config/api';
 
-const STORAGE_KEY = 'automart-compare';
+const SESSION_KEY = 'ayracars-compare-session';
 
-function readStored(): string[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.filter((x) => typeof x === 'string') : [];
-  } catch {
-    return [];
+function getOrCreateSessionId(): string {
+  if (typeof window === 'undefined') return '';
+  let id = window.localStorage.getItem(SESSION_KEY);
+  if (!id) {
+    id = 'cmp-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+    window.localStorage.setItem(SESSION_KEY, id);
   }
+  return id;
 }
 
 export interface ComparableVehicle {
@@ -44,16 +44,19 @@ export interface ComparableVehicle {
 
 @Injectable({ providedIn: 'root' })
 export class CompareService {
+  private readonly http = inject(HttpClient);
   private readonly catalogService = inject(CatalogService);
   private readonly toast = inject(ToastService);
+  private readonly sessionId = getOrCreateSessionId();
 
   constructor() {
     this.catalogService.load();
+    this.loadFromServer();
   }
 
   readonly max = 3;
 
-  readonly ids = signal<string[]>(readStored());
+  readonly ids = signal<string[]>([]);
 
   readonly vehicles = computed<ComparableVehicle[]>(() =>
     this.ids()
@@ -76,42 +79,53 @@ export class CompareService {
   });
 
   toggle(id: string, opts?: { silent?: boolean }): void {
-    let added = false;
-    this.ids.update((ids) => {
-      if (ids.includes(id)) {
-        return ids.filter((i) => i !== id);
-      }
-      if (ids.length >= this.max) {
-        this.toast.error('Compare list is full', `You can compare up to ${this.max} vehicles. Remove one first.`);
-        return ids;
-      }
-      added = true;
-      return [...ids, id];
-    });
-    if (!opts?.silent) {
-      if (added) this.toast.success('Added to compare', 'Open the compare bar to view them side by side.');
-      else this.toast.info('Removed from compare');
+    const isRemoving = this.ids().includes(id);
+
+    if (isRemoving) {
+      this.remove(id, opts);
+      return;
     }
-    this.persist();
+
+    if (this.ids().length >= this.max) {
+      this.toast.error('Compare list is full', `You can compare up to ${this.max} vehicles. Remove one first.`);
+      return;
+    }
+
+    this.ids.update((ids) => [...ids, id]);
+    this.http.post<{ vehicleIds: string[] }>(`${API_BASE}/compare`, { sessionId: this.sessionId, vehicleId: id }).subscribe({
+      error: () => {
+        this.ids.update((ids) => ids.filter((i) => i !== id));
+        this.toast.error('Could not update comparison', 'Please try again.');
+      }
+    });
+
+    if (!opts?.silent) {
+      this.toast.success('Added to compare', 'Open the compare bar to view them side by side.');
+    }
   }
 
-  remove(id: string): void {
+  remove(id: string, opts?: { silent?: boolean }): void {
     this.ids.update((ids) => ids.filter((i) => i !== id));
-    this.persist();
+    this.http.delete<{ vehicleIds: string[] }>(`${API_BASE}/compare/${id}`, { params: { sessionId: this.sessionId } }).subscribe({
+      error: () => undefined
+    });
+    if (!opts?.silent) {
+      this.toast.info('Removed from compare');
+    }
   }
 
   clear(): void {
     this.ids.set([]);
-    this.persist();
+    this.http.delete<{ vehicleIds: string[] }>(`${API_BASE}/compare`, { params: { sessionId: this.sessionId } }).subscribe({
+      error: () => undefined
+    });
   }
 
-  private persist(): void {
-    if (typeof window === 'undefined') return;
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(this.ids()));
-    } catch {
-      /* storage may be unavailable (private mode) — ignore */
-    }
+  private loadFromServer(): void {
+    this.http.get<{ vehicleIds: string[] }>(`${API_BASE}/compare`, { params: { sessionId: this.sessionId } }).subscribe({
+      next: (res) => this.ids.set(res.vehicleIds ?? []),
+      error: () => undefined
+    });
   }
 
   private lookup(id: string): ComparableVehicle | null {

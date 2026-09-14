@@ -96,7 +96,6 @@ export class InventoryPageComponent {
   readonly type = signal<VehicleType>(this.route.snapshot.data['type'] === 'bike' ? 'Bike' : 'Car');
   readonly sort = signal('Newest first');
   readonly search = signal('');
-  readonly saved = signal<string[]>([]);
   readonly filtersOpen = signal(false);
   readonly view = signal<'grid' | 'list'>('grid');
 
@@ -525,14 +524,10 @@ export class InventoryPageComponent {
   }
 
   toggleSave(id: string): void {
-    this.saved.update((current) =>
-      current.includes(id)
-        ? current.filter((item) => item !== id)
-        : [...current, id]
-    );
+    this.wishlistService.toggle(id);
   }
 
-  isSaved = (id: string): boolean => this.saved().includes(id);
+  isSaved = (id: string): boolean => this.wishlistService.has(id);
 
   setSearchValue(event: Event): void {
     const value = (event.target as HTMLInputElement).value;

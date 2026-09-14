@@ -12,7 +12,7 @@ import { RippleDirective } from '../../../cars/directives/ripple.directive';
 export class PriceCardComponent {
   readonly price = input.required<number>();
   readonly phone = input('+91 98765 43210');
-  readonly whatsapp = input('919876543210');
+  readonly whatsapp = input('919844555308');
 
   get priceInRupees(): string {
     return Math.round(this.price()).toLocaleString('en-IN');

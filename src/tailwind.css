@@ -1,5 +1,5 @@
 /* ============================================================
-   AutoMart — Tailwind CSS v4 Entry Point (plain CSS, not SCSS)
+   Ayra Cars — Tailwind CSS v4 Entry Point (plain CSS, not SCSS)
    Registers semantic design tokens as Tailwind utilities.
    Actual token values live in src/styles.scss (theming + dark).
    ============================================================ */
@@ -20,7 +20,7 @@
 /* 3. Class-based dark mode variant (toggled by adding `.dark` to <html>) */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* 4. AutoMart semantic tokens -> Tailwind utilities
+/* 4. Ayra Cars semantic tokens -> Tailwind utilities
    e.g. `bg-surface`, `text-muted`, `border-border`, `bg-primary`, `text-ink` */
 @theme {
   /* Brand */

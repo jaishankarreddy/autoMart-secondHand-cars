@@ -20,6 +20,7 @@ export interface AdminVehicle {
   bodyType: string;
   abs: 'Yes' | 'No' | '—';
   image: string;
+  images?: string[];
   status: 'Available' | 'Sold';
   rating?: number;
 }

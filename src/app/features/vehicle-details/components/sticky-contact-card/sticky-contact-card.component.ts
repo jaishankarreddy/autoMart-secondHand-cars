@@ -12,5 +12,5 @@ import { RippleDirective } from '../../../cars/directives/ripple.directive';
 export class StickyContactCardComponent {
   readonly price = input.required<number>();
   readonly phone = input('+91 98765 43210');
-  readonly whatsapp = input('919876543210');
+  readonly whatsapp = input('919844555308');
 }

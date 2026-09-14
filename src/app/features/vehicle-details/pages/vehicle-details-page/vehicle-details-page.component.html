@@ -15,31 +15,7 @@
             <strong>{{ vehicle.brand }} {{ vehicle.model }}</strong>
           </div>
 
-          <section class="gallery-card">
-            <div class="hero-image" [style.background-image]="'url(' + primaryImage() + ')'">
-              <div class="image-shade"></div>
-              <div class="gallery-top">
-                <span class="inspected"><svg lucideShieldCheck size="14"></svg> 200-point inspected</span>
-                <span class="photo-count">01 / {{ photos().length }}</span>
-              </div>
-              <div class="gallery-bottom">
-                <span>{{ vehicle.featured ? 'Featured listing' : 'Verified listing' }}</span>
-                <button (click)="showAllPhotos.set(!showAllPhotos())">
-                  {{ showAllPhotos() ? 'Hide photos' : 'View all photos' }} <svg lucideArrowUpRight size="14"></svg>
-                </button>
-              </div>
-            </div>
-            @if (showAllPhotos()) {
-              <div class="thumbnail-row">
-                @for (photo of photos(); track photo; let i = $index) {
-                  <button
-                    class="{{ i === 0 ? 'selected' : '' }}"
-                    [style.background-image]="'url(' + photo + ')'"
-                    [attr.aria-label]="'View photo ' + (i + 1)"></button>
-                }
-              </div>
-            }
-          </section>
+          <app-image-gallery [images]="photos()" [alt]="vehicle.brand + ' ' + vehicle.model" />
 
           <section class="title-section">
             <div class="status-row">
@@ -122,7 +98,7 @@
             <div class="seller-main">
               <div class="seller-avatar"><svg lucideShieldCheck size="25"></svg></div>
               <div>
-                <span class="verified-label"><svg lucideBadgeCheck size="13"></svg> AutoMart verified</span>
+                <span class="verified-label"><svg lucideBadgeCheck size="13"></svg> Ayra Cars verified</span>
                 <h2>{{ vehicle.seller.name }}</h2>
                 <p><svg lucideClock3 size="13"></svg> Typically replies within 30 minutes</p>
               </div>
@@ -145,7 +121,7 @@
                 <p>Our team will reach out shortly to discuss the next step.</p>
               </div>
             } @else {
-              <form (ngSubmit)="submitOffer($event)">
+              <form (submit)="submitOffer($event)">
                 <div class="form-grid">
                   <label>Full name
                     <input required placeholder="e.g. Ravi Kumar" [value]="name()" (input)="name.set($any($event.target).value)" />
@@ -161,7 +137,7 @@
                   <textarea placeholder="Anything we should know?" [value]="message()" (input)="message.set($any($event.target).value)"></textarea>
                 </label>
                 <button class="submit-button" type="submit">Submit offer <svg lucideSend size="15"></svg></button>
-                <small class="form-note">By submitting, you agree to be contacted by AutoMart. No payment is taken online.</small>
+                <small class="form-note">By submitting, you agree to be contacted by Ayra Cars. No payment is taken online.</small>
               </form>
             }
           </section>
@@ -178,7 +154,7 @@
             <button class="secondary-action"><svg lucideCalendarDays size="16"></svg> Schedule a visit</button>
             <div class="trust-row">
               <svg lucideShieldCheck size="22"></svg>
-              <div><strong>AutoMart certified</strong><span>200-point inspected</span></div>
+              <div><strong>Ayra Cars certified</strong><span>200-point inspected</span></div>
             </div>
           </div>
           <div class="sidebar-note">

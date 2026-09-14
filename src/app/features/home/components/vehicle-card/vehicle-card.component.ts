@@ -9,7 +9,6 @@ import {
 } from '@lucide/angular';
 import { Vehicle } from '../../models/vehicle.model';
 import { PricePipe } from '../../pipes/price.pipe';
-import { TiltDirective } from '../../directives/tilt.directive';
 import { WishlistService } from '../../../../services/wishlist.service';
 import { CompareService } from '../../../compare/services/compare.service';
 
@@ -23,8 +22,7 @@ import { CompareService } from '../../../compare/services/compare.service';
     LucideShieldCheck,
     LucideScale,
     PricePipe,
-    DecimalPipe,
-    TiltDirective
+    DecimalPipe
   ],
   templateUrl: './vehicle-card.component.html',
   styleUrl: './vehicle-card.component.scss'

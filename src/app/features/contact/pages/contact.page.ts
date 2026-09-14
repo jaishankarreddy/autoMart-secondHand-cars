@@ -63,7 +63,7 @@ export class ContactPageComponent {
     {
       icon: 'mail',
       title: 'Email us',
-      value: 'hello@automart.in',
+      value: 'aayracars@gmail.com',
       detail: 'Replies within 24 hours'
     },
     {

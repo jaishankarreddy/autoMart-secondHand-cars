@@ -3,14 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { API_BASE } from '@config/api';
 
-const TOKEN_KEY = 'automart-user-token';
-const USER_KEY = 'automart-user';
+const TOKEN_KEY = 'ayracars-user-token';
+const USER_KEY = 'ayracars-user';
 
 export interface AuthUser {
   _id: string;
   id: string;
   name: string;
   email: string;
+  phone?: string;
   role: string;
   avatar?: string;
 }
@@ -27,14 +28,14 @@ export class AuthService {
   readonly isAuthenticated = signal(this.hasToken());
   readonly user = signal<AuthUser | null>(this.readUser());
 
-  login(email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${API_BASE}/auth/login`, { email, password }).pipe(
+  register(phone: string, password: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${API_BASE}/auth/register`, { phone, password }).pipe(
       tap((res) => this.persist(res))
     );
   }
 
-  register(name: string, email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${API_BASE}/auth/register`, { name, email, password }).pipe(
+  login(phone: string, password: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${API_BASE}/auth/login`, { phone, password }).pipe(
       tap((res) => this.persist(res))
     );
   }

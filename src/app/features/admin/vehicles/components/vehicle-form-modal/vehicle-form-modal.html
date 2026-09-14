@@ -159,23 +159,38 @@
         </div>
       </section>
 
-      <!-- Image -->
+      <!-- Images -->
       <section>
-        <h3 class="mb-2 text-xs font-bold uppercase tracking-wider text-muted">Photo</h3>
-        @if (photoPreview() || existingImage()) {
-          <div class="relative w-fit">
-            <img [src]="photoPreview() ?? existingImage()" alt="Vehicle preview" class="h-32 w-48 rounded-xl border border-border object-cover" />
-            <button type="button" (click)="removePhoto()" class="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-danger text-white shadow" aria-label="Remove photo">
-              <svg lucideX class="h-3.5 w-3.5"></svg>
-            </button>
+        <div class="mb-2 flex items-center justify-between">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-muted">Photos</h3>
+          <span class="text-xs text-muted">{{ totalImages() }} / {{ maxImages }}</span>
+        </div>
+        @if (totalImages() > 0) {
+          <div class="mb-2 flex flex-wrap gap-2">
+            @for (img of existingImages(); track img; let i = $index) {
+              <div class="relative">
+                <img [src]="img" alt="Vehicle photo" class="h-24 w-32 rounded-lg border border-border object-cover" />
+                <button type="button" (click)="removeExistingImage(i)" class="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-danger text-white shadow" aria-label="Remove photo">
+                  <svg lucideX class="h-3.5 w-3.5"></svg>
+                </button>
+              </div>
+            }
+            @for (p of photos(); track p.preview; let i = $index) {
+              <div class="relative">
+                <img [src]="p.preview" alt="New vehicle photo" class="h-24 w-32 rounded-lg border border-border object-cover" />
+                <button type="button" (click)="removePhoto(i)" class="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-danger text-white shadow" aria-label="Remove photo">
+                  <svg lucideX class="h-3.5 w-3.5"></svg>
+                </button>
+              </div>
+            }
           </div>
         }
-        @if (!photoPreview()) {
-          <label class="mt-2 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-surface-2/40 px-4 py-8 text-center transition-colors hover:border-primary hover:bg-surface-2">
+        @if (totalImages() < maxImages) {
+          <label class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-surface-2/40 px-4 py-8 text-center transition-colors hover:border-primary hover:bg-surface-2">
             <svg lucideImagePlus class="h-7 w-7 text-primary"></svg>
-            <span class="text-sm font-semibold text-text">Click to upload a photo</span>
-            <span class="text-xs text-muted">Large phone photos are auto-resized on upload</span>
-            <input type="file" accept="image/*" class="hidden" (change)="onPhotoPicked($event)" />
+            <span class="text-sm font-semibold text-text">Click to upload photos</span>
+            <span class="text-xs text-muted">Up to {{ maxImages }} images — large photos are auto-resized on upload</span>
+            <input type="file" accept="image/*" multiple class="hidden" (change)="onPhotosPicked($event)" />
           </label>
         }
       </section>

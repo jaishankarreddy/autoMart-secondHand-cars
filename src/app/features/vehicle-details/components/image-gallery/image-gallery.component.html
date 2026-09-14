@@ -12,18 +12,18 @@
     <div class="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-ink/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
 
     <!-- Zoom hint -->
-    <div class="pointer-events-none absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-ink/60 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-0">
+    <!-- <div class="pointer-events-none absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-ink/60 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-0">
       <svg lucideZoomIn class="h-3.5 w-3.5"></svg>
       Hover to zoom
-    </div>
+    </div> -->
 
     <!-- Counter -->
-    <div class="pointer-events-none absolute bottom-4 left-4 inline-flex items-center rounded-full bg-ink/60 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
+    <!-- <div class="pointer-events-none absolute bottom-4 left-4 inline-flex items-center rounded-full bg-ink/60 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
       {{ activeIndex() + 1 }} / {{ images().length }}
-    </div>
+    </div> -->
 
     <!-- Fullscreen -->
-    <button
+    <!-- <button
       type="button"
       (click)="openFullscreen()"
       appRipple
@@ -31,10 +31,10 @@
       class="absolute bottom-3.5 right-3.5 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-ink shadow-sm backdrop-blur transition-transform duration-200 hover:scale-110 active:scale-95"
     >
       <svg lucideMaximize2 class="h-[18px] w-[18px]"></svg>
-    </button>
+    </button> -->
 
     <!-- Nav arrows -->
-    <button
+    <!-- <button
       type="button"
       (click)="prev()"
       appRipple
@@ -51,7 +51,7 @@
       class="nav-btn right-3"
     >
       <svg lucideChevronRight class="h-5 w-5"></svg>
-    </button>
+    </button> -->
   </div>
 
   <!-- Thumbnails -->

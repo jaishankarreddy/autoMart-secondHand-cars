@@ -2,7 +2,6 @@ import { Component, computed, effect, inject, input, signal } from '@angular/cor
 import { HttpClient } from '@angular/common/http';
 import { API_BASE } from '@config/api';
 import {
-  LucideArrowUpRight,
   LucideBadgeCheck,
   LucideCalendarDays,
   LucideCheck,
@@ -28,6 +27,7 @@ import {
 } from '@lucide/angular';
 import { FooterComponent } from '../../../home/components/footer/footer.component';
 import { StickyContactCardComponent } from '../../components/sticky-contact-card/sticky-contact-card.component';
+import { ImageGalleryComponent } from '../../components/image-gallery/image-gallery.component';
 import { VehicleDetailsService } from '../../services/vehicle-details.service';
 import { WishlistService } from '../../../../services/wishlist.service';
 import { ToastService } from '../../../../services/toast.service';
@@ -38,7 +38,7 @@ import { ToastService } from '../../../../services/toast.service';
   imports: [
     FooterComponent,
     StickyContactCardComponent,
-    LucideArrowUpRight,
+    ImageGalleryComponent,
     LucideBadgeCheck,
     LucideCalendarDays,
     LucideCheck,
@@ -98,7 +98,7 @@ export class VehicleDetailsPageComponent {
   readonly formatDistance = (km: number) => `${km.toLocaleString('en-IN')} km`;
 
   readonly phoneLink = computed(() => this.vehicle()?.seller.phone ?? '+91 98765 43210');
-  readonly whatsappLink = computed(() => this.vehicle()?.seller.whatsapp ?? '919876543210');
+  readonly whatsappLink = computed(() => this.vehicle()?.seller.whatsapp ?? '919844555308');
   readonly contactPhone = this.phoneLink;
   readonly contactWhatsapp = this.whatsappLink;
   readonly contactPrice = computed(() => this.vehicle()?.price ?? 0);
@@ -145,7 +145,7 @@ export class VehicleDetailsPageComponent {
 
   share(): void {
     const v = this.vehicle();
-    const data = { title: `${v?.brand} ${v?.model}`, text: `Check out this ${v?.brand} ${v?.model} on AutoMart`, url: window.location.href };
+    const data = { title: `${v?.brand} ${v?.model}`, text: `Check out this ${v?.brand} ${v?.model} on Ayra Cars`, url: window.location.href };
     if (navigator.share) {
       navigator.share(data).catch(() => undefined);
     } else if (navigator.clipboard) {

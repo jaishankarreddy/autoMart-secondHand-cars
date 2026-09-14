@@ -1,4 +1,4 @@
-// AutoMart backend — minimal Express server
+// Ayra Cars backend — minimal Express server
 // Demonstrates the DB design with a few core endpoints.
 require('dotenv').config();
 const express = require('express');
@@ -18,38 +18,50 @@ const ContactMessage = require('./models/contact-message.model');
 const Testimonial = require('./models/testimonial.model');
 const Faq = require('./models/faq.model');
 const HomepageStat = require('./models/homepage-stat.model');
+const Comparison = require('./models/comparison.model');
 
 const app = express();
 app.use(cors({ origin: process.env.CLIENT_ORIGIN || '*' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// --- Image uploads -----------------------------------------------------------
-const UPLOADS_DIR = path.join(__dirname, '..', 'uploads');
-if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+// --- Image uploads (Cloudinary) ----------------------------------------------
+const { v2: cloudinary } = require('cloudinary');
 
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, UPLOADS_DIR),
-  filename: (_req, file, cb) => {
-    const ext = (path.extname(file.originalname) || '.jpg').toLowerCase();
-    cb(null, `v-${Date.now()}-${Math.round(Math.random() * 1e6)}${ext}`);
-  }
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
+
+const CLOUDINARY_FOLDER = 'ayracars/vehicles';
+
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 8 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => cb(null, /^image\//.test(file.mimetype))
 });
-// Serve uploaded images under /uploads (proxied by the Angular dev server).
-app.use('/uploads', express.static(UPLOADS_DIR));
 
-// Remove an uploaded image file from disk (best-effort).
-function cleanUpload(imageUrl) {
+// Upload a buffer to Cloudinary and resolve the secure URL.
+function uploadToCloudinary(file) {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: CLOUDINARY_FOLDER, resource_type: 'image' },
+      (err, result) => (err || !result ? reject(err || new Error('Upload failed')) : resolve(result.secure_url))
+    );
+    stream.end(file.buffer);
+  });
+}
+
+// Delete a Cloudinary image by URL (best-effort; ignores local /uploads paths).
+async function cleanUpload(imageUrl) {
   try {
-    const filePath = path.join(UPLOADS_DIR, path.basename(imageUrl));
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    if (!imageUrl || !imageUrl.includes('res.cloudinary.com')) return;
+    const match = imageUrl.match(/\/upload\/(?:v\d+\/)?(.+?)\.[a-zA-Z0-9]+$/);
+    if (!match) return;
+    await cloudinary.uploader.destroy(`${match[1]}`);
   } catch (err) {
-    console.error('Failed to clean uploaded file:', err.message);
+    console.error('Failed to clean uploaded image:', err.message);
   }
 }
 
@@ -109,10 +121,10 @@ async function nextVehicleId(vehicleType) {
 }
 
 // Health
-app.get('/api/health', (req, res) => res.json({ status: 'ok', service: 'automart-api' }));
+app.get('/api/health', (req, res) => res.json({ status: 'ok', service: 'ayracars-api' }));
 
 // --- User authentication ------------------------------------------------------
-const JWT_SECRET = process.env.JWT_SECRET || 'automart-dev-secret-change-me';
+const JWT_SECRET = process.env.JWT_SECRET || 'ayracars-dev-secret-change-me';
 
 function signUserToken(user) {
   return jwt.sign(
@@ -122,7 +134,7 @@ function signUserToken(user) {
   );
 }
 
-// Require a valid user JWT. Populates req.user.
+// Require a valid user JWT. Populates req.userId.
 function authRequired(req, res, next) {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : null;
@@ -133,49 +145,76 @@ function authRequired(req, res, next) {
     const payload = jwt.verify(token, JWT_SECRET);
     req.userId = payload.sub;
     next();
-  } catch {
+  } catch (err) {
     return res.status(401).json({ message: 'Your session has expired. Please log in again.' });
   }
 }
 
-// POST /api/auth/register — create a user account and log them in
+// Require a valid admin JWT with role admin or super_admin. Populates req.adminId.
+function adminRequired(req, res, next) {
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  if (!token) {
+    return res.status(401).json({ message: 'Admin authentication required.' });
+  }
+  try {
+    const payload = jwt.verify(token, JWT_SECRET);
+    if (payload.role !== 'admin' && payload.role !== 'super_admin') {
+      return res.status(403).json({ message: 'Admin access required.' });
+    }
+    req.adminId = payload.sub;
+    req.adminRole = payload.role;
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: 'Admin session expired. Please log in again.' });
+  }
+}
+
+// POST /api/auth/register — create a user account with phone + password
 app.post('/api/auth/register', async (req, res, next) => {
   try {
-    const { name, email, password } = req.body || {};
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: 'Name, email and password are required.' });
+    const { phone, password } = req.body || {};
+    if (!phone || !password) {
+      return res.status(400).json({ message: 'Mobile number and password are required.' });
+    }
+    const normalized = String(phone).trim().replace(/\s+/g, '');
+    if (!/^\d{10,15}$/.test(normalized)) {
+      return res.status(400).json({ message: 'Please enter a valid mobile number.' });
     }
     if (String(password).length < 6) {
       return res.status(400).json({ message: 'Password must be at least 6 characters.' });
     }
-    const existing = await User.findOne({ email: String(email).toLowerCase().trim() });
+    const existing = await User.findOne({ phone: normalized });
     if (existing) {
-      return res.status(409).json({ message: 'An account with this email already exists.' });
+      return res.status(409).json({ message: 'An account with this mobile number already exists. Please login.' });
     }
     const user = await User.create({
-      name: String(name).trim(),
-      email: String(email).toLowerCase().trim(),
-      passwordHash: String(password),
-      emailVerified: true
+      name: 'User',
+      email: `${normalized}@phone.ayracars.in`,
+      phone: normalized,
+      passwordHash: String(password)
     });
-    res.status(201).json({ token: signUserToken(user), user: user.toSafeJSON() });
+    const token = signUserToken(user);
+    res.status(201).json({ token, user: user.toSafeJSON() });
   } catch (err) {
     next(err);
   }
 });
 
-// POST /api/auth/login — sign a user in
+// POST /api/auth/login — sign a user in with phone + password
 app.post('/api/auth/login', async (req, res, next) => {
   try {
-    const { email, password } = req.body || {};
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password are required.' });
+    const { phone, password } = req.body || {};
+    if (!phone || !password) {
+      return res.status(400).json({ message: 'Mobile number and password are required.' });
     }
-    const user = await User.findOne({ email: String(email).toLowerCase().trim() });
+    const normalized = String(phone).trim().replace(/\s+/g, '');
+    const user = await User.findOne({ phone: normalized });
     if (!user || !(await user.comparePassword(String(password)))) {
-      return res.status(401).json({ message: 'Invalid email or password.' });
+      return res.status(401).json({ message: 'Invalid mobile number or password.' });
     }
-    res.json({ token: signUserToken(user), user: user.toSafeJSON() });
+    const token = signUserToken(user);
+    res.json({ token, user: user.toSafeJSON() });
   } catch (err) {
     next(err);
   }
@@ -211,16 +250,25 @@ app.get('/api/wishlist', authRequired, async (req, res, next) => {
 // POST /api/wishlist/:id — add a vehicle to the user's wishlist
 app.post('/api/wishlist/:id', authRequired, async (req, res, next) => {
   try {
+    console.log(`[Wishlist] POST add ${req.params.id} for user ${req.userId}`);
     const user = await User.findById(req.userId);
-    if (!user) return res.status(404).json({ message: 'User not found.' });
+    if (!user) {
+      console.log(`[Wishlist] User ${req.userId} not found`);
+      return res.status(404).json({ message: 'User not found.' });
+    }
     const vehicle = await Vehicle.findOne({ id: req.params.id });
-    if (!vehicle) return res.status(404).json({ message: 'Vehicle not found.' });
+    if (!vehicle) {
+      console.log(`[Wishlist] Vehicle ${req.params.id} not found`);
+      return res.status(404).json({ message: 'Vehicle not found.' });
+    }
     if (!user.wishlist.includes(req.params.id)) {
       user.wishlist.push(req.params.id);
       await user.save();
     }
+    console.log(`[Wishlist] OK — user ${req.userId} now has ${user.wishlist.length} items`);
     res.json({ wishlist: user.wishlist });
   } catch (err) {
+    console.error('[Wishlist] POST error:', err.message);
     next(err);
   }
 });
@@ -228,11 +276,78 @@ app.post('/api/wishlist/:id', authRequired, async (req, res, next) => {
 // DELETE /api/wishlist/:id — remove a vehicle from the user's wishlist
 app.delete('/api/wishlist/:id', authRequired, async (req, res, next) => {
   try {
+    console.log(`[Wishlist] DELETE ${req.params.id} for user ${req.userId}`);
     const user = await User.findById(req.userId);
     if (!user) return res.status(404).json({ message: 'User not found.' });
     user.wishlist = user.wishlist.filter((id) => id !== req.params.id);
     await user.save();
     res.json({ wishlist: user.wishlist });
+  } catch (err) {
+    console.error('[Wishlist] DELETE error:', err.message);
+    next(err);
+  }
+});
+
+// --- Comparison (guest-friendly, no auth required) -----------------------------
+// GET /api/compare?sessionId=xxx — get current comparison basket
+app.get('/api/compare', async (req, res, next) => {
+  try {
+    const { sessionId } = req.query;
+    if (!sessionId) return res.json({ vehicleIds: [] });
+    const comp = await Comparison.findOne({ sessionId }).lean();
+    res.json({ vehicleIds: comp ? comp.vehicleIds : [] });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/compare — add vehicles to comparison basket (guest, sessionId-based)
+app.post('/api/compare', async (req, res, next) => {
+  try {
+    const { sessionId, vehicleId } = req.body;
+    if (!sessionId || !vehicleId) {
+      return res.status(400).json({ message: 'sessionId and vehicleId are required' });
+    }
+    let comp = await Comparison.findOne({ sessionId });
+    if (!comp) {
+      comp = await Comparison.create({ sessionId, vehicleIds: [vehicleId] });
+    } else {
+      if (!comp.vehicleIds.includes(vehicleId)) {
+        if (comp.vehicleIds.length >= 3) {
+          return res.status(400).json({ message: 'Comparison basket is full (max 3 vehicles)' });
+        }
+        comp.vehicleIds.push(vehicleId);
+        await comp.save();
+      }
+    }
+    res.json({ vehicleIds: comp.vehicleIds });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE /api/compare/:vehicleId — remove a vehicle from comparison basket
+app.delete('/api/compare/:vehicleId', async (req, res, next) => {
+  try {
+    const { sessionId } = req.query;
+    if (!sessionId) return res.status(400).json({ message: 'sessionId query param is required' });
+    const comp = await Comparison.findOne({ sessionId });
+    if (!comp) return res.json({ vehicleIds: [] });
+    comp.vehicleIds = comp.vehicleIds.filter((id) => id !== req.params.vehicleId);
+    await comp.save();
+    res.json({ vehicleIds: comp.vehicleIds });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE /api/compare — clear comparison basket
+app.delete('/api/compare', async (req, res, next) => {
+  try {
+    const { sessionId } = req.query;
+    if (!sessionId) return res.status(400).json({ message: 'sessionId query param is required' });
+    await Comparison.deleteOne({ sessionId });
+    res.json({ vehicleIds: [] });
   } catch (err) {
     next(err);
   }
@@ -258,7 +373,7 @@ app.post('/api/admin/login', async (req, res, next) => {
 
     const token = jwt.sign(
       { sub: admin.id, email: admin.email, role: admin.role },
-      process.env.JWT_SECRET || 'automart-dev-secret-change-me',
+      process.env.JWT_SECRET || 'ayracars-dev-secret-change-me',
       { expiresIn: '12h' }
     );
 
@@ -568,7 +683,7 @@ app.post('/api/contacts', async (req, res, next) => {
 });
 
 // Admin: dashboard summary counts
-app.get('/api/admin/dashboard', async (_req, res, next) => {
+app.get('/api/admin/dashboard', adminRequired, async (_req, res, next) => {
   try {
     const [totalCars, totalBikes, pendingOffers, newContacts] = await Promise.all([
       Vehicle.countDocuments({ vehicleType: 'car' }),
@@ -583,7 +698,7 @@ app.get('/api/admin/dashboard', async (_req, res, next) => {
 });
 
 // Admin: offers list (latest first) with joined vehicle label
-app.get('/api/admin/offers', async (_req, res, next) => {
+app.get('/api/admin/offers', adminRequired, async (_req, res, next) => {
   try {
     const offers = await VehicleOffer.find().sort({ createdAt: -1 }).lean();
     const ids = [...new Set(offers.map((o) => o.vehicleId).filter(Boolean))];
@@ -609,7 +724,7 @@ app.get('/api/admin/offers', async (_req, res, next) => {
 });
 
 // Admin: update offer status (Pending / Accepted / Countered / Rejected)
-app.patch('/api/admin/offers/:id', async (req, res, next) => {
+app.patch('/api/admin/offers/:id', adminRequired, async (req, res, next) => {
   try {
     const { status, counterPrice } = req.body;
     const query = { $or: [{ id: req.params.id }] };
@@ -626,7 +741,7 @@ app.patch('/api/admin/offers/:id', async (req, res, next) => {
 });
 
 // Admin: contacts list (latest first)
-app.get('/api/admin/contacts', async (_req, res, next) => {
+app.get('/api/admin/contacts', adminRequired, async (_req, res, next) => {
   try {
     const list = await ContactMessage.find().sort({ createdAt: -1 }).lean();
     res.json(list.map((c) => ({
@@ -645,7 +760,7 @@ app.get('/api/admin/contacts', async (_req, res, next) => {
 });
 
 // Admin: update contact status (New / Replied)
-app.patch('/api/admin/contacts/:id', async (req, res, next) => {
+app.patch('/api/admin/contacts/:id', adminRequired, async (req, res, next) => {
   try {
     const { status } = req.body;
     const query = { $or: [{ id: req.params.id }] };
@@ -660,8 +775,8 @@ app.patch('/api/admin/contacts/:id', async (req, res, next) => {
   }
 });
 
-// Admin: create a vehicle (multipart/form-data; optional `image` file)
-app.post('/api/admin/vehicles', upload.single('image'), async (req, res, next) => {
+// Admin: create a vehicle (multipart/form-data; up to 10 `images` files)
+app.post('/api/admin/vehicles', adminRequired, upload.array('images', 10), async (req, res, next) => {
   try {
     const type = req.body.vehicleType === 'bike' ? 'bike' : 'car';
     if (!req.body.brand || !req.body.model || !req.body.year || !req.body.price) {
@@ -673,7 +788,7 @@ app.post('/api/admin/vehicles', upload.single('image'), async (req, res, next) =
     payload.id = req.body.id || (await nextVehicleId(type));
     if (!payload.seller) {
       payload.seller = {
-        name: 'AutoMart Dealer',
+        name: 'Ayra Cars Dealer',
         verified: false,
         hours: '9 AM – 7 PM',
         location: payload.district || '',
@@ -681,7 +796,11 @@ app.post('/api/admin/vehicles', upload.single('image'), async (req, res, next) =
         whatsapp: ''
       };
     }
-    if (req.file) payload.image = `/uploads/${req.file.filename}`;
+    if (req.files && req.files.length > 0) {
+      const urls = await Promise.all(req.files.map((f) => uploadToCloudinary(f)));
+      payload.images = urls;
+      payload.image = urls[0];
+    }
     const vehicle = await Vehicle.create(payload);
     res.status(201).json(vehicle);
   } catch (err) {
@@ -689,8 +808,8 @@ app.post('/api/admin/vehicles', upload.single('image'), async (req, res, next) =
   }
 });
 
-// Admin: update a vehicle (multipart/form-data; optional new `image` file)
-app.put('/api/admin/vehicles/:id', upload.single('image'), async (req, res, next) => {
+// Admin: update a vehicle (multipart/form-data; up to 10 new `images` files)
+app.put('/api/admin/vehicles/:id', adminRequired, upload.array('images', 10), async (req, res, next) => {
   try {
     const query = { $or: [{ id: req.params.id }] };
     if (/^[0-9a-fA-F]{24}$/.test(req.params.id)) query.$or.push({ _id: req.params.id });
@@ -699,11 +818,26 @@ app.put('/api/admin/vehicles/:id', upload.single('image'), async (req, res, next
 
     const payload = buildVehiclePayload(req.body);
     delete payload.vehicleType; // type is an identity — not editable via admin form
-if (req.file) {
-      payload.image = `/uploads/${req.file.filename}`;
-      if (vehicle.image && vehicle.image.startsWith('/uploads/')) {
-        cleanUpload(vehicle.image);
+    if (req.body.existingImages !== undefined || (req.files && req.files.length > 0)) {
+      let kept = [];
+      try {
+        kept = JSON.parse(req.body.existingImages || '[]');
+        if (!Array.isArray(kept)) kept = [];
+      } catch {
+        kept = [];
       }
+      kept = kept.filter((u) => typeof u === 'string' && u.includes('res.cloudinary.com'));
+      const newUrls = req.files && req.files.length > 0
+        ? await Promise.all(req.files.map((f) => uploadToCloudinary(f)))
+        : [];
+      const nextImages = [...kept, ...newUrls].slice(0, 10);
+      // delete images that were removed by the admin
+      const oldImages = [vehicle.image, ...(vehicle.images || [])]
+        .filter(Boolean)
+        .filter((u) => !nextImages.includes(u));
+      await Promise.all(oldImages.map(cleanUpload));
+      payload.images = nextImages;
+      payload.image = nextImages[0] || '';
     }
     Object.assign(vehicle, payload);
     await vehicle.save();
@@ -714,15 +848,15 @@ if (req.file) {
 });
 
 // Admin: delete a vehicle
-app.delete('/api/admin/vehicles/:id', async (req, res, next) => {
+app.delete('/api/admin/vehicles/:id', adminRequired, async (req, res, next) => {
   try {
     const query = { $or: [{ id: req.params.id }] };
     if (/^[0-9a-fA-F]{24}$/.test(req.params.id)) query.$or.push({ _id: req.params.id });
     const vehicle = await Vehicle.findOne(query);
     if (!vehicle) return res.status(404).json({ message: 'Vehicle not found' });
-    if (vehicle.image && vehicle.image.startsWith('/uploads/')) {
-      cleanUpload(vehicle.image);
-    }
+    await Promise.all(
+      [vehicle.image, ...(vehicle.images || [])].filter(Boolean).map(cleanUpload)
+    );
     await vehicle.deleteOne();
     res.json({ message: 'Vehicle deleted', id: req.params.id });
   } catch (err) {
@@ -740,7 +874,7 @@ const PORT = process.env.PORT || 5000;
 
 connectDB()
   .then(() => {
-    app.listen(PORT, () => console.log(`AutoMart API listening on http://localhost:${PORT}`));
+    app.listen(PORT, () => console.log(`Ayra Cars API listening on http://localhost:${PORT}`));
   })
   .catch((err) => {
     console.error('Failed to connect to MongoDB:', err.message);

@@ -1,4 +1,4 @@
-// AutoMart database seeder
+// Ayra Cars database seeder
 // Usage: node src/seed/seed.js        (upsert without wiping)
 //        node src/seed/seed.js --drop (wipe collections first)
 const mongoose = require('mongoose');
@@ -67,15 +67,15 @@ function buildVehicles() {
       insurance: detail.insurance || '',
       image: v.image,
       images: detail.images || [v.image],
-      description: detail.description || ['AutoMart certified vehicle.'],
+      description: detail.description || ['Ayra Cars certified vehicle.'],
       features: detail.features || [],
-      seller: detail.seller || { name: 'AutoMart Certified', verified: true }
+      seller: detail.seller || { name: 'Ayra Cars Certified', verified: true }
     };
   });
 }
 
 async function seed() {
-  const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/automart';
+  const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/ayracars';
   mongoose.set('strictQuery', true);
   await mongoose.connect(uri, { serverSelectionTimeoutMS: 8000 });
   console.log('Connected to MongoDB:', mongoose.connection.name);

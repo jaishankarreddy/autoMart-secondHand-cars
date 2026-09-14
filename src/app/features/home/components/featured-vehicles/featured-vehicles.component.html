@@ -29,7 +29,7 @@
           <button class="compare-button" [class.compared]="compared(vehicle.id)" (click)="$event.stopPropagation(); compareService.toggle(vehicle.id)" [attr.aria-label]="compared(vehicle.id) ? 'Remove from compare' : 'Add to compare'"><svg lucideScale size="16" [attr.fill]="compared(vehicle.id) ? 'currentColor' : 'none'"></svg></button>
         </div>
         <div class="vehicle-details">
-          <div class="vehicle-type">{{ vehicle.type }} <span>•</span> AutoMart inspected</div>
+          <div class="vehicle-type">{{ vehicle.type }} <span>•</span> Ayra Cars inspected</div>
           <h3>{{ vehicle.name }}</h3>
           <div class="vehicle-meta">{{ vehicle.meta }}</div>
           <div class="vehicle-bottom">

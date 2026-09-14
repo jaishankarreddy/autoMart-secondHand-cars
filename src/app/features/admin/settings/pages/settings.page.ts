@@ -53,7 +53,7 @@ export class AdminSettingsPageComponent {
   ];
 
   readonly name = signal('Admin User');
-  readonly email = signal('admin@automart.in');
+  readonly email = signal('admin@ayracars.in');
   readonly phone = signal('+91 98765 43210');
   readonly oldPassword = signal('');
   readonly newPassword = signal('');

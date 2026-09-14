@@ -1,4 +1,4 @@
-ï»¿# AutoMart â€” Database Design & Project Guide (MongoDB + Express + Angular)
+# Ayra Cars — Database Design & Project Guide (MongoDB + Express + Angular)
 
 > This document reflects the **current, implemented** backend (`backend/`), not a hypothetical design. It
 > covers every MongoDB collection/model, the Mongoose schemas, the REST endpoints, the seed/data
@@ -8,7 +8,7 @@
 
 ## 1. Project Overview
 
-AutoMart is a **second-hand car & bike marketplace for Karnataka, India**. It is a full-stack app:
+Ayra Cars is a **second-hand car & bike marketplace for Karnataka, India**. It is a full-stack app:
 
 - **Front end**: Angular 20 (standalone components, signals), Tailwind CSS 4, Lucide icons.
 - **Back end**: Node.js + Express + Mongoose, backed by **MongoDB Atlas**.
@@ -40,7 +40,7 @@ AutoMart is a **second-hand car & bike marketplace for Karnataka, India**. It is
 | ORM/ODM     | **Mongoose 8**                              | schema validation + indexes |
 | Database    | **MongoDB Atlas** (shared replica set)      | direct TCP connection (non-SRV) |
 | Uploads     | **Multer 2** (disk storage)                 | local `backend/uploads/` |
-| Auth deps   | **bcryptjs**, **jsonwebtoken**              | installed; JWT auth not yet wired (see Â§10) |
+| Auth deps   | **bcryptjs**, **jsonwebtoken**              | installed; JWT auth not yet wired (see §10) |
 | Dev server  | **nodemon**                                 | backend auto-reload |
 | Dev proxy   | **Vite dev server** (`proxy.conf.json`)     | Angular dev server -> Express |
 
@@ -61,9 +61,9 @@ Create `backend/.env` (copy from `.env.sample` if present):
 
 ```env
 PORT=5000
-MONGODB_URI=mongodb://127.0.0.1:27017/automart
+MONGODB_URI=mongodb://127.0.0.1:27017/Ayra Cars
 # or a direct (non-SRV) Atlas URI, e.g.
-# mongodb://USER:PASS@host-00...:27017,host-01...:27017/?ssl=true&replicaSet=REPL&authSource=admin&appName=automart
+# mongodb://USER:PASS@host-00...:27017,host-01...:27017/?ssl=true&replicaSet=REPL&authSource=admin&appName=Ayra Cars
 JWT_SECRET=change-me-in-production
 JWT_EXPIRES_IN=7d
 CLIENT_ORIGIN=http://localhost:4200
@@ -85,7 +85,7 @@ npm run seed        # upsert (idempotent) - safe to re-run
 npm run seed:drop   # wipe the collections first, then seed
 ```
 Seeding is *idempotent*: it uses `findOneAndUpdate(..., { upsert: true })` so you can re-run it freely; use
-`seed:drop` only when you want a clean slate. **Demo credentials are printed at the end of seeding** (see Â§6).
+`seed:drop` only when you want a clean slate. **Demo credentials are printed at the end of seeding** (see §6).
 
 ### D. Start the API
 ```bash
@@ -131,7 +131,7 @@ npm run build      # `ng build`, outputs to dist/
 | 14| `wishlists`         | User <-> vehicle wishlist mapping          |
 
 > **Heads-up on naming.** Mongoose auto-pluralises model names (lowercased, uncapitalised) for the
-> physical collection â€” e.g. `Vehicle` -> `vehicles`, `VehicleOffer` -> `vehicleoffers`,
+> physical collection — e.g. `Vehicle` -> `vehicles`, `VehicleOffer` -> `vehicleoffers`,
 > `HomepageStat` -> `homepagestats`. No explicit `collection` option is set on any model. If you prefer
 > conventional snake_case collection names, add `{ collection: 'vehicle_offers' }` etc. now.
 
@@ -227,7 +227,7 @@ const AVAILABILITIES  = ['available','reserved','sold']
 | `name`   | String **required** | buyer name |
 | `phone`  | String **required** | |
 | `whatsapp` | String | |
-| `offerPrice` | Number **required, min 0** | â‚¹ |
+| `offerPrice` | Number **required, min 0** | ? |
 | `askingPrice`| Number default null | snapshot of vehicle price |
 | `message`| String | |
 | `status` | String enum `Pending/Accepted/Countered/Rejected`, default `Pending`, `index` |
@@ -322,7 +322,7 @@ Index `{ unread:1, createdAt:-1 }`.
 | `profile`| `{ name, email, phone }` | |
 | `notifications`| Map<String,Boolean> default toggles | offerAlerts, contactAlerts, weeklyDigest, listingUpdates |
 | `marketplace`| Map<String,Boolean> default toggles | autoApprove, showDriveAwayPrices, whatsappOffers |
-| `region`| `{ location:'Karnataka, India', currency:'â‚¹ INR' }` | |
+| `region`| `{ location:'Karnataka, India', currency:'? INR' }` | |
 Exports toggle label lists (`NOTIFICATION_TOGGLES`, `MARKETPLACE_TOGGLES`) for use by the API/UI.
 
 ### 5.12 `Comparison`
@@ -375,7 +375,7 @@ Seeder: `backend/src/seed/seed.js` (run `npm run seed` / `seed:drop`). Data sour
 
 **Demo accounts (printed at end of seeding):**
 ```
-Admin  -> admin@automart.in  / admin123    (role: admin)
+Admin  -> admin@Ayra Cars.in  / admin123    (role: admin)
 User   -> ravi.kumar@example.com / password123
 User   -> sneha.rao@example.com  / password123
 ```
@@ -385,16 +385,16 @@ Passwords are stored hashed (bcrypt) only.
 
 ## 7. REST API (implemented, from `server.js`)
 
-All JSON unless noted. Auth/JWT is **not yet enforced** on any route (see Â§10).
+All JSON unless noted. Auth/JWT is **not yet enforced** on any route (see §10).
 
 ### Public
 | Method | Path | Notes |
 |--------|------|-------|
-| GET | `/api/health` | `{ status:'ok', service:'automart-api' }` |
-| GET | `/api/vehicles` | list with filters + pagination (see Â§7.1) |
+| GET | `/api/health` | `{ status:'ok', service:'Ayra Cars-api' }` |
+| GET | `/api/vehicles` | list with filters + pagination (see §7.1) |
 | GET | `/api/vehicles/:id` | full detail (look-up by readable `id`) |
 | GET | `/api/brands` | all brands sorted by name |
-| GET | `/api/facets?type=car\|bike` | distinct filter options for sidebar (see Â§7.2) |
+| GET | `/api/facets?type=car\|bike` | distinct filter options for sidebar (see §7.2) |
 | GET | `/api/testimonials` | active testimonials |
 | GET | `/api/faqs` | active FAQs ordered by `order` |
 | GET | `/api/homestats?section=hero\|section` | homepage stats |

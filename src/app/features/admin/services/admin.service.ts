@@ -31,7 +31,8 @@ export interface VehicleFormPayload {
   rating: number;
   description: string;
   oldImage?: string;
-  image?: File | null;
+  images?: File[];
+  existingImages?: string[];
 }
 
 export interface ApiVehicle {
@@ -80,7 +81,12 @@ export class AdminService {
     set('availability', payload.availability);
     set('rating', payload.rating ?? 0);
     set('description', payload.description);
-    if (payload.image) fd.append('image', payload.image, payload.image.name);
+    for (const file of payload.images ?? []) {
+      fd.append('images', file, file.name);
+    }
+    if (payload.existingImages) {
+      fd.append('existingImages', JSON.stringify(payload.existingImages));
+    }
     return fd;
   }
 

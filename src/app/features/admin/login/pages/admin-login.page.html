@@ -11,7 +11,7 @@
         <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-primary">
           <svg lucideShieldCheck class="h-7 w-7"></svg>
         </span>
-        <h1 class="mt-5 font-heading text-2xl font-bold">AutoMart <span class="text-primary">Admin</span></h1>
+        <h1 class="mt-5 font-heading text-2xl font-bold">Ayra Cars <span class="text-primary">Admin</span></h1>
         <p class="mt-1 text-sm text-white/60">Sign in to the marketplace control panel</p>
       </div>
 
@@ -24,7 +24,7 @@
               id="admin-email"
               type="email"
               class="field-input has-icon"
-              placeholder="admin@automart.in"
+              placeholder="Email address"
               autocomplete="username"
               [value]="email()"
               (input)="email.set($any($event.target).value)"
@@ -80,15 +80,6 @@
             Sign In
           }
         </button>
-
-        <div class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-center">
-          <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">Demo credentials</p>
-          <p class="mt-1 text-xs text-white/70">
-            <span class="font-semibold text-white/90">admin@automart.in</span>
-            <span class="mx-1 text-white/30">·</span>
-            <span class="font-semibold text-white/90">admin123</span>
-          </p>
-        </div>
 
         <p class="flex items-center justify-center gap-1.5 text-center text-[11px] text-white/40">
           <svg lucideShieldCheck class="h-3.5 w-3.5 text-primary"></svg>

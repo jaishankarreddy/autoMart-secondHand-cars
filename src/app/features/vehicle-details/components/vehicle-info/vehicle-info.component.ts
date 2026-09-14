@@ -43,7 +43,7 @@ export class VehicleInfoComponent {
     const text = `${this.vehicle().brand} ${this.vehicle().model} ${this.vehicle().variant} — ${this.vehicle().location}`;
     const url = window.location.href;
     if (navigator.share) {
-      navigator.share({ title: 'AutoMart', text, url }).catch(() => undefined);
+      navigator.share({ title: 'Ayra Cars', text, url }).catch(() => undefined);
     } else if (navigator.clipboard) {
       navigator.clipboard.writeText(`${text} ${url}`).catch(() => undefined);
     }

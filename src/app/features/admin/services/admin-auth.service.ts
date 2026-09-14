@@ -3,8 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { API_BASE } from '@config/api';
 
-const TOKEN_KEY = 'automart-admin-token';
-const ADMIN_KEY = 'automart-admin';
+const TOKEN_KEY = 'ayracars-admin-token';
+const ADMIN_KEY = 'ayracars-admin';
 
 export interface AdminProfile {
   id: string;

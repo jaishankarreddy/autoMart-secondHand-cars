@@ -33,7 +33,7 @@ const SEED_USERS = [
 
 const SEED_ADMIN = {
   name: 'Admin User',
-  email: 'admin@automart.in',
+  email: 'admin@ayracars.in',
   password: 'admin123',
   role: 'admin'
 };

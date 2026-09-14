@@ -1,12 +1,12 @@
 import { Component, DestroyRef, inject, input, signal } from '@angular/core';
-import { LucideChevronLeft, LucideChevronRight, LucideMaximize2, LucideX, LucideZoomIn } from '@lucide/angular';
+import { LucideChevronLeft, LucideChevronRight, LucideX } from '@lucide/angular';
 import { RippleDirective } from '../../../cars/directives/ripple.directive';
 import { ThumbnailGalleryComponent } from '../thumbnail-gallery/thumbnail-gallery.component';
 
 @Component({
   selector: 'app-image-gallery',
   standalone: true,
-  imports: [ThumbnailGalleryComponent, RippleDirective, LucideChevronLeft, LucideChevronRight, LucideMaximize2, LucideX, LucideZoomIn],
+  imports: [ThumbnailGalleryComponent, RippleDirective, LucideChevronLeft, LucideChevronRight, LucideX],
   templateUrl: './image-gallery.component.html',
   styleUrl: './image-gallery.component.scss'
 })

@@ -1,13 +1,11 @@
 <header class="inventory-nav">
-  <a class="brand" routerLink="/home"><span class="brand-symbol"><svg lucideCarFront size="19"></svg></span>AutoMart<span>.</span></a>
+  <a class="brand" routerLink="/home"><span class="brand-symbol"><svg lucideCarFront size="19"></svg></span>Ayra Cars<span>.</span></a>
   <nav>
     <a routerLink="/cars" [class.active-link]="navActive().cars">Find a vehicle</a>
     <a routerLink="/brands" [class.active-link]="navActive().brands">Brands</a>
-    <a routerLink="/about" [class.active-link]="navActive().about">Why AutoMart</a>
+    <a routerLink="/about" [class.active-link]="navActive().about">Why Ayra Cars</a>
     <a routerLink="/contact" [class.active-link]="navActive().contact">Help</a>
-    <!-- Sell your vehicle (coming soon)
-    <a routerLink="/home" [class.active-link]="navActive().home">Sell your vehicle</a>
-    -->
+    <a routerLink="/sell" [class.active-link]="navActive().sell">Sell your vehicle</a>
   </nav>
   <div class="nav-right">
     <a class="icon-link" routerLink="/wishlist" aria-label="Wishlist"><svg lucideHeart size="18"></svg><span class="nav-badge" [hidden]="wishlistCount() === 0">{{ wishlistCount() }}</span></a>
@@ -27,17 +25,15 @@
   <div class="mobile-nav">
     <div class="mobile-nav-panel">
       <div class="mobile-nav-head">
-        <a class="brand" routerLink="/home" (click)="menuOpen.set(false)"><span class="brand-symbol"><svg lucideCarFront size="18"></svg></span>AutoMart<span>.</span></a>
+        <a class="brand" routerLink="/home" (click)="menuOpen.set(false)"><span class="brand-symbol"><svg lucideCarFront size="18"></svg></span>Ayra Cars<span>.</span></a>
         <button class="menu-close" (click)="menuOpen.set(false)" aria-label="Close menu"><svg lucideX size="20"></svg></button>
       </div>
       <nav class="mobile-nav-links">
         <a routerLink="/cars" [class.active-link]="navActive().cars" (click)="menuOpen.set(false)">Find a vehicle</a>
         <a routerLink="/brands" [class.active-link]="navActive().brands" (click)="menuOpen.set(false)">Brands</a>
-        <a routerLink="/about" [class.active-link]="navActive().about" (click)="menuOpen.set(false)">Why AutoMart</a>
+        <a routerLink="/about" [class.active-link]="navActive().about" (click)="menuOpen.set(false)">Why Ayra Cars</a>
         <a routerLink="/contact" [class.active-link]="navActive().contact" (click)="menuOpen.set(false)">Help</a>
-        <!-- Sell your vehicle (coming soon)
-        <a routerLink="/home" [class.active-link]="navActive().home" (click)="menuOpen.set(false)">Sell your vehicle</a>
-        -->
+        <a routerLink="/sell" [class.active-link]="navActive().sell" (click)="menuOpen.set(false)">Sell your vehicle</a>
         <a routerLink="/wishlist" (click)="menuOpen.set(false)">Wishlist</a>
         <a routerLink="/compare" (click)="menuOpen.set(false)">Compare</a>
       </nav>
