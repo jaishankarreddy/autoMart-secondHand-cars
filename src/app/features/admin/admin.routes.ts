@@ -31,10 +31,5 @@ export const ADMIN_ROUTES: Routes = [
     path: 'contacts',
     loadComponent: () =>
       import('./contacts/pages/contacts.page').then((m) => m.AdminContactsPageComponent)
-  },
-  {
-    path: 'settings',
-    loadComponent: () =>
-      import('./settings/pages/settings.page').then((m) => m.AdminSettingsPageComponent)
   }
 ];

@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 const VEHICLE_TYPES = ['car', 'bike'];
 const FUEL_TYPES = ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'];
-const TRANSMISSIONS = ['Manual', 'Automatic'];
+const TRANSMISSIONS = ['Manual', 'Automatic', 'Electric'];
 const CAR_BODY_TYPES = ['SUV', 'Sedan', 'Hatchback', 'MPV', 'Crossover'];
 const BIKE_BODY_TYPES = [
   'Commuter',

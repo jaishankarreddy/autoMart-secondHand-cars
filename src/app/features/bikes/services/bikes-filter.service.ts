@@ -140,6 +140,12 @@ export class BikesFilterService {
   private requestSeq = 0;
   private keywordTimer: ReturnType<typeof setTimeout> | undefined;
 
+  refresh(): void {
+    this.requestSeq++;
+    this.fetchPage();
+    this.loadFacets();
+  }
+
   constructor() {
     this.loadFacets();
     effect(() => {

@@ -109,6 +109,9 @@ export class AdminVehiclesPageComponent {
 
   onSaved(): void {
     this.formOpen.set(false);
+    this.catalog.refresh();
+    this.carsService.refresh();
+    this.bikesService.refresh();
     this.toast.success(
       this.formModel() ? 'Vehicle updated' : 'Vehicle added',
       this.formModel()

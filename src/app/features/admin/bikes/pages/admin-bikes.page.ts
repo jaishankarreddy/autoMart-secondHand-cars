@@ -83,6 +83,8 @@ export class AdminBikesPageComponent {
 
   onSaved(): void {
     this.formOpen.set(false);
+    this.catalog.refresh();
+    this.bikesService.refresh();
     this.toast.success(
       this.formModel() ? 'Bike updated' : 'Bike added',
       this.formModel()

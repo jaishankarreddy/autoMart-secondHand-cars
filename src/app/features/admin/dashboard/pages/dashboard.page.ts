@@ -9,8 +9,7 @@ import {
   LucideHandCoins,
   LucideMail,
   LucidePlus,
-  LucideArrowUpRight,
-  LucideTrendingUp
+  LucideArrowUpRight
 } from '@lucide/angular';
 import { RippleDirective } from '../../../cars/directives/ripple.directive';
 import { CarsFilterService } from '../../../cars/services/cars-filter.service';
@@ -34,8 +33,7 @@ import { ToastService } from '../../../../services/toast.service';
     LucideHandCoins,
     LucideMail,
     LucidePlus,
-    LucideArrowUpRight,
-    LucideTrendingUp
+    LucideArrowUpRight
   ],
   templateUrl: './dashboard.page.html',
   styleUrl: './dashboard.page.scss'
@@ -67,6 +65,9 @@ export class AdminDashboardPageComponent implements OnInit {
 
   onSaved(): void {
     this.formOpen.set(false);
+    this.catalog.refresh();
+    this.carsService.refresh();
+    this.bikesService.refresh();
     this.toast.success('Vehicle added', 'Your new listing is now live on the marketplace.');
   }
 

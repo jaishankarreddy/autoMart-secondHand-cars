@@ -120,15 +120,10 @@ export class AdminLayoutComponent implements OnInit {
     { path: '/admin/cars', label: 'Cars', icon: 'car' },
     { path: '/admin/bikes', label: 'Bikes', icon: 'bike' },
     { path: '/admin/offers', label: 'Offers', icon: 'offers', badgeKey: 'offers' },
-    { path: '/admin/contacts', label: 'Contacts', icon: 'mail', badgeKey: 'contacts' },
-    { path: '/admin/settings', label: 'Settings', icon: 'settings' }
+    { path: '/admin/contacts', label: 'Contacts', icon: 'mail', badgeKey: 'contacts' }
   ];
 
-  readonly notifications = signal([
-    { id: 1, title: 'New offer received', detail: 'Ravi Kumar offered ₹16.5 L on Hyundai Creta · 2m ago' },
-    { id: 2, title: 'New enquiry', detail: 'Sneha Patil asked about Honda City · 34m ago' },
-    { id: 3, title: 'Listing viewed', detail: 'Royal Enfield Classic 350 got 120 views today' }
-  ]);
+  readonly notifications = signal<{ id: number; title: string; detail: string }[]>([]);
 
   constructor() {
     this.router.events
