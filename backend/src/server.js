@@ -21,7 +21,24 @@ const HomepageStat = require('./models/homepage-stat.model');
 const Comparison = require('./models/comparison.model');
 
 const app = express();
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || '*' }));
+const configuredOrigins = (process.env.CLIENT_ORIGIN || '')
+  .split(',')
+  .map((origin) => origin.trim().replace(/\/$/, ''))
+  .filter(Boolean);
+const allowedOrigins = new Set([
+  ...configuredOrigins,
+  'https://ayracars.in'
+]);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.has(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(null, false);
+  }
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
