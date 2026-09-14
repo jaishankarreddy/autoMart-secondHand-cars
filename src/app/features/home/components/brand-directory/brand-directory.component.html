@@ -12,9 +12,13 @@
       </a>
     </div>
 
-    <div class="directory-grid">
+    <div class="directory-grid" [class.show-all]="showAll()">
       @for (brand of visibleBrands(); track brand.name) {
-        <a class="directory-card" [routerLink]="brandLink(brand)">
+        <a
+          class="directory-card"
+          [routerLink]="brand.type === 'bike' ? '/bikes' : '/cars'"
+          [queryParams]="{ brand: brand.name }"
+        >
           <span class="directory-mark">
             @if (getLogo(brand) && !failedLogos().has(brand.name)) {
               <img

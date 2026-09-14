@@ -59,7 +59,7 @@ export class SiteNavbarComponent {
       about: url.startsWith('/about'),
       contact: url.startsWith('/contact'),
       sell: url.startsWith('/sell'),
-      home: url === '/' || url.startsWith('/home')
+      home: url === '/'
     };
   });
 

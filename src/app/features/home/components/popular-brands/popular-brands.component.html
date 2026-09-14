@@ -19,7 +19,7 @@
                 @if (brand.logo && !failedLogos().has(brand.name)) {
                   <img [src]="brand.logo" [alt]="brand.name" loading="lazy" class="brand-logo-img" (error)="onLogoError(brand.name)" />
                 } @else {
-                  <span class="brand-mark" [style.color]="brand.color">
+                  <span class="brand-mark brand-mark-fallback" [style.color]="brand.color" [attr.aria-label]="brand.name + ' logo'">
                     @if (isRings(brand.mark)) { <span class="rings">&#x25C9;&#x25C9;&#x25C9;&#x25C9;</span> } @else { {{ brand.mark }} }
                   </span>
                 }

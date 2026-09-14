@@ -217,6 +217,30 @@
     gap: 12px;
   }
   .vehicle-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .vehicle-image {
+    height: 135px;
+  }
+  .vehicle-details {
+    padding: 12px 11px 13px;
+  }
+  .vehicle-type {
+    font-size: 9px;
+  }
+  .vehicle-details h3 {
+    font-size: 14px;
+    line-height: 1.2;
+  }
+  .vehicle-meta {
+    font-size: 10px;
+  }
+  .vehicle-bottom strong {
+    font-size: 16px;
+  }
+  .vehicle-bottom a {
+    height: 30px;
+    width: 30px;
   }
 }

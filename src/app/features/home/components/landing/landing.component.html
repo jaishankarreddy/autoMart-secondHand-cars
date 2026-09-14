@@ -9,8 +9,7 @@
 
   <!-- ===== Hero ===== -->
   <section class="hero" id="top">
-    <div class="hero-image" [style.background-image]="'url(' + heroImage + ')'"></div>
-    <div class="hero-vignette"></div>
+    <div class="hero-image" [style.background-image]="'url(' + heroImage + ')'" [style.--hero-mobile-image]="'url(' + heroMobileImage + ')'" ></div>
     <div class="hero-content">
       <div class="eyebrow"><svg lucideShieldCheck size="14"></svg> Verified vehicles, better journeys</div>
       <h1>Find the one<br /><span>that feels right.</span></h1>
@@ -20,12 +19,16 @@
         <a class="ghost-button" routerLink="/sell">Sell with us <svg lucideTag size="16"></svg></a>
       </div>
     </div>
-    <div class="hero-stamp"><svg lucideSparkles size="15"></svg><span>Curated<br /><b>for the road ahead</b></span></div>
-    <div class="scroll-hint"><span></span> Scroll to explore</div>
+    <div class="hero-feature-strip" aria-label="Ayra Cars benefits">
+      <div class="hero-feature"><span class="feature-icon"><svg lucideShieldCheck size="19"></svg></span><div><strong>Verified Vehicles</strong><small>Inspected for your peace of mind</small></div></div>
+      <div class="hero-feature"><span class="feature-icon"><svg lucideCarFront size="19"></svg></span><div><strong>Wide Range</strong><small>Cars and bikes from top brands</small></div></div>
+      <div class="hero-feature"><span class="feature-icon"><svg lucideTag size="19"></svg></span><div><strong>Great Value</strong><small>Quality vehicles at the right price</small></div></div>
+      <div class="hero-feature"><span class="feature-icon"><svg lucideUsers size="19"></svg></span><div><strong>Hassle-Free Experience</strong><small>Simple, transparent and reliable</small></div></div>
+    </div>
   </section>
 
   <!-- ===== Quick search ===== -->
-  <section class="quick-search" aria-label="Find your vehicle">
+  <section class="quick-search" aria-label="Find your vehicle" hidden>
     <div class="search-intro"><span>01</span><div><strong>Start your search</strong><small>Make the first move</small></div></div>
     <form class="quick-search-form" (submit)="submitSearch($event)">
       <div class="select-field" [class.dropdown-open]="dropdownOpen() === 'type'">
@@ -81,7 +84,7 @@
     <div class="trust-points">
       <div class="trust-point"><span><svg lucideCheck size="17"></svg></span><div><strong>200-point inspection</strong><p>Every car and bike is checked by a trained specialist.</p></div></div>
       <div class="trust-point"><span><svg lucideShieldCheck size="17"></svg></span><div><strong>Verified history</strong><p>No hidden surprises. Just the full story, upfront.</p></div></div>
-      <div class="trust-point"><span><svg lucideTruck size="17"></svg></span><div><strong>Delivered to your door</strong><p>Choose it from home. We will bring it home to you.</p></div></div>
+      <div class="trust-point"><span><svg lucideTruck size="17"></svg></span><div><strong>Delivered to your door</strong><p>Choose delivery from home; additional charges may apply by location.</p></div></div>
     </div>
   </section>
 </main>

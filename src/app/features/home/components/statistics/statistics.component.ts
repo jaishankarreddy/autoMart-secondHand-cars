@@ -1,6 +1,4 @@
-import { Component, ElementRef, inject, signal, AfterViewInit, OnDestroy, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { API_BASE } from '@config/api';
+import { Component, ElementRef, inject, signal, AfterViewInit, OnDestroy } from '@angular/core';
 import { RevealDirective } from '../../directives/reveal.directive';
 
 interface StatData {
@@ -9,10 +7,12 @@ interface StatData {
   label: string;
 }
 
-interface ApiStat {
-  value: string;
-  label: string;
-}
+const STATIC_STATS: StatData[] = [
+  { end: 1000, suffix: '+', label: 'Verified vehicles' },
+  { end: 31, suffix: '', label: 'Karnataka districts' },
+  { end: 30, suffix: '+', label: 'Brands' },
+  { end: 24, suffix: '/7', label: 'Buyer and seller support' }
+];
 
 @Component({
   selector: 'app-statistics',
@@ -20,22 +20,14 @@ interface ApiStat {
   imports: [RevealDirective],
   templateUrl: './statistics.component.html'
 })
-export class StatisticsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class StatisticsComponent implements AfterViewInit, OnDestroy {
   private readonly el = inject(ElementRef<HTMLElement>);
-  private readonly http = inject(HttpClient);
   private observer?: IntersectionObserver;
   private rafId?: number;
   private animated = false;
 
   readonly progress = signal(0);
-  readonly stats = signal<StatData[]>([]);
-
-  ngOnInit(): void {
-    this.http.get<ApiStat[]>(`${API_BASE}/homestats?section=section`).subscribe({
-      next: (list) => this.stats.set(list.map((s) => this.toStat(s))),
-      error: () => this.stats.set([])
-    });
-  }
+  readonly stats = signal<StatData[]>(STATIC_STATS);
 
   ngAfterViewInit(): void {
     if (typeof IntersectionObserver === 'undefined') {
@@ -63,14 +55,6 @@ export class StatisticsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   display(stat: StatData): string {
     return `${Math.round(stat.end * this.progress())}${stat.suffix}`;
-  }
-
-  private toStat(s: ApiStat): StatData {
-    const match = /^(.*?)([-+]?[\d.]+)(.*)$/.exec(s.value);
-    if (match) {
-      return { end: parseFloat(match[2]) ?? 0, suffix: match[3] ?? '', label: s.label };
-    }
-    return { end: 0, suffix: '', label: s.label };
   }
 
   private animate(): void {

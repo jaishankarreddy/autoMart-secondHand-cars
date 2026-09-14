@@ -49,8 +49,8 @@
 }
 
 .directory-logo {
-  width: 2rem;
-  height: 2rem;
+  width: 2.45rem;
+  height: 2.45rem;
   object-fit: contain;
 }
 
@@ -131,14 +131,54 @@
   .directory-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .directory-grid:not(.show-all) .directory-card:nth-child(n + 9) {
+    display: none;
+  }
 }
 
 @media (max-width: 480px) {
   .directory-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
   }
 
   .directory-card {
     min-height: 4.5rem;
+    padding: 10px 8px;
+  }
+
+  .directory-mark {
+    border-radius: 8px;
+    height: 2.45rem;
+    width: 2.45rem;
+  }
+
+  .directory-logo {
+    height: 2rem;
+    width: 2rem;
+  }
+
+  .directory-details {
+    margin-left: 7px;
+  }
+
+  .directory-details strong {
+    font-size: 0.75rem;
+  }
+
+  .directory-details small,
+  .directory-stock {
+    font-size: 0.68rem;
+  }
+
+  .directory-stock {
+    gap: 1px;
+    margin-left: 4px;
+  }
+
+  .directory-stock svg {
+    height: 12px;
+    width: 12px;
   }
 }

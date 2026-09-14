@@ -10,31 +10,73 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'home',
-        pathMatch: 'full'
+            data: {
+              seo: {
+                title: 'Ayra Cars | Buy and Sell Used Cars in Bangalore',
+                description: 'Buy and sell verified used cars and bikes in Bangalore and across Karnataka with transparent prices and trusted listings.',
+                keywords: 'used cars Bangalore, second hand cars Bangalore, used bikes Bangalore, buy used vehicles Karnataka, sell car Bangalore, Ayra Cars'
+              }
+            },
+            loadChildren: () => import('@features/home/home.routes').then(m => m.HOME_ROUTES)
       },
       {
         path: 'home',
-        loadChildren: () => import('@features/home/home.routes').then(m => m.HOME_ROUTES)
+            redirectTo: '',
+            pathMatch: 'full'
       },
       {
         path: 'cars',
+            data: {
+              seo: {
+                title: 'Used Cars for Sale in Bangalore | Ayra Cars',
+                description: 'Browse verified second hand cars for sale in Bangalore and Karnataka with transparent prices and trusted vehicle listings.',
+                keywords: 'used cars for sale Bangalore, second hand cars Bangalore, pre owned cars Karnataka, buy used car Bangalore, Ayra Cars cars'
+              }
+            },
         loadChildren: () => import('@features/cars/cars.routes').then(m => m.CARS_ROUTES)
       },
       {
         path: 'bikes',
+            data: {
+              seo: {
+                title: 'Used Bikes for Sale in Bangalore | Ayra Cars',
+                description: 'Find inspected second hand bikes for sale in Bangalore and across Karnataka with clear pricing and trusted listings.',
+                keywords: 'used bikes for sale Bangalore, second hand bikes Karnataka, pre owned bikes Bangalore, buy used bike, Ayra Cars bikes'
+              }
+            },
         loadChildren: () => import('@features/bikes/bikes.routes').then(m => m.BIKES_ROUTES)
       },
       {
         path: 'vehicles/:id',
+        data: {
+          seo: {
+            title: 'Used Vehicle Details | Ayra Cars Bangalore',
+            description: 'View verified used car and bike details, pricing and seller information for vehicles available in Bangalore and Karnataka.',
+            keywords: 'used vehicle Bangalore, used car details, used bike details Karnataka, verified vehicles Ayra Cars'
+          }
+        },
         loadChildren: () => import('@features/vehicle-details/vehicle-details.routes').then(m => m.VEHICLE_DETAILS_ROUTES)
       },
       {
         path: 'search',
+        data: {
+          seo: {
+            title: 'Search Used Cars and Bikes in Bangalore | Ayra Cars',
+            description: 'Search verified second hand cars and bikes by brand, price, location and body type across Bangalore and Karnataka.',
+            keywords: 'search used cars Bangalore, search used bikes Karnataka, second hand vehicle search, Ayra Cars inventory'
+          }
+        },
         loadChildren: () => import('@features/search/search.routes').then(m => m.SEARCH_ROUTES)
       },
       {
         path: 'compare',
+        data: {
+          seo: {
+            title: 'Compare Used Cars and Bikes | Ayra Cars',
+            description: 'Compare verified used cars and bikes in Bangalore and Karnataka by price, mileage, features and condition.',
+            keywords: 'compare used cars Bangalore, compare used bikes, pre owned vehicle comparison, Ayra Cars'
+          }
+        },
         loadChildren: () => import('@features/compare/compare.routes').then(m => m.COMPARE_ROUTES)
       },
       {
@@ -43,18 +85,46 @@ export const routes: Routes = [
       },
       {
         path: 'brands',
+        data: {
+          seo: {
+            title: 'Car and Bike Brands in Bangalore | Ayra Cars',
+            description: 'Explore popular car and bike brands with verified pre owned vehicles available for buyers across Bangalore and Karnataka.',
+            keywords: 'car brands Bangalore, bike brands Karnataka, used vehicle brands, pre owned cars by brand, Ayra Cars'
+          }
+        },
         loadChildren: () => import('@features/brands/brands.routes').then(m => m.BRANDS_ROUTES)
       },
       {
         path: 'about',
+        data: {
+          seo: {
+            title: 'About Ayra Cars | Trusted Used Vehicles in Karnataka',
+            description: 'Learn how Ayra Cars helps buyers and sellers trade verified second hand cars and bikes across Bangalore and Karnataka.',
+            keywords: 'about Ayra Cars, trusted used cars Bangalore, used vehicle marketplace Karnataka, buy sell cars Bangalore'
+          }
+        },
         loadChildren: () => import('@features/about/about.routes').then(m => m.ABOUT_ROUTES)
       },
       {
         path: 'contact',
+        data: {
+          seo: {
+            title: 'Contact Ayra Cars | Used Cars and Bikes in Bangalore',
+            description: 'Contact Ayra Cars for help buying or selling used cars and bikes in Bangalore and across Karnataka.',
+            keywords: 'contact Ayra Cars, used car help Bangalore, sell used vehicle Karnataka, Ayra Cars support'
+          }
+        },
         loadChildren: () => import('@features/contact/contact.routes').then(m => m.CONTACT_ROUTES)
       },
       {
         path: 'sell',
+        data: {
+          seo: {
+            title: 'Sell Your Used Car or Bike in Bangalore | Ayra Cars',
+            description: 'Sell your used car or bike in Bangalore and Karnataka with Ayra Cars. Get a fair offer, expert support and a simple selling process.',
+            keywords: 'sell used car Bangalore, sell used bike Bangalore, sell car Karnataka, car valuation Bangalore, Ayra Cars sellers'
+          }
+        },
         loadChildren: () => import('@features/sell/sell.routes').then(m => m.SELL_ROUTES)
       },
       {
@@ -91,6 +161,6 @@ export const routes: Routes = [
   // Fallback catch-all route
   {
     path: '**',
-    redirectTo: 'home'
+    redirectTo: ''
   }
 ];

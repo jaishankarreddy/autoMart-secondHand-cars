@@ -1,6 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { API_BASE } from '@config/api';
+import { Component, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   LucideArrowRight,
@@ -22,7 +20,7 @@ interface BrandDirectoryEntry {
 const LOGO_MAP: Record<string, string> = {
   'Maruti Suzuki': '/vehicle_logos/suzuki-logo.png',
   'Hyundai': '/vehicle_logos/hyundai-logo.png',
-  'Honda': '/vehicle_logos/Honda-Logo.wine.svg',
+  'Honda': '/vehicle_logos/honda-logo.png',
   'Toyota': '/vehicle_logos/toyota-logo.png',
   'Mahindra': '/vehicle_logos/mahindra-logo.png',
   'Tata': '/vehicle_logos/tata-logo.png',
@@ -35,11 +33,9 @@ const LOGO_MAP: Record<string, string> = {
   'Volkswagen': '/vehicle_logos/volkswagen-logo.png',
   'KTM': '/vehicle_logos/ktm-logo.png',
   'Renault': '/vehicle_logos/renault-logo.png',
-  'Royal Enfield': '/vehicle_logos/Eicher_Motors-Logo.wine.svg',
   'TVS': '/vehicle_logos/TVS_Motor_Company-Logo.wine.svg',
   'Hero': '/vehicle_logos/Hero_MotoCorp-Logo.wine.svg',
   'Yamaha': '/vehicle_logos/Yamaha_Motor_Company-Logo.wine.svg',
-  'Bajaj': '/vehicle_logos/bajaj-logo.png',
   'Ford': '/vehicle_logos/ford-logo.png',
   'Chevrolet': '/vehicle_logos/chevrolet-logo.png',
   'Nissan': '/vehicle_logos/nissan-logo.png',
@@ -52,6 +48,25 @@ const LOGO_MAP: Record<string, string> = {
   'Fiat': '/vehicle_logos/fiat-logo.png',
   'Tesla': '/vehicle_logos/tesla-logo.png',
 };
+
+const STATIC_BRANDS: BrandDirectoryEntry[] = [
+  { name: 'Maruti Suzuki', code: 'MS', color: '#e34b4b', logo: '', type: 'car', count: 42 },
+  { name: 'Hyundai', code: 'HY', color: '#1472b8', logo: '', type: 'car', count: 36 },
+  { name: 'Tata', code: 'TA', color: '#1f4e79', logo: '', type: 'car', count: 31 },
+  { name: 'Mahindra', code: 'MA', color: '#c23c32', logo: '', type: 'car', count: 28 },
+  { name: 'Toyota', code: 'TO', color: '#d71920', logo: '', type: 'car', count: 24 },
+  { name: 'Honda', code: 'HO', color: '#cc1f2f', logo: '', type: 'car', count: 19 },
+  { name: 'Kia', code: 'KI', color: '#1d1d1d', logo: '', type: 'car', count: 17 },
+  { name: 'BMW', code: 'BM', color: '#1f5da8', logo: '', type: 'car', count: 12 },
+  { name: 'Royal Enfield', code: 'RE', color: '#c28c36', logo: '', type: 'bike', count: 26 },
+  { name: 'Yamaha', code: 'YA', color: '#1d4e9e', logo: '', type: 'bike', count: 21 },
+  { name: 'Bajaj', code: 'BA', color: '#1674bb', logo: '', type: 'bike', count: 18 },
+  { name: 'TVS', code: 'TV', color: '#e42d31', logo: '', type: 'bike', count: 16 },
+  { name: 'Hero', code: 'HE', color: '#e1262f', logo: '', type: 'bike', count: 14 },
+  { name: 'KTM', code: 'KT', color: '#f58220', logo: '', type: 'bike', count: 10 },
+  { name: 'Volkswagen', code: 'VW', color: '#1c4b78', logo: '', type: 'car', count: 9 },
+  { name: 'Skoda', code: 'SK', color: '#16834b', logo: '', type: 'car', count: 8 }
+];
 
 @Component({
   selector: 'app-brand-directory',
@@ -67,10 +82,8 @@ const LOGO_MAP: Record<string, string> = {
   templateUrl: './brand-directory.component.html',
   styleUrl: './brand-directory.component.scss'
 })
-export class BrandDirectoryComponent implements OnInit {
-  private readonly http = inject(HttpClient);
-
-  readonly brands = signal<BrandDirectoryEntry[]>([]);
+export class BrandDirectoryComponent {
+  readonly brands = signal<BrandDirectoryEntry[]>(STATIC_BRANDS);
   readonly showAll = signal(false);
   readonly failedLogos = signal<Set<string>>(new Set());
   readonly initialCount = 12;
@@ -82,19 +95,6 @@ export class BrandDirectoryComponent implements OnInit {
   readonly totalCount = computed(() =>
     this.brands().reduce((sum, b) => sum + b.count, 0)
   );
-
-  ngOnInit(): void {
-    this.http.get<BrandDirectoryEntry[]>(`${API_BASE}/brands/directory`).subscribe({
-      next: (list) => {
-        const enriched = list.map((b) => ({
-          ...b,
-          logo: LOGO_MAP[b.name] || b.logo || ''
-        }));
-        this.brands.set(enriched);
-      },
-      error: () => this.brands.set([])
-    });
-  }
 
   getLogo(brand: BrandDirectoryEntry): string {
     return LOGO_MAP[brand.name] || brand.logo || '';
@@ -112,8 +112,4 @@ export class BrandDirectoryComponent implements OnInit {
     });
   }
 
-  brandLink(brand: BrandDirectoryEntry): string {
-    const param = brand.type === 'bike' ? '/bikes' : '/cars';
-    return param + '?brand=' + encodeURIComponent(brand.name);
-  }
 }

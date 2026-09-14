@@ -69,7 +69,7 @@ export class RegisterPageComponent {
       next: () => {
         this.loading.set(false);
         this.toast.success('Account created', 'Welcome to Ayra Cars!');
-        this.router.navigate(['/home']);
+        this.router.navigate(['/']);
       },
       error: (err: unknown) => {
         this.loading.set(false);

@@ -1,5 +1,5 @@
-<header class="inventory-nav">
-  <a class="brand" routerLink="/home"><span class="brand-symbol"><svg lucideCarFront size="19"></svg></span>Ayra Cars<span>.</span></a>
+<header class="inventory-nav" [class.home-navbar]="navActive().home">
+  <a class="brand" routerLink="/"><span class="brand-symbol"><svg lucideCarFront size="19"></svg></span>Ayra Cars<span>.</span></a>
   <nav>
     <a routerLink="/cars" [class.active-link]="navActive().cars">Find a vehicle</a>
     <a routerLink="/brands" [class.active-link]="navActive().brands">Brands</a>
@@ -25,7 +25,7 @@
   <div class="mobile-nav">
     <div class="mobile-nav-panel">
       <div class="mobile-nav-head">
-        <a class="brand" routerLink="/home" (click)="menuOpen.set(false)"><span class="brand-symbol"><svg lucideCarFront size="18"></svg></span>Ayra Cars<span>.</span></a>
+        <a class="brand" routerLink="/" (click)="menuOpen.set(false)"><span class="brand-symbol"><svg lucideCarFront size="18"></svg></span>Ayra Cars<span>.</span></a>
         <button class="menu-close" (click)="menuOpen.set(false)" aria-label="Close menu"><svg lucideX size="20"></svg></button>
       </div>
       <nav class="mobile-nav-links">

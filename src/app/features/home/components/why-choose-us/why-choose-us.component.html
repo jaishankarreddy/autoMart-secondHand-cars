@@ -11,9 +11,6 @@
     <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       @for (feature of features; track feature.title; let i = $index) {
         <div class="feature-card {{ cardClass(i) }}">
-          <!-- soft gradient blob on hover -->
-          <div class="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[#d7fa4c]/40 opacity-0 blur-2xl transition-opacity duration-700 ease-smooth group-hover:opacity-100"></div>
-
           <!-- decorative ring on featured cards -->
           @if (i === 0 || i === 5) {
             <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#d7fa4c] to-transparent"></div>

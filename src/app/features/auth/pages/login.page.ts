@@ -58,7 +58,7 @@ export class LoginPageComponent {
         this.loading.set(false);
         this.toast.success('Welcome back', 'You are now signed in.');
         const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-        this.router.navigateByUrl(returnUrl || '/home');
+        this.router.navigateByUrl(returnUrl || '/');
       },
       error: (err: unknown) => {
         this.loading.set(false);

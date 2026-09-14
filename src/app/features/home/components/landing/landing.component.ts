@@ -9,12 +9,14 @@ import {
   LucideShieldCheck,
   LucideSparkles,
   LucideTag,
+  LucideUsers,
   LucideTruck,
   LucideX
 } from '@lucide/angular';
 import { CatalogService } from '../../../../services/catalog.service';
 
-const HERO_IMAGE = 'https://images.pexels.com/photos/28380935/pexels-photo-28380935.jpeg?auto=compress&cs=tinysrgb&h=650&w=940';
+const HERO_IMAGE = '/home_landing.png';
+const HERO_MOBILE_IMAGE = '/home_landing_mobile.png';
 
 interface BudgetOption {
   value: string;
@@ -42,6 +44,7 @@ const BUDGET_OPTIONS: BudgetOption[] = [
     LucideShieldCheck,
     LucideSparkles,
     LucideTag,
+    LucideUsers,
     LucideTruck,
     LucideX
   ],
@@ -53,6 +56,7 @@ export class LandingComponent {
   private readonly catalog = inject(CatalogService);
 
   readonly heroImage = HERO_IMAGE;
+  readonly heroMobileImage = HERO_MOBILE_IMAGE;
   readonly searchOpen = signal(false);
   readonly dropdownOpen = signal<'type' | 'brand' | 'budget' | null>(null);
   readonly searchType = signal<'car' | 'bike'>('car');

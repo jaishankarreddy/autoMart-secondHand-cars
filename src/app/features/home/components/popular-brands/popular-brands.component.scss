@@ -16,8 +16,9 @@
 .brand-card { align-items: center; background: rgba(255, 255, 255, 0.96); border: 1px solid #e6e7e1; border-radius: 16px; box-shadow: 0 9px 20px rgba(35, 55, 45, 0.06); display: flex; height: 88px; min-width: 190px; padding: 13px 14px; position: relative; transition: transform 0.25s ease, box-shadow 0.25s ease; }
 .brand-card:hover { box-shadow: 0 14px 28px rgba(35, 55, 45, 0.13); transform: translateY(-5px); }
 .brand-logo-tile { align-items: center; background: #f6f6f2; border: 1px solid #ecece7; border-radius: 12px; display: flex; height: 60px; justify-content: center; overflow: hidden; width: 60px; }
-.brand-logo-img { height: 36px; object-fit: contain; width: 36px; }
-.brand-mark { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: -0.06em; }
+.brand-logo-img { height: 48px; object-fit: contain; width: 48px; }
+.brand-mark { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: -0.06em; }
+.brand-mark-fallback { align-items: center; display: flex; justify-content: center; min-width: 2.5rem; }
 .rings { font-size: 11px; letter-spacing: -5px; transform: scaleX(1.15); }
 .brand-card-name { color: #32423f; font-size: 14px; font-weight: 700; margin-left: 12px; max-width: 93px; text-align: left; white-space: normal; }
 .brand-card-arrow { align-items: center; background: #f1f2ed; border-radius: 50%; color: #73817b; display: flex; height: 25px; justify-content: center; margin-left: auto; opacity: 0; transform: translateX(-4px); transition: opacity 0.2s ease, transform 0.2s ease; width: 25px; }

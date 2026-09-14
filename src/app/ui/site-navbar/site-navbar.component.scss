@@ -33,10 +33,18 @@
   border-bottom: 1px solid #e9e6dd;
   display: flex;
   justify-content: space-between;
-  padding: 18px 5vw;
+  padding: 14px 5vw;
   position: sticky;
   top: 0;
   z-index: 50;
+}
+.inventory-nav.home-navbar {
+  background: rgba(255, 255, 255, 0.16);
+  border-bottom-color: rgba(255, 255, 255, 0.3);
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 .inventory-nav nav {
   display: flex;
@@ -173,6 +181,12 @@
   position: relative;
   width: 86%;
   z-index: 1;
+  margin-left: auto;
+  animation: mobile-drawer-in 0.25s ease-out both;
+}
+@keyframes mobile-drawer-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
 }
 .mobile-nav-head {
   align-items: center;

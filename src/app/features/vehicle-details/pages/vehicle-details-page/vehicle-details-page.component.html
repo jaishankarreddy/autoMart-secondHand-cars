@@ -104,8 +104,8 @@
               </div>
             </div>
             <div class="seller-buttons">
-              <button><svg lucidePhone size="16"></svg> Call</button>
-              <button><svg lucideMessageCircle size="16"></svg> WhatsApp</button>
+              <a [href]="'tel:' + phoneLink()" aria-label="Call the seller"><svg lucidePhone size="16"></svg> Call</a>
+              <a [href]="'https://wa.me/' + whatsappLink()" target="_blank" rel="noopener noreferrer" aria-label="Contact the seller on WhatsApp"><svg lucideMessageCircle size="16"></svg> WhatsApp</a>
             </div>
           </section>
 
@@ -151,7 +151,6 @@
             <button class="offer-button" (click)="scrollToOffer()"><svg lucideTag size="16"></svg> Offer price</button>
             <a class="primary-action" [href]="'tel:' + phoneLink()"><svg lucidePhone size="16"></svg> Call now</a>
             <a class="secondary-action" [href]="'https://wa.me/' + whatsappLink()" target="_blank"><svg lucideMessageCircle size="16"></svg> WhatsApp</a>
-            <button class="secondary-action"><svg lucideCalendarDays size="16"></svg> Schedule a visit</button>
             <div class="trust-row">
               <svg lucideShieldCheck size="22"></svg>
               <div><strong>Ayra Cars certified</strong><span>200-point inspected</span></div>

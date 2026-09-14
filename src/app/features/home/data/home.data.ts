@@ -82,7 +82,7 @@ export const WHY_CHOOSE_US: FeatureItem[] = [
   {
     icon: 'truck',
     title: 'Doorstep Delivery',
-    description: 'Choose home delivery or pick up from our experience centres across all 31 districts.'
+    description: 'Choose home delivery or pick up from our experience centres across Karnataka. Additional delivery charges may apply based on your location.'
   }
 ];
 
