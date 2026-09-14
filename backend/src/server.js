@@ -121,6 +121,7 @@ async function nextVehicleId(vehicleType) {
 }
 
 // Health
+app.get('/', (_req, res) => res.json({ status: 'ok', service: 'ayracars-api' }));
 app.get('/api/health', (req, res) => res.json({ status: 'ok', service: 'ayracars-api' }));
 
 // --- User authentication ------------------------------------------------------
